@@ -1,242 +1,118 @@
-# 🚀 Production-Ready Data Mapping Application
+# 🤖 Agentic Mapping AI Platform
 
-An intelligent data mapping application that leverages GPT-4 with advanced prompt engineering to automate PySpark code generation, test case creation, and data validation.
+A comprehensive AI-powered data mapping and transformation platform with advanced Excel integration capabilities.
 
-## 🌟 Features
+## 🚀 Features
 
-- **AI-Powered Code Generation**: Uses GPT-4 to generate production-ready PySpark transformation code
-- **Intelligent Mapping Analysis**: Analyzes Excel mapping specifications and provides recommendations
-- **FAISS Vector Database**: Enables similarity search to find and reuse similar mapping patterns
-- **Comprehensive Test Generation**: Automatically creates test cases for all mapping scenarios
-- **Data Quality Validation**: Generates validation rules based on data profiling
-- **Beautiful CLI Interface**: Rich terminal UI with progress tracking and status updates
-- **Production-Ready**: Includes error handling, logging, and performance optimizations
+### Core Platform
+- **Enhanced Orchestrator**: Multi-agent coordination and workflow management
+- **RAG Knowledge Engine**: Intelligent context retrieval and learning
+- **Streamlit UI**: Interactive web interface for system management
+- **FastAPI Backend**: RESTful API for all platform operations
 
-## 📋 Prerequisites
+### Excel Mapping Integration
+- **Excel Parser**: Extract complex field mappings from Excel files
+- **Transformation Agent**: Analyze and process conditional logic, lookups, and derivations
+- **Gold Reference Validator**: Ensure compliance with data standards (img_0241 template)
+- **PySpark Code Generator**: Automatic production-ready code generation
 
-- Python 3.8 or higher
-- OpenAI API key with GPT-4 access
-- Excel file with mapping specifications
-- (Optional) Table metadata JSON files in `results/` directory
+### Advanced Capabilities
+- **Multi-Agent Architecture**: Specialized agents for different transformation types
+- **Code Generation**: PySpark, SQL, and Python code generation
+- **Validation & Compliance**: Comprehensive data quality checks
+- **Knowledge Management**: Learning from transformation patterns
 
-## 🛠️ Installation
+## 📊 Excel Mapping Support
 
-1. **Clone the repository**
-   ```bash
-   cd /Applications/Mapping
-   ```
+The platform supports complex Excel mapping structures including:
+- **Conditional Transformations**: `If HIFI_ACCT_IND > 0 then 'Y' else 'N'`
+- **Lookup Operations**: `Lookup for genesis STANDARD_VAL_DESC using keys`
+- **Date Formatting**: `Date format should be 'YYYYMMDD'`
+- **Direct Mappings**: Simple field-to-field mappings
+- **Gold Reference Validation**: Against img_0241 template standards
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 🛠️ Quick Start
 
-3. **Set up environment**
-   ```bash
-   # Copy the example environment file
-   cp env_example.txt .env
-   
-   # Edit .env and add your OpenAI API key
-   ```
+### 1. Install Dependencies
+```bash
+cd agentic_mapping_ai
+pip install -r requirements.txt
+```
+
+### 2. Start the Platform
+```bash
+python run_application.py
+```
+
+### 3. Access the Interface
+- **API Documentation**: http://localhost:8000/docs
+- **Streamlit UI**: http://localhost:8501
+- **Health Check**: http://localhost:8000/health
+
+### 4. Upload Excel Mappings
+```bash
+# Upload Excel file
+curl -X POST "http://localhost:8000/api/v1/excel/upload" -F "file=@your_mapping.xlsx"
+
+# Process full pipeline
+curl -X POST "http://localhost:8000/api/v1/excel/process-full" \
+  -H "Content-Type: application/json" \
+  -d '{"file_path": "./data/uploads/your_mapping.xlsx"}'
+```
 
 ## 📁 Project Structure
 
 ```
-Mapping/
-├── main.py                 # Main application orchestrator
-├── gpt4_prompt_engine.py   # Advanced prompt engineering system
-├── faiss_integration.py    # Vector database for similarity search
-├── data_profiler.py        # Data quality profiling module
-├── run_application.py      # Interactive runner script
-├── requirements.txt        # Python dependencies
-├── env_example.txt         # Environment configuration template
-├── Testing1 copy.xlsx      # Your mapping Excel file
-├── results/               # Directory for table metadata JSON files
-├── output/                # Generated outputs
-│   ├── pyspark_code/     # Generated PySpark transformations
-│   ├── test_cases/       # Generated test cases
-│   ├── validation_rules/ # Data validation rules
-│   └── reports/          # Analysis reports
-└── indexes/              # FAISS vector database indexes
+agentic_mapping_ai/
+├── agents/                 # AI agents for different tasks
+│   ├── transformation_agent.py
+│   ├── goldref_validator.py
+│   └── pyspark_code_generator.py
+├── parsers/               # Excel and data parsers
+├── api/                   # FastAPI backend
+├── core/                  # Core models and utilities
+├── knowledge/             # RAG engine and knowledge base
+├── examples/              # Demo scripts and examples
+└── ui/                    # Streamlit interface
 ```
 
-## 🚀 Quick Start
+## 🔧 API Endpoints
 
-### Option 1: Using the Interactive Runner (Recommended)
-```bash
-python run_application.py
-```
+### Excel Processing
+- `POST /api/v1/excel/upload` - Upload Excel files
+- `POST /api/v1/excel/parse` - Parse mapping files
+- `POST /api/v1/excel/process-full` - Full pipeline processing
 
-The runner will:
-- Check all requirements
-- Guide you through setup if needed
-- Let you select which Excel file to process
-- Run the application with proper configuration
+### Transformations
+- `POST /api/v1/transformations/validate` - Validate transformation logic
+- `POST /api/v1/transformations/generate-code` - Generate PySpark/SQL code
 
-### Option 2: Direct Execution
-```bash
-python main.py
-```
+### Gold Reference
+- `POST /api/v1/goldref/validate` - Validate against standards
+- `GET /api/v1/goldref/compliance-report` - Generate compliance reports
 
-## 📊 Excel File Format
+## 📚 Documentation
 
-Your Excel file should have two sheets:
+- [Excel Mapping Integration Guide](agentic_mapping_ai/EXCEL_MAPPING_INTEGRATION_GUIDE.md)
+- [Enhanced Implementation Guide](agentic_mapping_ai/ENHANCED_IMPLEMENTATION_GUIDE.md)
+- [Setup Instructions](agentic_mapping_ai/SETUP_INSTRUCTIONS.md)
 
-### Sheet 1: Mapping Logic
-Required columns:
-- `standard physical table name`: Target table name
-- `Logical name`: Business description
-- `Standard physical column name`: Target column name
-- `Datatype`: Data type (String, char(1), etc.)
-- `Source table name`: Source table(s)
-- `source column name`: Source column(s)
-- `Direct/derived/Default/no mapping`: Mapping type
-- `Transformation/Derivation`: Transformation logic
+## 🎯 Use Cases
 
-### Sheet 2: Gold Reference Data
-Contains lookup/reference data for mappings
+1. **Data Migration Projects**: Automate complex field transformations
+2. **ETL Pipeline Generation**: Generate production-ready PySpark code
+3. **Compliance Validation**: Ensure mappings meet business standards
+4. **Knowledge Management**: Learn from transformation patterns
+5. **Code Automation**: Reduce manual coding for data transformations
 
-## 📝 Table Metadata Format
+## 🤝 Contributing
 
-Create JSON files in the `results/` directory with naming pattern: `{table_name}_metadata.json`
+This is an AI-generated platform. Contributions and improvements are welcome!
 
-Example structure:
-```json
-{
-  "table_name": "ACCT_DLY",
-  "database": "prod_db",
-  "columns": [
-    {
-      "name": "LAST_PYMT_DT",
-      "type": "string",
-      "nullable": true
-    }
-  ],
-  "partitions": ["biz_dt"],
-  "file_format": "parquet",
-  "location": "hdfs://prod/data/ACCT_DLY"
-}
-```
+## 📄 License
 
-## 🎯 Supported Mapping Types
-
-1. **derived**: Complex transformations with business logic
-2. **derived_goldref**: Derived with gold reference lookups
-3. **direct**: Simple column-to-column mapping
-4. **direct_map**: Direct mapping with value transformation
-5. **no_mapping**: Columns to exclude or pass through
-6. **blanks**: Special handling for null/blank values
-
-## 📤 Output Files
-
-The application generates:
-
-1. **PySpark Code** (`output/pyspark_code/`)
-   - Production-ready transformation functions
-   - Error handling and logging included
-   - Performance optimizations applied
-
-2. **Test Cases** (`output/test_cases/`)
-   - Positive, negative, edge, and performance tests
-   - Test data generators
-   - PySpark test code
-
-3. **Validation Rules** (`output/validation_rules/`)
-   - Data quality checks
-   - Business rule validations
-   - Monitoring metrics
-
-4. **Reports** (`output/reports/`)
-   - Comprehensive analysis
-   - Recommendations
-   - Data quality assessments
-
-## 🔧 Configuration
-
-Edit `.env` file to customize:
-```bash
-OPENAI_API_KEY=your_key_here
-EXCEL_FILE=Testing1 copy.xlsx
-RESULTS_DIR=results
-OUTPUT_DIR=output
-GPT_MODEL=gpt-4
-MAX_TOKENS=8000
-TEMPERATURE=0.1
-```
-
-## 📊 Monitoring & Logs
-
-- Application logs: `mapping_application.log`
-- FAISS index statistics available in the application output
-- Progress tracking shown in real-time during execution
-
-## 🤝 Best Practices
-
-1. **Excel Data Quality**
-   - Ensure mapping logic is clear and complete
-   - Use consistent naming conventions
-   - Document complex transformations clearly
-
-2. **Performance**
-   - For large datasets, the application automatically optimizes prompts
-   - FAISS index enables fast similarity searches
-   - Caching reduces redundant API calls
-
-3. **Cost Management**
-   - Monitor OpenAI API usage
-   - Application optimizes prompts to fit within token limits
-   - Batch processing reduces API calls
-
-## 🐛 Troubleshooting
-
-1. **OpenAI API Issues**
-   - Verify API key has GPT-4 access
-   - Check API rate limits
-   - Ensure sufficient credits
-
-2. **Excel Reading Errors**
-   - Verify Excel file format
-   - Check column names match expected format
-   - Ensure file is not corrupted
-
-3. **Memory Issues**
-   - For large mappings, increase available memory
-   - Process in batches if needed
-
-## 📈 Performance Tips
-
-1. Use the FAISS similarity search to find existing patterns
-2. Keep transformation logic clear and well-documented
-3. Provide complete table metadata for better code generation
-4. Review and optimize generated code before production use
-
-## 🔐 Security
-
-- API keys are stored in `.env` file (not committed to version control)
-- No sensitive data is sent to external APIs
-- All outputs are stored locally
-
-## 📞 Support
-
-For issues or questions:
-1. Check the application logs
-2. Review generated reports for insights
-3. Ensure all prerequisites are met
-4. Verify Excel format matches requirements
-
-## 🎉 Getting Started Example
-
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Run the application
-python run_application.py
-
-# 3. Follow the interactive prompts
-# 4. Check the output directory for results
-```
+Open source - see LICENSE file for details.
 
 ---
 
-Built with ❤️ using GPT-4, FAISS, and PySpark 
+**Built with AI-powered agents for intelligent data transformation** 🚀
