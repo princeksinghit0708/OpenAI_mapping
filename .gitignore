@@ -1,0 +1,123 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Data files
+data/uploads/
+data/processed/
+data/temp/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+
+# Output directories
+output/
+generated_code/
+reports/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+.cache/
+.pytest_cache/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Streamlit
+.streamlit/
+
+# FastAPI
+.uvicorn/
+
+# ChromaDB
+chroma_db/
+vector_store/
+
+# Temporary files
+*.tmp
+*.temp
+.temporary/
+temp/
+
+# Model files (if large)
+*.pkl
+*.joblib
+*.model
+
+# Configuration files with secrets
+config/secrets.py
+config/production.py
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/

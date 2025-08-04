@@ -1,0 +1,12 @@
+# OpenAI API Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Application Configuration
+EXCEL_FILE=Testing1 copy.xlsx
+RESULTS_DIR=results
+OUTPUT_DIR=output
+
+# Model Configuration
+GPT_MODEL=gpt-4
+MAX_TOKENS=8000
+TEMPERATURE=0.1 
