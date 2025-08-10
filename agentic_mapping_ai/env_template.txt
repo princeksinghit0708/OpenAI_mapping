@@ -1,8 +1,12 @@
-# API Keys (Enhanced Multi-Provider Support)
-OPENAI_API_KEY=your_openai_api_key_here
-ANTHROPIC_API_KEY=your_claude_api_key_here
-GOOGLE_API_KEY=your_google_api_key_here
-AZURE_OPENAI_API_KEY=your_azure_openai_api_key_here
+# Token-Based Authentication Configuration
+# No API keys required - using token-based authentication via LLM Service
+# Ensure your environment has access to 'helix' command for token generation
+
+# MongoDB Configuration for Token Storage (optional fallback)
+DEV_MONGO_USER=your_mongo_user
+DEV_MONGO_KEY=your_mongo_key
+
+# Vector Database (if using Pinecone)
 PINECONE_API_KEY=your_pinecone_api_key_here
 PINECONE_ENVIRONMENT=your_pinecone_environment
 

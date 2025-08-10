@@ -22,6 +22,12 @@ from dotenv import load_dotenv
 from enhanced_prompt_engine import EnhancedGPT4PromptEngine
 from faiss_integration import FAISSIntegration
 
+# Import LLM Service for token-based authentication
+import sys
+import os
+sys.path.append('./agentic_mapping_ai')
+from llm_service import llm_service
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -38,7 +44,6 @@ class EnhancedDataMappingApplication:
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.openai_api_key = config.get('openai_api_key')
         self.excel_file = config.get('excel_file')
         self.results_dir = Path(config.get('results_dir', 'results'))
         self.output_dir = Path(config.get('output_dir', 'output'))
@@ -56,9 +61,10 @@ class EnhancedDataMappingApplication:
         for dir_path in self.output_dirs.values():
             dir_path.mkdir(parents=True, exist_ok=True)
         
-        # Initialize enhanced components
-        self.prompt_engine = EnhancedGPT4PromptEngine(api_key=self.openai_api_key)
-        self.faiss_db = FAISSIntegration(self.openai_api_key)
+        # Initialize enhanced components using token-based authentication
+        self.prompt_engine = None  # Will be initialized differently
+        self.llm_service = llm_service
+        self.faiss_db = FAISSIntegration()  # No API key required
         
         # Data storage
         self.raw_mapping_data = None
@@ -675,15 +681,12 @@ def main():
     load_dotenv()
     
     config = {
-        'openai_api_key': os.getenv('OPENAI_API_KEY'),
         'excel_file': 'Testing1 copy.xlsx',
         'results_dir': 'results',
         'output_dir': 'output'
     }
     
-    if not config['openai_api_key']:
-        console.print("[red]Error: OPENAI_API_KEY not found[/red]")
-        return
+    console.print("[cyan]Using token-based authentication - no API key required[/cyan]")
     
     app = EnhancedDataMappingApplication(config)
     app.run_enhanced()

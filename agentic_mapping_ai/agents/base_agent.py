@@ -15,12 +15,17 @@ from langchain.memory import ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import BaseMessage
 from langchain.tools import BaseTool
-from langchain_openai import ChatOpenAI
 from loguru import logger
 from pydantic import BaseModel
 
 from core.models import AgentTask, AgentType, TaskStatus
 from knowledge.rag_engine import RAGEngine
+
+# Import the LLM Service for token-based authentication
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from llm_service import llm_service
 
 
 class AgentConfig(BaseModel):
@@ -61,12 +66,11 @@ class BaseAgent(ABC):
         self.agent_executor = None
         self.current_task: Optional[AgentTask] = None
         
-        # Initialize LLM
-        self.llm = ChatOpenAI(
-            model=config.model,
-            temperature=config.temperature,
-            max_tokens=config.max_tokens
-        )
+        # Initialize LLM using token-based authentication
+        self.llm_service = llm_service
+        self.model = config.model
+        self.temperature = config.temperature
+        self.max_tokens = config.max_tokens
         
         # Initialize memory if enabled
         if config.enable_memory:
@@ -94,22 +98,9 @@ class BaseAgent(ABC):
             MessagesPlaceholder(variable_name="agent_scratchpad")
         ])
         
-        # Create agent
-        if self.tools:
-            agent = create_openai_functions_agent(
-                llm=self.llm,
-                tools=self.tools,
-                prompt=prompt_template
-            )
-            
-            self.agent_executor = AgentExecutor(
-                agent=agent,
-                tools=self.tools,
-                memory=self.memory,
-                max_iterations=self.config.max_iterations,
-                verbose=True,
-                return_intermediate_steps=True
-            )
+        # Note: Agent executor functionality will be adapted to use LLM service directly
+        # For now, we'll handle tool execution in the _execute_core_logic method
+        self.agent_executor = None
     
     @abstractmethod
     def _get_system_prompt(self) -> str:
@@ -219,19 +210,27 @@ class BaseAgent(ABC):
         Returns:
             Agent response
         """
-        if not self.agent_executor:
-            # Fallback to direct LLM call
-            full_prompt = f"{self._get_system_prompt()}\n\nContext: {context}\n\nUser: {message}"
-            response = await self.llm.apredict(full_prompt)
-            return response
-        
-        # Use agent executor
         try:
-            result = await self.agent_executor.ainvoke({
-                "input": message,
-                "context": context
-            })
-            return result.get("output", "No response generated")
+            # Prepare messages for LLM service
+            system_prompt = self._get_system_prompt()
+            full_prompt = f"{system_prompt}\n\nContext: {context}\n\nUser: {message}"
+            
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Context: {context}\n\nUser: {message}"}
+            ]
+            
+            # Use LLM service with token-based authentication
+            response = self.llm_service.query_llm(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                llm_provider="azure"  # Default to azure, can be configured
+            )
+            
+            return response
+            
         except Exception as e:
             logger.error(f"Chat error: {str(e)}")
             return f"I encountered an error: {str(e)}"
@@ -256,8 +255,19 @@ class BaseAgent(ABC):
     async def health_check(self) -> Dict[str, Any]:
         """Perform health check"""
         try:
-            # Test LLM connection
-            test_response = await self.llm.apredict("Say 'OK' if you can respond")
+            # Test LLM connection using token-based service
+            messages = [
+                {"role": "system", "content": "You are a health check assistant."},
+                {"role": "user", "content": "Say 'OK' if you can respond"}
+            ]
+            
+            test_response = self.llm_service.query_llm(
+                model=self.model,
+                messages=messages,
+                temperature=0.1,
+                max_tokens=10,
+                llm_provider="azure"
+            )
             
             return {
                 "status": "healthy",

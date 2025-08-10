@@ -39,12 +39,12 @@ def setup_environment():
     if not Path(".env").exists():
         console.print("[yellow]No .env file found. Let's create one![/yellow]")
         
-        # Get OpenAI API key
-        api_key = Prompt.ask("Enter your OpenAI API key", password=True)
+        # No API key required - using token-based authentication
+        console.print("[green]Using token-based authentication - no API key required[/green]")
         
-        # Create .env file
+        # Create .env file with basic configuration
         with open(".env", "w") as f:
-            f.write(f"OPENAI_API_KEY={api_key}\n")
+            f.write("# Token-based authentication - no API key required\n")
             f.write("EXCEL_FILE=Testing1 copy.xlsx\n")
             f.write("RESULTS_DIR=results\n")
             f.write("OUTPUT_DIR=output\n")

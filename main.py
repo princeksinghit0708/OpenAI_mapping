@@ -21,6 +21,12 @@ from dotenv import load_dotenv
 from gpt4_prompt_engine import GPT4PromptEngine
 from faiss_integration import FAISSIntegration
 
+# Import LLM Service for token-based authentication
+import sys
+import os
+sys.path.append('./agentic_mapping_ai')
+from llm_service import llm_service
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -41,7 +47,6 @@ class DataMappingApplication:
     def __init__(self, config: Dict[str, Any]):
         """Initialize the application with configuration"""
         self.config = config
-        self.openai_api_key = config.get('openai_api_key')
         self.excel_file = config.get('excel_file', 'Testing1.xlsx')
         self.results_dir = Path(config.get('results_dir', 'results'))
         self.output_dir = Path(config.get('output_dir', 'output'))
@@ -53,10 +58,10 @@ class DataMappingApplication:
         (self.output_dir / 'validation_rules').mkdir(exist_ok=True)
         (self.output_dir / 'reports').mkdir(exist_ok=True)
         
-        # Initialize components
+        # Initialize components using token-based authentication
         self.prompt_engine = GPT4PromptEngine()
-        self.faiss_db = FAISSIntegration(self.openai_api_key)
-        self.gpt_client = None
+        self.llm_service = llm_service
+        self.faiss_db = FAISSIntegration()  # No API key required
         
         # Data storage
         self.mapping_data = None
@@ -65,24 +70,27 @@ class DataMappingApplication:
         
         logger.info("Data Mapping Application initialized successfully")
     
-    def setup_openai(self) -> bool:
-        """Setup OpenAI client"""
+    def setup_llm_service(self) -> bool:
+        """Setup LLM service with token-based authentication"""
         try:
-            openai.api_key = self.openai_api_key
-            self.gpt_client = openai
+            # Test connection using LLM service
+            messages = [
+                {"role": "system", "content": "You are a test assistant."},
+                {"role": "user", "content": "test"}
+            ]
             
-            # Test connection
-            response = openai.ChatCompletion.create(
+            response = self.llm_service.query_llm(
                 model="gpt-4",
-                messages=[{"role": "user", "content": "test"}],
-                max_tokens=10
+                messages=messages,
+                max_tokens=10,
+                llm_provider="azure"
             )
             
-            console.print("[green]✓ OpenAI GPT-4 connection established[/green]")
+            console.print("[green]✓ LLM Service connection established with token-based auth[/green]")
             return True
             
         except Exception as e:
-            console.print(f"[red]✗ Failed to setup OpenAI: {e}[/red]")
+            console.print(f"[red]✗ Failed to setup LLM Service: {e}[/red]")
             return False
     
     def load_excel_data(self) -> bool:
@@ -492,8 +500,8 @@ class DataMappingApplication:
         """Main execution flow"""
         console.print(Panel.fit("🚀 Data Mapping Application", style="bold blue"))
         
-        # Setup OpenAI
-        if not self.setup_openai():
+        # Setup LLM Service
+        if not self.setup_llm_service():
             return
         
         # Load Excel data
@@ -523,19 +531,14 @@ def main():
     # Load environment variables
     load_dotenv()
     
-    # Configuration
+    # Configuration - no longer requires API key
     config = {
-        'openai_api_key': os.getenv('OPENAI_API_KEY'),
         'excel_file': 'Testing1 copy.xlsx',  # Using the non-empty Excel file
         'results_dir': 'results',
         'output_dir': 'output'
     }
     
-    # Validate configuration
-    if not config['openai_api_key']:
-        console.print("[red]Error: OPENAI_API_KEY not found in environment variables[/red]")
-        console.print("Please create a .env file with: OPENAI_API_KEY=your_api_key_here")
-        return
+    console.print("[cyan]Using token-based authentication - no API key required[/cyan]")
     
     # Create and run application
     app = DataMappingApplication(config)

@@ -121,3 +121,7 @@ docker-compose.yml
 .pytest_cache/
 htmlcov/
 .tox/
+
+# LLM Service file - never push to git
+agentic_mapping_ai/llm_service.py.py
+agentic_mapping_ai/llm_service.py

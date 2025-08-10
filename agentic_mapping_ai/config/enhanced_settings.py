@@ -12,50 +12,39 @@ from pathlib import Path
 class LiteLLMSettings(BaseSettings):
     """LiteLLM configuration for multi-provider support"""
     
-    # Provider configurations
+    # Provider configurations - Updated for token-based authentication
     providers: Dict[str, Dict[str, Any]] = Field(default={
-        "openai": {
+        "azure": {
             "model": "gpt-4",
-            "api_key": "${OPENAI_API_KEY}",
-            "api_base": "https://api.openai.com/v1",
             "max_tokens": 2000,
             "temperature": 0.1,
             "cost_per_token": 0.00003,  # GPT-4 pricing
-            "priority": 1  # Higher priority = preferred
+            "priority": 1,  # Higher priority = preferred
+            "auth_type": "token"
         },
-        "anthropic": {
-            "model": "claude-3-sonnet-20240229",
-            "api_key": "${ANTHROPIC_API_KEY}",
+        "stellar": {
+            "model": "Meta-Llama-3.2-90B-Vision-Instruct",
             "max_tokens": 2000,
             "temperature": 0.1,
-            "cost_per_token": 0.000015,  # Claude pricing
-            "priority": 2
+            "cost_per_token": 0.000015,
+            "priority": 2,
+            "auth_type": "token"
         },
-        "google": {
-            "model": "gemini-pro",
-            "api_key": "${GOOGLE_API_KEY}",
+        "gemini": {
+            "model": "gemini-2.5-pro",
             "max_tokens": 2000,
             "temperature": 0.1,
             "cost_per_token": 0.0000005,  # Gemini pricing
-            "priority": 3
+            "priority": 3,
+            "auth_type": "token"
         },
-        "azure": {
-            "model": "azure/gpt-4",
-            "api_key": "${AZURE_OPENAI_API_KEY}",
-            "api_base": "${AZURE_OPENAI_ENDPOINT}",
-            "api_version": "2023-12-01-preview",
+        "claude": {
+            "model": "claude-3-7-sonnet@20250219",
             "max_tokens": 2000,
             "temperature": 0.1,
-            "cost_per_token": 0.00003,
-            "priority": 4
-        },
-        "local": {
-            "model": "ollama/llama2",
-            "api_base": "http://localhost:11434",
-            "max_tokens": 2000,
-            "temperature": 0.1,
-            "cost_per_token": 0.0,  # Free local model
-            "priority": 5
+            "cost_per_token": 0.000015,  # Claude pricing
+            "priority": 4,
+            "auth_type": "token"
         }
     })
     

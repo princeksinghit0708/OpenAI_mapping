@@ -32,12 +32,12 @@ class VectorDBSettings(BaseSettings):
 
 
 class LLMSettings(BaseSettings):
-    """LLM configuration"""
-    openai_api_key: Optional[str] = None
-    anthropic_api_key: Optional[str] = None
+    """LLM configuration - Now using token-based authentication"""
+    # API keys are no longer required - using token-based auth
     default_model: str = Field(default="gpt-4")
     temperature: float = Field(default=0.1)
     max_tokens: int = Field(default=2000)
+    default_provider: str = Field(default="azure")  # azure, stellar, gemini, claude
     
     class Config:
         env_prefix = "LLM_"
