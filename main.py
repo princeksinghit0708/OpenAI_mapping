@@ -533,7 +533,7 @@ def main():
     
     # Configuration - no longer requires API key
     config = {
-        'excel_file': 'Testing1 copy.xlsx',  # Using the non-empty Excel file
+        'excel_file': 'ebs_IM_account_DATAhub_mapping_v8.0.xlsx',  # EBS IM Account DataHub mapping file
         'results_dir': 'results',
         'output_dir': 'output'
     }

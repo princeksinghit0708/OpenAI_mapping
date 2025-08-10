@@ -44,9 +44,14 @@ class EnhancedDataMappingApplication:
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.excel_file = config.get('excel_file')
+        # Use the specific Excel file
+        self.excel_file = config.get('excel_file', 'ebs_IM_account_DATAhub_mapping_v8.0.xlsx')
         self.results_dir = Path(config.get('results_dir', 'results'))
         self.output_dir = Path(config.get('output_dir', 'output'))
+        
+        # Define specific sheet names for your Excel file
+        self.mapping_sheet_name = 'datahub standard mapping'
+        self.goldref_sheet_name = 'goldref'
         
         # Create comprehensive output structure
         self.output_dirs = {
@@ -134,55 +139,78 @@ class EnhancedDataMappingApplication:
         return column_mapping
     
     def load_excel_data(self) -> bool:
-        """Enhanced Excel data loading with intelligent structure detection"""
+        """Enhanced Excel data loading for EBS IM Account DataHub mapping"""
         try:
-            console.print("[bold blue]Loading Excel data with intelligent detection...[/bold blue]")
+            console.print(f"[bold blue]Loading Excel data from {self.excel_file}...[/bold blue]")
             
-            # Read all sheets
-            excel_data = pd.read_excel(self.excel_file, sheet_name=None, engine='openpyxl')
-            
-            mapping_sheet = None
-            goldref_sheets = {}
-            
-            # Analyze each sheet
-            for sheet_name, df in excel_data.items():
-                if df.empty:
-                    continue
+            # Read specific sheets
+            try:
+                # Read the main mapping sheet
+                mapping_df = pd.read_excel(
+                    self.excel_file, 
+                    sheet_name=self.mapping_sheet_name, 
+                    engine='openpyxl'
+                )
+                console.print(f"[green]✓ Loaded '{self.mapping_sheet_name}' sheet with {len(mapping_df)} rows[/green]")
                 
-                console.print(f"Analyzing sheet: [cyan]{sheet_name}[/cyan] ({len(df)} rows, {len(df.columns)} cols)")
+                # Read the goldref sheet
+                goldref_df = pd.read_excel(
+                    self.excel_file, 
+                    sheet_name=self.goldref_sheet_name, 
+                    engine='openpyxl'
+                )
+                console.print(f"[green]✓ Loaded '{self.goldref_sheet_name}' sheet with {len(goldref_df)} rows[/green]")
                 
-                # Check if this looks like a mapping sheet
-                column_mapping = self.detect_excel_structure(df)
+            except Exception as e:
+                console.print(f"[red]✗ Error reading sheets: {e}[/red]")
+                # Fallback: try to find sheets with similar names
+                all_sheets = pd.ExcelFile(self.excel_file).sheet_names
+                console.print(f"[yellow]Available sheets: {all_sheets}[/yellow]")
                 
-                if len(column_mapping) >= 5:  # Must have at least 5 key fields
-                    mapping_sheet = (sheet_name, df, column_mapping)
-                    console.print(f"[green]✓ Identified mapping sheet: {sheet_name}[/green]")
+                # Try to find mapping sheet
+                mapping_candidates = [s for s in all_sheets if 'mapping' in s.lower() or 'datahub' in s.lower()]
+                goldref_candidates = [s for s in all_sheets if 'goldref' in s.lower() or 'gold' in s.lower()]
+                
+                if mapping_candidates:
+                    self.mapping_sheet_name = mapping_candidates[0]
+                    mapping_df = pd.read_excel(self.excel_file, sheet_name=self.mapping_sheet_name, engine='openpyxl')
+                    console.print(f"[yellow]Using '{self.mapping_sheet_name}' as mapping sheet[/yellow]")
                 else:
-                    # Treat as goldref/lookup sheet
-                    goldref_sheets[sheet_name] = df
-                    console.print(f"[yellow]→ Treating as lookup/reference sheet: {sheet_name}[/yellow]")
+                    console.print("[red]✗ Could not find mapping sheet[/red]")
+                    return False
+                
+                if goldref_candidates:
+                    self.goldref_sheet_name = goldref_candidates[0]
+                    goldref_df = pd.read_excel(self.excel_file, sheet_name=self.goldref_sheet_name, engine='openpyxl')
+                    console.print(f"[yellow]Using '{self.goldref_sheet_name}' as goldref sheet[/yellow]")
+                else:
+                    console.print("[yellow]⚠ Could not find goldref sheet - goldref lookups will be disabled[/yellow]")
+                    goldref_df = pd.DataFrame()
             
-            if not mapping_sheet:
-                console.print("[red]✗ Could not identify mapping sheet[/red]")
-                # Show available columns for debugging
-                for sheet_name, df in excel_data.items():
-                    console.print(f"\nSheet '{sheet_name}' columns:")
-                    for i, col in enumerate(df.columns):
-                        console.print(f"  {i+1}. {col}")
+            # Detect column structure for mapping sheet
+            if not mapping_df.empty:
+                column_mapping = self.detect_excel_structure(mapping_df)
+                console.print(f"[cyan]Detected column mapping: {column_mapping}[/cyan]")
+                
+                # Store the raw data
+                self.raw_mapping_data = mapping_df
+                
+                # Create standardized mapping data
+                self.processed_mapping_data = self._standardize_mapping_data(mapping_df, column_mapping)
+                
+                # Store goldref data if available
+                if not goldref_df.empty:
+                    self.goldref_data = {self.goldref_sheet_name: goldref_df}
+                    console.print(f"[cyan]Goldref data available for 'Derived goldref' mappings[/cyan]")
+                else:
+                    self.goldref_data = {}
+                    console.print(f"[yellow]No goldref data available[/yellow]")
+            else:
+                console.print("[red]✗ Mapping sheet is empty[/red]")
                 return False
             
-            # Process mapping sheet
-            sheet_name, df, column_mapping = mapping_sheet
-            self.raw_mapping_data = df
-            
-            # Create standardized mapping data
-            self.processed_mapping_data = self._standardize_mapping_data(df, column_mapping)
-            
-            # Store goldref data
-            self.goldref_data = goldref_sheets
-            
             console.print(f"[green]✓ Successfully loaded {len(self.processed_mapping_data)} mappings[/green]")
-            console.print(f"[cyan]Found {len(goldref_sheets)} reference sheets[/cyan]")
+            console.print(f"[cyan]Goldref sheet available: {bool(not goldref_df.empty)}[/cyan]")
             
             return True
             
@@ -233,14 +261,13 @@ class EnhancedDataMappingApplication:
                 if col in df.columns:
                     df[col] = df[col].astype(str).str.strip()
             
-            # Normalize mapping types
+            # Normalize mapping types - Focus on your specific use case
             mapping_type_mapping = {
                 'derived': ['derived', 'derive', 'calculated', 'computed'],
-                'derived_goldref': ['derived_goldref', 'derived goldref', 'lookup derived'],
+                'derived_goldref': ['derived goldref', 'derived_goldref', 'goldref derived', 'lookup goldref'],
                 'direct': ['direct', 'direct map', 'copy', 'passthrough'],
-                'direct_map': ['direct_map', 'direct map', 'value mapping'],
-                'no_mapping': ['no_mapping', 'no mapping', 'exclude', 'skip'],
-                'blanks': ['blanks', 'blank', 'null', 'empty']
+                'default': ['default', 'default value', 'hardcoded'],
+                'no_mapping': ['no mapping', 'no_mapping', 'exclude', 'skip', 'no map']
             }
             
             def normalize_mapping_type(mapping_type):
@@ -404,11 +431,20 @@ class EnhancedDataMappingApplication:
     
     def _build_enhanced_context(self, mapping_info: Dict) -> Dict[str, Any]:
         """Build enhanced context for code generation"""
+        
+        # Check for goldref lookup if it's a derived goldref mapping
+        goldref_logic = ""
+        if mapping_info.get('mapping_type') == 'derived_goldref':
+            # Create a Series for the mapping row to pass to goldref lookup
+            mapping_series = pd.Series(mapping_info)
+            goldref_logic = self.get_goldref_lookup(mapping_series)
+        
         context = {
             'data_volume': '10M+ records daily',
             'performance_requirements': 'Sub-minute execution',
             'error_handling': 'Comprehensive with circuit breakers',
             'monitoring': 'Full observability required',
+            'goldref_logic': goldref_logic,
             'compliance': 'Banking regulatory standards',
             'table_metadata': self.table_metadata.get(mapping_info.get('staging_table'), {}),
             'lookup_tables': [],
@@ -674,6 +710,70 @@ TRANSFORMATION_METADATA = {json.dumps({
             })
         
         return report
+    
+    def get_goldref_lookup(self, mapping_row: pd.Series) -> str:
+        """Get goldref lookup for 'Derived goldref' mappings"""
+        try:
+            mapping_type = str(mapping_row.get('mapping_type', '')).strip().lower()
+            
+            # Check if this is a "derived_goldref" mapping
+            if mapping_type == 'derived_goldref':
+                if not self.goldref_data:
+                    return "# No goldref data available"
+                
+                # Get goldref DataFrame
+                goldref_df = list(self.goldref_data.values())[0]
+                
+                # Get the source information for lookup
+                source_table = str(mapping_row.get('source_table', '')).strip()
+                source_column = str(mapping_row.get('source_column', '')).strip()
+                target_column = str(mapping_row.get('column_name', '')).strip()
+                
+                # Search for matching goldref entry
+                goldref_matches = []
+                
+                # Strategy 1: Exact match on source table and column
+                if source_table and source_column:
+                    for _, goldref_row in goldref_df.iterrows():
+                        goldref_source_table = str(goldref_row.get('source_table', '')).strip()
+                        goldref_source_column = str(goldref_row.get('source_column', '')).strip()
+                        
+                        if (goldref_source_table.lower() == source_table.lower() and 
+                            goldref_source_column.lower() == source_column.lower()):
+                            goldref_matches.append(goldref_row)
+                
+                # Strategy 2: Match on target column name
+                if not goldref_matches and target_column:
+                    for _, goldref_row in goldref_df.iterrows():
+                        goldref_target = str(goldref_row.get('target_column', '')).strip()
+                        if goldref_target.lower() == target_column.lower():
+                            goldref_matches.append(goldref_row)
+                
+                if goldref_matches:
+                    # Use the first match and extract the transformation logic
+                    goldref_match = goldref_matches[0]
+                    
+                    # Look for transformation logic in the goldref
+                    transformation_fields = ['transformation_logic', 'derivation', 'logic', 'formula', 'expression']
+                    for field in transformation_fields:
+                        if field in goldref_match.index:
+                            logic = str(goldref_match[field]).strip()
+                            if logic and logic.lower() not in ['nan', 'null', '']:
+                                return f"# Goldref transformation: {logic}"
+                    
+                    # If no specific logic found, create a lookup reference
+                    goldref_source = goldref_match.get('source_column', 'source_value')
+                    goldref_target = goldref_match.get('target_column', target_column)
+                    return f"# Goldref lookup: Map {goldref_source} to {goldref_target}"
+                else:
+                    return f"# Goldref lookup required for {target_column} (no match found in goldref sheet)"
+            
+            # Return empty string for non-goldref mappings
+            return ""
+            
+        except Exception as e:
+            logger.error(f"Error in goldref lookup: {e}")
+            return f"# Error in goldref lookup: {e}"
 
 
 def main():
@@ -681,7 +781,7 @@ def main():
     load_dotenv()
     
     config = {
-        'excel_file': 'Testing1 copy.xlsx',
+        'excel_file': 'ebs_IM_account_DATAhub_mapping_v8.0.xlsx',
         'results_dir': 'results',
         'output_dir': 'output'
     }

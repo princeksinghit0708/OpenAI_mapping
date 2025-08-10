@@ -45,7 +45,7 @@ def setup_environment():
         # Create .env file with basic configuration
         with open(".env", "w") as f:
             f.write("# Token-based authentication - no API key required\n")
-            f.write("EXCEL_FILE=Testing1 copy.xlsx\n")
+            f.write("EXCEL_FILE=ebs_IM_account_DATAhub_mapping_v8.0.xlsx\n")
             f.write("RESULTS_DIR=results\n")
             f.write("OUTPUT_DIR=output\n")
             f.write("GPT_MODEL=gpt-4\n")
