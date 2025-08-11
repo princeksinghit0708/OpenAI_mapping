@@ -34,7 +34,7 @@ import structlog
 from pydantic import BaseModel
 
 # Internal imports
-from core.models import AgentTask, AgentType, TaskStatus
+from agentic_mapping_ai.core.models import AgentTask, AgentType, TaskStatus
 from knowledge.rag_engine import RAGEngine
 from config.enhanced_settings import enhanced_settings
 

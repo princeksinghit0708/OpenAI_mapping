@@ -4,7 +4,11 @@ Configuration settings for Agentic Mapping AI Platform
 
 import os
 from typing import List, Optional
-from pydantic import BaseSettings, Field
+try:
+    from pydantic_settings import BaseSettings
+    from pydantic import Field
+except ImportError:
+    from pydantic import BaseSettings, Field
 from pathlib import Path
 
 
@@ -126,6 +130,7 @@ class AppSettings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "allow"  # Allow extra fields
 
 
 # Global settings instance

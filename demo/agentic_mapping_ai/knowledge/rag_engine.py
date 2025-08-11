@@ -15,7 +15,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from loguru import logger
 
-from config.settings import settings
+from agentic_mapping_ai.config.settings import settings
 
 
 @dataclass

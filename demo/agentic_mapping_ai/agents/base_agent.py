@@ -18,8 +18,8 @@ from langchain.tools import BaseTool
 from loguru import logger
 from pydantic import BaseModel
 
-from core.models import AgentTask, AgentType, TaskStatus
-from knowledge.rag_engine import RAGEngine
+from agentic_mapping_ai.core.models import AgentTask, AgentType, TaskStatus
+from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
 
 # Import the LLM Service for token-based authentication
 import sys

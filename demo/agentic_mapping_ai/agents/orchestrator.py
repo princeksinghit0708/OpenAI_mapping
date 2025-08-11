@@ -14,7 +14,7 @@ from agents.base_agent import BaseAgent, AgentConfig, AgentFactory
 from agents.metadata_validator import MetadataValidatorAgent
 from agents.code_generator import CodeGeneratorAgent
 from agents.test_generator import TestGeneratorAgent
-from core.models import (
+from agentic_mapping_ai.core.models import (
     AgentType, AgentTask, TaskStatus, WorkflowDefinition,
     CodeGenerationRequest, ValidationResult
 )

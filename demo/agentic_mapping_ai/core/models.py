@@ -184,7 +184,7 @@ class Document(Base):
     name = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)
     content_hash = Column(String(64), nullable=False)
-    metadata = Column(JSON)
+    doc_metadata = Column(JSON)
     schema_extracted = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -215,7 +215,7 @@ class GeneratedArtifact(Base):
     content = Column(Text, nullable=False)
     language = Column(String(50))
     file_path = Column(String(500))
-    metadata = Column(JSON)
+    artifact_metadata = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
