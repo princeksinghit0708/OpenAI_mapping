@@ -21,10 +21,11 @@ from langchain.callbacks import get_openai_callback
 from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 
-# LiteLLM imports
-import litellm
-from litellm import completion, acompletion
-from litellm.exceptions import AuthenticationError, RateLimitError, ContextWindowExceededError
+# Token-based LLM Service
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from llm_service import llm_service
 
 # Observability
 from prometheus_client import Counter, Histogram, Gauge
@@ -35,7 +36,7 @@ from pydantic import BaseModel
 # Internal imports
 from core.models import AgentTask, AgentType, TaskStatus
 from knowledge.rag_engine import RAGEngine
-from config.enhanced_settings import enhanced_settings, get_optimal_model_for_task, get_fallback_models
+from config.enhanced_settings import enhanced_settings
 
 
 # Metrics
@@ -74,9 +75,11 @@ class EnhancedAgentConfig(BaseModel):
     description: str
     agent_type: str
     
-    # LLM configuration
-    primary_model: str = "openai"
-    fallback_models: List[str] = ["anthropic", "google"]
+    # LLM configuration - Token-based providers
+    primary_model: str = "gpt-4"
+    primary_provider: str = "azure" 
+    fallback_models: List[str] = ["claude-3-7-sonnet@20250219", "gemini-2.5-pro"]
+    fallback_providers: List[str] = ["claude", "gemini"]
     temperature: float = 0.1
     max_tokens: int = 2000
     max_cost_per_request: float = 0.50
@@ -102,74 +105,61 @@ class EnhancedAgentConfig(BaseModel):
 
 
 class LLMProvider:
-    """Enhanced LLM provider with multi-model support"""
+    """Enhanced LLM provider with token-based authentication"""
     
     def __init__(self, config: EnhancedAgentConfig):
         self.config = config
-        self.current_provider = config.primary_model
-        self.fallback_providers = config.fallback_models
+        self.current_provider = config.primary_provider
+        self.current_model = config.primary_model
+        self.fallback_providers = config.fallback_providers
+        self.fallback_models = config.fallback_models
         self.request_count = 0
         self.total_cost = 0.0
         
-        # Configure LiteLLM
-        litellm.set_verbose = enhanced_settings.debug
-        litellm.drop_params = True  # Drop unsupported params
+        # Use token-based LLM service
+        self.llm_service = llm_service
         
-        # Set up provider configurations
-        self._setup_providers()
-    
-    def _setup_providers(self):
-        """Setup provider configurations"""
-        provider_configs = enhanced_settings.litellm.providers
-        
-        for provider, config in provider_configs.items():
-            if provider == "openai" and config.get("api_key"):
-                litellm.openai_key = config["api_key"]
-            elif provider == "anthropic" and config.get("api_key"):
-                litellm.anthropic_key = config["api_key"]
-            elif provider == "google" and config.get("api_key"):
-                litellm.google_key = config["api_key"]
+        logger.info(
+            "LLM Provider initialized with token-based authentication",
+            provider=self.current_provider,
+            model=self.current_model
+        )
     
     async def generate(
         self, 
         messages: List[Dict[str, str]], 
         **kwargs
     ) -> Dict[str, Any]:
-        """Generate response with fallback support"""
+        """Generate response with token-based authentication and fallback support"""
         
-        providers_to_try = [self.current_provider] + self.fallback_providers
+        # Primary attempt with current provider/model
+        providers_to_try = [(self.current_provider, self.current_model)]
+        
+        # Add fallback providers and models
+        for provider, model in zip(self.fallback_providers, self.fallback_models):
+            providers_to_try.append((provider, model))
+        
         last_error = None
         
-        for provider in providers_to_try:
+        for provider, model in providers_to_try:
             try:
                 start_time = time.time()
                 
-                # Get provider configuration
-                provider_config = enhanced_settings.litellm.providers.get(provider, {})
-                model = provider_config.get("model", "gpt-3.5-turbo")
-                
-                # Prepare request parameters
-                request_params = {
-                    "model": model,
-                    "messages": messages,
-                    "temperature": kwargs.get("temperature", self.config.temperature),
-                    "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
-                    **kwargs
-                }
-                
-                # Make async request
-                response = await acompletion(**request_params)
+                # Use token-based LLM service
+                response_content = self.llm_service.query_llm(
+                    model=model,
+                    messages=messages,
+                    temperature=kwargs.get("temperature", self.config.temperature),
+                    max_tokens=kwargs.get("max_tokens", self.config.max_tokens),
+                    llm_provider=provider
+                )
                 
                 # Calculate metrics
                 response_time = time.time() - start_time
-                usage = response.usage if hasattr(response, 'usage') else {}
-                prompt_tokens = usage.get('prompt_tokens', 0)
-                completion_tokens = usage.get('completion_tokens', 0)
-                total_tokens = usage.get('total_tokens', prompt_tokens + completion_tokens)
                 
-                # Estimate cost
-                cost_per_token = provider_config.get("cost_per_token", 0.00002)
-                estimated_cost = total_tokens * cost_per_token
+                # Estimate token usage (simplified)
+                estimated_tokens = len(str(messages)) // 4 + len(response_content) // 4
+                estimated_cost = estimated_tokens * 0.00002  # Rough estimate
                 
                 # Update metrics
                 llm_requests_total.labels(
@@ -179,8 +169,7 @@ class LLMProvider:
                 ).inc()
                 
                 llm_response_time.labels(provider=provider, model=model).observe(response_time)
-                llm_tokens_used.labels(provider=provider, model=model, type="prompt").inc(prompt_tokens)
-                llm_tokens_used.labels(provider=provider, model=model, type="completion").inc(completion_tokens)
+                llm_tokens_used.labels(provider=provider, model=model, type="total").inc(estimated_tokens)
                 llm_cost_usd.labels(provider=provider, model=model).inc(estimated_cost)
                 
                 # Update instance metrics
@@ -189,38 +178,30 @@ class LLMProvider:
                 
                 # Log successful request
                 logger.info(
-                    "LLM request successful",
+                    "LLM request successful via token auth",
                     provider=provider,
                     model=model,
-                    tokens=total_tokens,
+                    tokens=estimated_tokens,
                     cost=estimated_cost,
                     response_time=response_time
                 )
                 
                 return {
-                    "content": response.choices[0].message.content,
+                    "content": response_content,
                     "provider": provider,
                     "model": model,
-                    "usage": usage,
+                    "usage": {"total_tokens": estimated_tokens},
                     "cost": estimated_cost,
                     "response_time": response_time
                 }
                 
-            except (AuthenticationError, RateLimitError, ContextWindowExceededError) as e:
-                last_error = e
-                logger.warning(
-                    f"Provider {provider} failed, trying next",
-                    error=str(e),
-                    provider=provider
-                )
-                continue
-                
             except Exception as e:
                 last_error = e
-                logger.error(
-                    f"Unexpected error with provider {provider}",
+                logger.warning(
+                    f"Provider {provider} with model {model} failed, trying next",
                     error=str(e),
-                    provider=provider
+                    provider=provider,
+                    model=model
                 )
                 continue
         
