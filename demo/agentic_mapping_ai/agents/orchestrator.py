@@ -13,6 +13,7 @@ from loguru import logger
 from agents.base_agent import BaseAgent, AgentConfig, AgentFactory
 from agents.metadata_validator import MetadataValidatorAgent
 from agents.code_generator import CodeGeneratorAgent
+from agents.test_generator import TestGeneratorAgent
 from core.models import (
     AgentType, AgentTask, TaskStatus, WorkflowDefinition,
     CodeGenerationRequest, ValidationResult
@@ -67,6 +68,12 @@ class OrchestratorAgent(BaseAgent):
                     description="Generates PySpark and SQL code",
                     model="gpt-4",
                     temperature=0.2
+                ),
+                AgentType.TEST_GENERATOR: AgentConfig(
+                    name="Test Generator",
+                    description="Generates comprehensive test suites for transformations",
+                    model="gpt-4",
+                    temperature=0.1
                 )
             }
             
@@ -377,13 +384,29 @@ class OrchestratorAgent(BaseAgent):
             if not code_generation_result.get("success"):
                 return code_generation_result
             
+            # Step 4: Test Generation (NEW!)
+            test_generation_result = await self._execute_test_generation_workflow(
+                f"{workflow_id}_test_generation",
+                {
+                    "code_generation_request": code_gen_request.dict(),
+                    "generated_code": code_generation_result.get("generated_code"),
+                    "test_type": workflow_data.get("test_type", "comprehensive")
+                },
+                context
+            )
+            
+            if not test_generation_result.get("success"):
+                logger.warning("Test generation failed, continuing without tests")
+                test_generation_result = {"success": False, "error": "Test generation failed"}
+            
             # Combine results
             return {
                 "success": True,
                 "workflow_id": workflow_id,
-                "pipeline_type": "full_mapping",
+                "pipeline_type": "full_mapping_with_tests",
                 "document_processing": doc_processing_result,
                 "code_generation": code_generation_result,
+                "test_generation": test_generation_result,
                 "database_name": database_name,
                 "field_count": len(extracted_fields),
                 "timestamp": datetime.utcnow().isoformat()
@@ -408,6 +431,76 @@ class OrchestratorAgent(BaseAgent):
             workflow_id, workflow_data, context
         )
     
+    async def _execute_test_generation_workflow(
+        self, 
+        workflow_id: str, 
+        workflow_data: Dict[str, Any],
+        context: str
+    ) -> Dict[str, Any]:
+        """Execute test generation workflow"""
+        
+        workflow = WorkflowDefinition(
+            id=workflow_id,
+            name="Test Generation Workflow", 
+            description="Generate comprehensive test suites for transformations",
+            tasks=[],
+            dependencies={}
+        )
+        
+        try:
+            # Parse test generation request
+            request_data = workflow_data.get("code_generation_request", {})
+            generated_code_data = workflow_data.get("generated_code", {})
+            test_type = workflow_data.get("test_type", "comprehensive")
+            
+            # Task 1: Test Generation
+            test_gen_task = AgentTask(
+                agent_type=AgentType.TEST_GENERATOR,
+                input_data={
+                    "code_generation_request": request_data,
+                    "generated_code": generated_code_data,
+                    "test_type": test_type
+                }
+            )
+            
+            workflow.tasks.append(test_gen_task)
+            
+            # Execute test generation
+            if AgentType.TEST_GENERATOR in self.agents:
+                test_result = await self.agents[AgentType.TEST_GENERATOR].execute_task(
+                    test_gen_task
+                )
+                self.task_results[test_gen_task.id] = test_result
+            else:
+                raise Exception("Test Generator agent not available")
+            
+            if test_result.status != TaskStatus.COMPLETED:
+                return {
+                    "success": False,
+                    "error": "Test generation failed",
+                    "task_result": test_result.dict(),
+                    "workflow_id": workflow_id
+                }
+            
+            self.active_workflows[workflow_id] = workflow
+            
+            return {
+                "success": True,
+                "workflow_id": workflow_id,
+                "test_results": test_result.output_data.get("test_results"),
+                "test_type": test_type,
+                "coverage_estimate": test_result.output_data.get("coverage_estimate"),
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Test generation workflow {workflow_id} failed: {str(e)}")
+            return {
+                "success": False,
+                "error": str(e),
+                "workflow_id": workflow_id
+            }
+
     def _build_schema_from_fields(self, fields: List[Dict], schema_name: str):
         """Build SchemaDefinition from extracted fields"""
         from core.models import SchemaDefinition, FieldDefinition, DataType

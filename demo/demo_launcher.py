@@ -42,10 +42,11 @@ def main():
     print("🚀 Demo Options:")
     print("1. 🤖 Agent Framework Demo (Interactive)")
     print("2. ⚡ Enhanced Main Application (Direct)")
-    print("3. 📖 View Demo Documentation")
+    print("3. 🧪 Test Generator Agent Demo (NEW!)")
+    print("4. 📖 View Demo Documentation")
     print("0. 🚪 Exit")
     
-    choice = input("\nSelect option (0-3): ").strip()
+    choice = input("\nSelect option (0-4): ").strip()
     
     if choice == "1":
         print("\n🤖 Starting Agent Framework Demo...")
@@ -57,17 +58,23 @@ def main():
         subprocess.run([sys.executable, "enhanced_main.py"])
     
     elif choice == "3":
+        print("\n🧪 Starting Test Generator Agent Demo...")
+        print("💡 This demonstrates standalone test generation capabilities")
+        subprocess.run([sys.executable, "test_agent_demo.py"])
+    
+    elif choice == "4":
         print("\n📖 Demo Documentation:")
         print("See README_DEMO.md for detailed instructions")
         if Path("README_DEMO.md").exists():
             with open("README_DEMO.md", "r") as f:
-                print(f.read()[:1000] + "..." if len(f.read()) > 1000 else f.read())
+                content = f.read()
+                print(content[:1000] + "..." if len(content) > 1000 else content)
     
     elif choice == "0":
         print("👋 Demo ended. Good luck with your presentation!")
     
     else:
-        print("❌ Invalid option. Please select 0-3.")
+        print("❌ Invalid option. Please select 0-4.")
 
 if __name__ == "__main__":
     main()
