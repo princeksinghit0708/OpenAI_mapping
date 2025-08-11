@@ -49,6 +49,7 @@ def main():
         (".env", "Environment configuration"),
         ("demo_launcher.py", "Demo launcher"),
         ("test_agent_demo.py", "Test Generator demo"),
+        ("metadata_validator_demo.py", "Metadata Validator demo"),
         ("enhanced_main.py", "Enhanced main application"),
         ("gpt4_prompt_engine.py", "Prompt engine"),
         ("faiss_integration.py", "FAISS integration"),
@@ -89,6 +90,17 @@ def main():
     else:
         print("⚠️  No Excel file found - add ebs_IM_account_DATAhub_mapping_v8.0.xlsx manually")
         # Not marking as failed since it can be added later
+    
+    # Check metadata files
+    print("\n📋 Metadata Files:")
+    metadata_files = list(Path("results").glob("*_metadata.json")) if Path("results").exists() else []
+    if metadata_files:
+        for metadata_file in metadata_files:
+            print(f"✅ Metadata file: {metadata_file}")
+    else:
+        print("⚠️  No metadata files found in results/ directory")
+        if not Path("results").exists():
+            print("💡 Creating results/ directory structure...")
     
     # Check Python imports (basic validation)
     print("\n🐍 Python Modules:")

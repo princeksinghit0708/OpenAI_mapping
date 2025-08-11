@@ -1,0 +1,74 @@
+{
+  "table_name": "txn_dly",
+  "database_name": "ebs_im_datahub",
+  "description": "EBS IM Transaction Daily table metadata",
+  "columns": [
+    {
+      "col_name": "txn_id",
+      "data_type": "string",
+      "comment": "Unique transaction identifier"
+    },
+    {
+      "col_name": "acct_nbr",
+      "data_type": "string",
+      "comment": "Account number (foreign key to acct_dly)"
+    },
+    {
+      "col_name": "txn_dt",
+      "data_type": "date",
+      "comment": "Transaction date"
+    },
+    {
+      "col_name": "txn_ts",
+      "data_type": "timestamp",
+      "comment": "Transaction timestamp"
+    },
+    {
+      "col_name": "txn_typ_cd",
+      "data_type": "string",
+      "comment": "Transaction type code (DEBIT, CREDIT, TRANSFER)"
+    },
+    {
+      "col_name": "txn_amt",
+      "data_type": "decimal",
+      "comment": "Transaction amount"
+    },
+    {
+      "col_name": "curr_cd",
+      "data_type": "string",
+      "comment": "Currency code"
+    },
+    {
+      "col_name": "txn_desc",
+      "data_type": "string",
+      "comment": "Transaction description"
+    },
+    {
+      "col_name": "branch_cd",
+      "data_type": "string",
+      "comment": "Branch code where transaction occurred"
+    },
+    {
+      "col_name": "channel_cd",
+      "data_type": "string",
+      "comment": "Channel code (ATM, ONLINE, BRANCH, MOBILE)"
+    },
+    {
+      "col_name": "ref_nbr",
+      "data_type": "string",
+      "comment": "Reference number"
+    },
+    {
+      "col_name": "status_cd",
+      "data_type": "string",
+      "comment": "Transaction status code"
+    }
+  ],
+  "row_count": 50000000,
+  "partitions": ["txn_dt", "branch_cd"],
+  "source_system": "EBS_IM",
+  "target_system": "DataHub",
+  "data_refresh": "daily",
+  "created_date": "2024-01-01",
+  "last_validated": "2024-01-15"
+}

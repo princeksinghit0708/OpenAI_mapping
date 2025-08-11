@@ -1,0 +1,64 @@
+{
+  "table_name": "acct_dly",
+  "database_name": "ebs_im_datahub",
+  "description": "EBS IM Account Daily table metadata",
+  "columns": [
+    {
+      "col_name": "acct_nbr",
+      "data_type": "string",
+      "comment": "Primary account number identifier"
+    },
+    {
+      "col_name": "acct_nbr_1c1",
+      "data_type": "string", 
+      "comment": "Account number 1C1 format"
+    },
+    {
+      "col_name": "sec_acct_nbr",
+      "data_type": "string",
+      "comment": "Secondary account number"
+    },
+    {
+      "col_name": "prim_gl_acct_nbr",
+      "data_type": "string",
+      "comment": "Primary general ledger account number"
+    },
+    {
+      "col_name": "acct_stat_cd",
+      "data_type": "string",
+      "comment": "Account status code"
+    },
+    {
+      "col_name": "acct_bal",
+      "data_type": "decimal",
+      "comment": "Account balance amount"
+    },
+    {
+      "col_name": "curr_cd",
+      "data_type": "string",
+      "comment": "Currency code"
+    },
+    {
+      "col_name": "open_dt",
+      "data_type": "date",
+      "comment": "Account opening date"
+    },
+    {
+      "col_name": "close_dt",
+      "data_type": "date",
+      "comment": "Account closure date"
+    },
+    {
+      "col_name": "last_updt_ts",
+      "data_type": "timestamp",
+      "comment": "Last update timestamp"
+    }
+  ],
+  "row_count": 15000000,
+  "partitions": ["year", "month"],
+  "source_system": "EBS_IM",
+  "target_system": "DataHub",
+  "data_refresh": "daily",
+  "created_date": "2024-01-01",
+  "last_validated": "2024-01-15"
+}

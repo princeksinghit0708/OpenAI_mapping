@@ -1,0 +1,74 @@
+{
+  "table_name": "cust_dly",
+  "database_name": "ebs_im_datahub",
+  "description": "EBS IM Customer Daily table metadata",
+  "columns": [
+    {
+      "col_name": "cust_id",
+      "data_type": "string",
+      "comment": "Unique customer identifier"
+    },
+    {
+      "col_name": "cust_nbr",
+      "data_type": "string",
+      "comment": "Customer number"
+    },
+    {
+      "col_name": "cust_nm",
+      "data_type": "string",
+      "comment": "Customer name"
+    },
+    {
+      "col_name": "cust_typ_cd",
+      "data_type": "string",
+      "comment": "Customer type code (INDIVIDUAL, CORPORATE)"
+    },
+    {
+      "col_name": "birth_dt",
+      "data_type": "date",
+      "comment": "Date of birth for individual customers"
+    },
+    {
+      "col_name": "addr_line_1",
+      "data_type": "string",
+      "comment": "Address line 1"
+    },
+    {
+      "col_name": "addr_line_2", 
+      "data_type": "string",
+      "comment": "Address line 2"
+    },
+    {
+      "col_name": "city_nm",
+      "data_type": "string",
+      "comment": "City name"
+    },
+    {
+      "col_name": "state_cd",
+      "data_type": "string",
+      "comment": "State code"
+    },
+    {
+      "col_name": "postal_cd",
+      "data_type": "string",
+      "comment": "Postal/ZIP code"
+    },
+    {
+      "col_name": "phone_nbr",
+      "data_type": "string",
+      "comment": "Primary phone number"
+    },
+    {
+      "col_name": "email_addr",
+      "data_type": "string",
+      "comment": "Email address"
+    }
+  ],
+  "row_count": 2500000,
+  "partitions": ["state_cd"],
+  "source_system": "EBS_IM",
+  "target_system": "DataHub", 
+  "data_refresh": "daily",
+  "created_date": "2024-01-01",
+  "last_validated": "2024-01-15"
+}
