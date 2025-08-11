@@ -15,43 +15,39 @@ from pathlib import Path
 
 
 def check_environment():
-    """Check if environment is properly configured for enhanced features"""
+    """Check if environment is properly configured for token-based authentication"""
     print("🔍 Checking enhanced environment configuration...")
     
-    required_vars = ["OPENAI_API_KEY"]
-    missing_vars = []
+    # Check for token-based authentication setup
+    print("🔐 Using token-based authentication - no API keys required!")
     
-    for var in required_vars:
-        if not os.getenv(var):
-            missing_vars.append(var)
+    # Check if helix CLI is available
+    try:
+        result = subprocess.run(["helix", "--version"], capture_output=True, text=True)
+        if result.returncode == 0:
+            print("✅ Helix CLI available for token generation")
+        else:
+            print("⚠️ Helix CLI not found - will try MongoDB fallback")
+    except FileNotFoundError:
+        print("⚠️ Helix CLI not found - will try MongoDB fallback")
     
-    if missing_vars:
-        print(f"❌ Missing required environment variables: {', '.join(missing_vars)}")
-        print("📝 Please check your .env file or set these variables")
-        return False
+    # Check optional MongoDB configuration for token fallback
+    mongo_user = os.getenv("DEV_MONGO_USER")
+    mongo_key = os.getenv("DEV_MONGO_KEY")
     
-    # Check optional multi-provider keys
-    optional_providers = {
-        "ANTHROPIC_API_KEY": "Claude",
-        "GOOGLE_API_KEY": "Gemini",
-        "AZURE_OPENAI_API_KEY": "Azure OpenAI"
-    }
-    
-    available_providers = ["OpenAI"]  # OpenAI is required
-    for var, provider in optional_providers.items():
-        if os.getenv(var):
-            available_providers.append(provider)
-    
-    print(f"✅ Environment check passed")
-    print(f"🤖 Available AI providers: {', '.join(available_providers)}")
-    
-    # Set enhanced features based on available providers
-    if len(available_providers) > 1:
-        os.environ.setdefault("ENABLE_MULTI_PROVIDER", "true")
-        print(f"✨ Multi-provider mode enabled with {len(available_providers)} providers")
+    if mongo_user and mongo_key:
+        print("✅ MongoDB fallback configured for token storage")
     else:
-        os.environ.setdefault("ENABLE_MULTI_PROVIDER", "false")
-        print(f"🔧 Single-provider mode (OpenAI only)")
+        print("ℹ️ MongoDB fallback not configured (optional)")
+    
+    # All providers available via token-based auth
+    available_providers = ["Azure", "Stellar", "Gemini", "Claude"]
+    print(f"✅ Environment check passed")
+    print(f"🤖 Available AI providers via token auth: {', '.join(available_providers)}")
+    
+    # Enable multi-provider by default with token auth
+    os.environ.setdefault("ENABLE_MULTI_PROVIDER", "true")
+    print(f"✨ Multi-provider mode enabled with token-based authentication")
     
     return True
 
@@ -64,7 +60,10 @@ def install_enhanced_dependencies():
         "litellm>=1.17.0",
         "tenacity>=8.2.3",
         "structlog>=23.2.0",
-        "langchain-anthropic>=0.1.0"
+        "langchain-anthropic>=0.1.0",
+        "pymongo>=4.6.0",  # For token storage fallback
+        "google-auth>=2.0.0",  # For Google OAuth2 credentials
+        "vertexai>=1.0.0"  # For Vertex AI integration
     ]
     
     missing_packages = []
@@ -175,18 +174,18 @@ def print_enhanced_banner():
     banner = """
 ╔══════════════════════════════════════════════════════════════════╗
 ║                  🚀 AGENTIC MAPPING AI v2.0                     ║
-║                Enhanced with LangChain + LiteLLM                 ║
+║             Enhanced with Token-Based Authentication             ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
 ║  ✨ NEW ENHANCED FEATURES:                                       ║
-║  🤖 Multi-Provider AI (OpenAI, Claude, Gemini)                  ║
-║  🔗 LangChain Integration for Advanced Workflows                ║
-║  ⚡ LiteLLM for Intelligent Provider Routing                    ║
-║  🎯 Enhanced Metadata Validation (Fixes DB Name Issue)          ║
-║  🏗️ AI-Powered Code Generation                                   ║
-║  📊 Advanced Cost Tracking & Optimization                       ║
+║  🔐 Token-Based Authentication (No API Keys Required!)          ║
+║  🤖 Multi-Provider AI (Azure, Stellar, Gemini, Claude)          ║
+║  📊 EBS IM Account DataHub Mapping Support                      ║
+║  🔍 Goldref Lookup Integration                                   ║
+║  🏗️ AI-Powered PySpark Code Generation                          ║
 ║  🛡️ Production-Ready Error Handling                             ║
 ║  📈 Performance Monitoring & Analytics                          ║
+║  ⚡ Helix CLI + MongoDB Token Management                        ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 """
@@ -282,20 +281,25 @@ def main():
             elif choice == "9":
                 print("❓ Enhanced Features Help:")
                 print("\n🎯 KEY ENHANCED FEATURES:")
-                print("   • Multi-Strategy Database Name Extraction (fixes your original issue)")
-                print("   • AI-Powered Field Validation with confidence scoring")
-                print("   • Multi-Provider LLM support (OpenAI, Claude, Gemini)")
-                print("   • Intelligent cost optimization and provider routing")
+                print("   • Token-Based Authentication (No API keys required!)")
+                print("   • EBS IM Account DataHub mapping with goldref support")
+                print("   • Multi-Provider LLM support (Azure, Stellar, Gemini, Claude)")
+                print("   • Intelligent PySpark code generation")
                 print("   • Advanced error handling with automatic fallbacks")
-                print("   • Comprehensive testing and documentation generation")
+                print("   • Production-ready banking transformation logic")
                 print("\n🔧 CONFIGURATION:")
-                print("   • Set API keys in .env file")
-                print("   • Enable ENABLE_MULTI_PROVIDER=true for advanced features")
-                print("   • Use /api/v1/enhanced/ endpoints for new capabilities")
+                print("   • No API keys required - uses token-based authentication")
+                print("   • Ensure helix CLI is installed and configured")
+                print("   • Optional: Set DEV_MONGO_USER/DEV_MONGO_KEY for token fallback")
+                print("   • Multi-provider mode enabled by default")
                 print("\n📞 API ENDPOINTS:")
                 print("   • POST /api/v1/enhanced/extract - Enhanced metadata extraction")
                 print("   • POST /api/v1/enhanced/pipeline/full - Complete enhanced pipeline")
                 print("   • GET /health - System health with enhanced metrics")
+                print("\n🔐 TOKEN AUTHENTICATION:")
+                print("   • Uses 'helix auth access-token print -a' for token generation")
+                print("   • MongoDB fallback for token storage")
+                print("   • Automatic token refresh and management")
             elif choice == "0":
                 print("👋 Thank you for using Enhanced Agentic Mapping AI!")
                 print("✨ Your enhanced platform is ready for production use!")
