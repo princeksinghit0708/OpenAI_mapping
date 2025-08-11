@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 from enum import Enum
 
-from agents.enhanced_agent_v2 import EnhancedBaseAgent, EnhancedAgentConfig, create_enhanced_agent
+from agents.enhanced_base_agent import EnhancedBaseAgent, EnhancedAgentConfig
 from agents.enhanced_metadata_validator_v2 import create_enhanced_metadata_validator
 from agents.enhanced_code_generator_v2 import create_enhanced_code_generator
 from core.models import (
