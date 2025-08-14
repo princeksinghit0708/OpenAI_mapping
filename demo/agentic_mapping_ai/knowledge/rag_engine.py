@@ -56,6 +56,7 @@ class RAGEngine:
         self.id_to_index: Dict[str, int] = {}
         self.index_to_id: Dict[int, str] = {}
         self.document_store: Dict[int, str] = {}
+        self.document_metadata: List[Dict[str, Any]] = []  # Missing attribute
         self.next_index = 0
         
         # Initialize asynchronously
@@ -165,6 +166,12 @@ class RAGEngine:
         embedding = embedding / np.linalg.norm(embedding)
         
         return embedding
+    
+    def _get_document_count(self) -> int:
+        """Get the number of documents in the index"""
+        if self.faiss_index is not None:
+            return self.faiss_index.ntotal
+        return 0
     
     def _encode_text(self, text: str) -> 'numpy.ndarray':
         """Encode text with fallback for offline mode"""

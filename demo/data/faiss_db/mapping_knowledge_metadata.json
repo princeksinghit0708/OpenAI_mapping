@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "0": {
+      "category": "pyspark_patterns",
+      "title": "Data Type Mapping"
+    },
+    "1": {
+      "category": "validation_patterns",
+      "title": "Schema Validation Rules"
+    },
+    "2": {
+      "category": "performance_optimization",
+      "title": "PySpark Performance Tips"
+    },
+    "3": {
+      "category": "error_handling",
+      "title": "Error Handling Patterns"
+    },
+    "4": {
+      "category": "extraction_patterns",
+      "title": "Database Name Extraction"
+    }
+  },
+  "documents": {
+    "0": "\n                    PySpark Data Type Mapping Best Practices:\n                    - StringType() for VARCHAR and TEXT fields\n                    - IntegerType() for INT fields, LongType() for BIGINT\n                    - DoubleType() for FLOAT and DECIMAL fields\n                    - BooleanType() for BOOLEAN fields\n                    - DateType() for DATE fields, TimestampType() for DATETIME\n                    - ArrayType() for arrays, StructType() for nested objects\n                    Always use nullable=True unless field is explicitly required.\n                    ",
+    "1": "\n                    Schema Validation Patterns:\n                    1. Check required fields: providedKey, displayName, physicalName, dataType\n                    2. Validate providedKey format: \"database.table.field\"\n                    3. Ensure data types are consistent and valid\n                    4. Verify nullable constraints match business rules\n                    5. Check for meaningful descriptions\n                    6. Validate field name conventions\n                    ",
+    "2": "\n                    PySpark Performance Optimization:\n                    - Use .cache() for DataFrames accessed multiple times\n                    - Partition data appropriately with .repartition() or .coalesce()\n                    - Use broadcast joins for small lookup tables\n                    - Avoid wide transformations when possible\n                    - Use vectorized operations over UDFs\n                    - Configure spark.sql.adaptive.enabled=true\n                    - Set appropriate spark.sql.adaptive.coalescePartitions.enabled\n                    ",
+    "3": "\n                    Error Handling Best Practices:\n                    - Validate input data before processing\n                    - Use try-except blocks for external operations\n                    - Log errors with context and stack traces\n                    - Implement graceful degradation for non-critical failures\n                    - Use data quality checks throughout pipeline\n                    - Implement retry mechanisms for transient failures\n                    - Always clean up resources in finally blocks\n                    ",
+    "4": "\n                    Database Name Extraction Patterns:\n                    1. First check field-level providedKey values\n                    2. Look for dictionary.providedKey in document root\n                    3. Search for database/db_name/schema keys recursively\n                    4. Extract last part of dot-separated providedKey\n                    5. Validate against common naming conventions\n                    6. Fallback to intelligent LLM-based extraction\n                    "
+  }
+}
