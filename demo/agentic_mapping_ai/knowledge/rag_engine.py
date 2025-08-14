@@ -64,40 +64,129 @@ class RAGEngine:
     async def _initialize(self):
         """Initialize the RAG engine with FAISS"""
         try:
-            # Initialize embedding model
+            # Initialize embedding model with fallback
             logger.info(f"Loading embedding model: {settings.vector_db.embedding_model}")
-            self.embedding_model = SentenceTransformer(settings.vector_db.embedding_model)
+            
+            # Try to load model with offline fallback
+            try:
+                self.embedding_model = SentenceTransformer(settings.vector_db.embedding_model)
+                logger.info("✅ Successfully loaded embedding model")
+            except Exception as model_error:
+                logger.warning(f"Failed to load embedding model: {model_error}")
+                logger.info("🔄 Falling back to simple embedding simulation for demo")
+                self.embedding_model = None  # Will use simulated embeddings
             
             # Create base directory if it doesn't exist
             self.base_path.mkdir(parents=True, exist_ok=True)
             
             # Load existing index and metadata if available
-            if self.index_path.exists():
+            if self.index_path.exists() and self.embedding_model is not None:
                 await self._load_existing_index()
-            else:
+            elif self.embedding_model is not None:
                 await self._create_new_index()
+            else:
+                # Offline mode - create minimal index
+                logger.info("🔄 Running in offline mode - limited RAG functionality")
+                await self._create_offline_index()
             
             logger.info(f"Initialized FAISS RAG engine with collection: {self.collection_name}")
             self.is_initialized = True
             
-            # Initialize with default knowledge if index is empty
-            if self._get_document_count() == 0:
+            # Initialize with default knowledge if index is empty and model available
+            if self.embedding_model is not None and self._get_document_count() == 0:
                 await self._initialize_default_knowledge()
                 
         except Exception as e:
             logger.error(f"Failed to initialize RAG engine: {str(e)}")
+            logger.info("🔄 RAG engine running in minimal mode")
             self.is_initialized = False
     
     async def _create_new_index(self):
         """Create a new FAISS index"""
         # Get embedding dimension
-        test_embedding = self.embedding_model.encode(["test"])
+        test_embedding = self._encode_texts(["test"])
         embedding_dim = test_embedding.shape[1]
         
         # Create FAISS index (using IndexFlatIP for cosine similarity)
         self.faiss_index = faiss.IndexFlatIP(embedding_dim)
         
         logger.info(f"Created new FAISS index with dimension: {embedding_dim}")
+    
+    async def _create_offline_index(self):
+        """Create a minimal index for offline mode"""
+        import numpy as np
+        import hashlib
+        
+        # Create a simple 384-dimensional index (default for many models)
+        embedding_dim = 384
+        self.faiss_index = faiss.IndexFlatIP(embedding_dim)
+        
+        logger.info(f"Created offline FAISS index with dimension {embedding_dim}")
+        
+        # Add some demo data for offline mode
+        demo_texts = [
+            "Banking account transformation mapping",
+            "Customer data field mapping", 
+            "Transaction processing logic",
+            "Data validation rules",
+            "PySpark code generation"
+        ]
+        
+        for text in demo_texts:
+            # Create simple hash-based embedding
+            embedding = self._create_simple_embedding(text, embedding_dim)
+            self.faiss_index.add(embedding.reshape(1, -1).astype('float32'))
+            
+            # Store metadata
+            self.document_metadata.append({
+                'content': text,
+                'metadata': {'source': 'demo', 'offline_mode': True},
+                'id': f"demo_{len(self.document_metadata)}"
+            })
+    
+    def _create_simple_embedding(self, text: str, dim: int) -> 'numpy.ndarray':
+        """Create a simple hash-based embedding for offline mode"""
+        import numpy as np
+        import hashlib
+        
+        # Create hash of text
+        text_hash = hashlib.md5(text.encode()).hexdigest()
+        
+        # Convert hash to numbers and normalize
+        numbers = [ord(c) for c in text_hash]
+        
+        # Extend/truncate to desired dimension
+        if len(numbers) < dim:
+            numbers = numbers * (dim // len(numbers) + 1)
+        numbers = numbers[:dim]
+        
+        # Normalize to unit vector
+        embedding = np.array(numbers, dtype=np.float32)
+        embedding = embedding / np.linalg.norm(embedding)
+        
+        return embedding
+    
+    def _encode_text(self, text: str) -> 'numpy.ndarray':
+        """Encode text with fallback for offline mode"""
+        if self.embedding_model is not None:
+            # Use real model
+            return self.embedding_model.encode([text])[0]
+        else:
+            # Use simple embedding for offline mode
+            return self._create_simple_embedding(text, 384)
+    
+    def _encode_texts(self, texts: list) -> 'numpy.ndarray':
+        """Encode multiple texts with fallback for offline mode"""
+        if self.embedding_model is not None:
+            # Use real model
+            return self.embedding_model.encode(texts)
+        else:
+            # Use simple embeddings for offline mode
+            import numpy as np
+            embeddings = []
+            for text in texts:
+                embeddings.append(self._create_simple_embedding(text, 384))
+            return np.array(embeddings)
     
     async def _load_existing_index(self):
         """Load existing FAISS index and metadata"""
@@ -262,7 +351,7 @@ class RAGEngine:
         
         try:
             # Generate embedding
-            embedding = self.embedding_model.encode([content])[0]
+            embedding = self._encode_text(content)
             # Normalize for cosine similarity
             embedding = embedding / np.linalg.norm(embedding)
             
@@ -316,7 +405,7 @@ class RAGEngine:
                 ids.append(doc_id)
             
             # Generate embeddings in batch
-            embeddings = self.embedding_model.encode(contents)
+            embeddings = self._encode_texts(contents)
             # Normalize embeddings for cosine similarity
             embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
             
@@ -372,7 +461,7 @@ class RAGEngine:
                 return []
             
             # Generate query embedding
-            query_embedding = self.embedding_model.encode([query])[0]
+            query_embedding = self._encode_text(query)
             # Normalize for cosine similarity
             query_embedding = query_embedding / np.linalg.norm(query_embedding)
             
@@ -446,7 +535,7 @@ class RAGEngine:
             
             # For FAISS, we need to rebuild the index for the updated embedding
             # Generate new embedding
-            embedding = self.embedding_model.encode([content])[0]
+            embedding = self._encode_text(content)
             embedding = embedding / np.linalg.norm(embedding)
             
             # Note: FAISS doesn't support direct updates, so we rebuild the entire index
