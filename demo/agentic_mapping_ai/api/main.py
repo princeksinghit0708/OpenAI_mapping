@@ -13,14 +13,13 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
 
-from config.settings import settings
-from core.models import (
+from agentic_mapping_ai.config.settings import settings
+from agentic_mapping_ai.core.models import (
     APIResponse, ValidationResponse, CodeGenerationResponse, WorkflowResponse,
     SchemaDefinition, MappingRule, CodeGenerationRequest, ValidationResult
 )
-from agents.enhanced_orchestrator_v2 import create_enhanced_orchestrator, WorkflowType
-from agents.enhanced_agent_v2 import EnhancedAgentConfig
-from knowledge.rag_engine import RAGEngine
+from agentic_mapping_ai.agents.enhanced_orchestrator_v2 import EnhancedOrchestrator, WorkflowType
+from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
 
 
 # Pydantic models for API requests
@@ -97,12 +96,14 @@ async def startup_event():
         rag_engine = RAGEngine()
         
         # Initialize enhanced orchestrator agent
-        orchestrator_agent = create_enhanced_orchestrator(
-            enable_multi_provider=True,  # Enable multi-provider for production
-            rag_engine=rag_engine,
+        from agentic_mapping_ai.agents.enhanced_base_agent import EnhancedAgentConfig
+        config = EnhancedAgentConfig(
             name="Enhanced Main Orchestrator",
-            description="Enhanced orchestrator with LangChain + LiteLLM integration"
+            description="Enhanced orchestrator with LangChain + LiteLLM integration",
+            primary_provider="azure",
+            fallback_providers=["claude", "gemini"]
         )
+        orchestrator_agent = EnhancedOrchestrator(config)
         
         print(f"🚀 {settings.name} v{settings.version} started successfully!")
         print(f"📚 RAG Engine initialized")
