@@ -18,7 +18,7 @@ from agentic_mapping_ai.core.models import (
     APIResponse, ValidationResponse, CodeGenerationResponse, WorkflowResponse,
     SchemaDefinition, MappingRule, CodeGenerationRequest, ValidationResult
 )
-from agentic_mapping_ai.agents.enhanced_orchestrator_v2 import EnhancedOrchestrator, WorkflowType
+from agentic_mapping_ai.agents.orchestrator import OrchestratorAgent, WorkflowType
 from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
 
 
@@ -95,15 +95,15 @@ async def startup_event():
         # Initialize RAG engine
         rag_engine = RAGEngine()
         
-        # Initialize enhanced orchestrator agent
-        from agentic_mapping_ai.agents.enhanced_base_agent import EnhancedAgentConfig
-        config = EnhancedAgentConfig(
-            name="Enhanced Main Orchestrator",
-            description="Enhanced orchestrator with LangChain + LiteLLM integration",
-            primary_provider="azure",
-            fallback_providers=["claude", "gemini"]
+        # Initialize orchestrator agent
+        from agentic_mapping_ai.agents.base_agent import AgentConfig
+        config = AgentConfig(
+            name="Main Orchestrator",
+            description="Orchestrator for coordinating multi-agent workflows",
+            model="gpt-4",
+            temperature=0.1
         )
-        orchestrator_agent = EnhancedOrchestrator(config)
+        orchestrator_agent = OrchestratorAgent(config, rag_engine=rag_engine)
         
         print(f"🚀 {settings.name} v{settings.version} started successfully!")
         print(f"📚 RAG Engine initialized")
