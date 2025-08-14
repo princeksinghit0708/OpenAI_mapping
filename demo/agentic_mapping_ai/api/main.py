@@ -687,71 +687,23 @@ async def upload_excel_mapping(file: UploadFile = File(...)):
 @app.post("/api/v1/excel/parse", tags=["Excel Mapping"])
 async def parse_excel_mapping(request: ExcelMappingRequest):
     """Parse Excel mapping file and extract field mappings"""
-    try:
-        from parsers.excel_mapping_parser import parse_excel_mappings
-        
-        # Parse the Excel file
-        excel_schema = parse_excel_mappings(request.file_path, request.sheet_name)
-        
-        # Convert to standard models
-        from parsers.excel_mapping_parser import ExcelMappingParser
-        parser = ExcelMappingParser()
-        field_definitions, mapping_rules = parser.to_standard_models(excel_schema)
-        
-        return APIResponse(
-            success=True,
-            message="Excel mapping parsed successfully",
-            data={
-                "schema_name": excel_schema.name,
-                "field_count": len(excel_schema.field_mappings),
-                "gold_references_count": len(excel_schema.gold_references),
-                "transformation_rules_count": len(excel_schema.transformation_rules),
-                "field_definitions": [field.dict() for field in field_definitions],
-                "mapping_rules": [rule.dict() for rule in mapping_rules],
-                "metadata": excel_schema.metadata
-            }
-        )
-        
-    except Exception as e:
-        return APIResponse(
-            success=False,
-            message="Excel parsing failed", 
-            errors=[str(e)]
-        )
+    # NOTE: parsers.excel_mapping_parser not available in demo version
+    return APIResponse(
+        success=False,
+        message="Excel parsing not available in demo version",
+        errors=["parsers.excel_mapping_parser not included in demo"]
+    )
 
 
 @app.post("/api/v1/transformations/validate", tags=["Transformations"])
 async def validate_transformation(request: TransformationValidationRequest):
     """Validate transformation logic"""
-    try:
-        from agents.transformation_agent import create_transformation_agent
-        
-        # Create transformation agent
-        transform_agent = create_transformation_agent()
-        
-        # Create transformation rule
-        rule = await transform_agent.create_transformation_rule(
-            name="validation_rule",
-            source_fields=request.source_fields,
-            target_field=request.target_field,
-            logic=request.transformation_logic
-        )
-        
-        # Validate the transformation
-        validation_result = await transform_agent.validate_transformation(rule)
-        
-        return ValidationResponse(
-            success=validation_result.is_valid,
-            message="Transformation validation completed",
-            data=validation_result
-        )
-        
-    except Exception as e:
-        return ValidationResponse(
-            success=False,
-            message="Transformation validation failed",
-            errors=[str(e)]
-        )
+    # NOTE: transformation_agent not available in demo version
+    return ValidationResponse(
+        success=False,
+        message="Transformation validation not available in demo version",
+        errors=["transformation_agent not included in demo"]
+    )
 
 
 @app.post("/api/v1/transformations/generate-code", tags=["Transformations"])
@@ -760,99 +712,34 @@ async def generate_transformation_code(
     language: str = "pyspark"
 ):
     """Generate code for transformation logic"""
-    try:
-        from agents.transformation_agent import create_transformation_agent
-        
-        # Create transformation agent
-        transform_agent = create_transformation_agent()
-        
-        # Create transformation rule
-        rule = await transform_agent.create_transformation_rule(
-            name="code_generation_rule",
-            source_fields=request.source_fields,
-            target_field=request.target_field,
-            logic=request.transformation_logic
-        )
-        
-        # Generate code
-        generated_code = await transform_agent.generate_transformation_code(rule, language)
-        
-        return APIResponse(
-            success=True,
-            message="Transformation code generated successfully",
-            data={
-                "code": generated_code,
-                "language": language,
-                "rule_name": rule.name,
-                "rule_type": rule.rule_type
-            }
-        )
-        
-    except Exception as e:
-        return APIResponse(
-            success=False,
-            message="Code generation failed",
-            errors=[str(e)]
-        )
+    # NOTE: transformation_agent not available in demo version
+    return APIResponse(
+        success=False,
+        message="Transformation code generation not available in demo version",
+        errors=["transformation_agent not included in demo"]
+    )
 
 
 @app.post("/api/v1/goldref/validate", tags=["Gold Reference"])
 async def validate_gold_reference(request: GoldReferenceValidationRequest):
     """Validate field mappings against gold reference standards"""
-    try:
-        from agents.goldref_validator import create_goldref_validator
-        
-        # Create gold reference validator
-        goldref_validator = create_goldref_validator()
-        
-        # Validate mapping compliance
-        validation_result = await goldref_validator.validate_mapping_compliance(
-            request.field_mappings,
-            request.gold_reference_template
-        )
-        
-        return ValidationResponse(
-            success=validation_result.is_valid,
-            message="Gold reference validation completed",
-            data=validation_result
-        )
-        
-    except Exception as e:
-        return ValidationResponse(
-            success=False,
-            message="Gold reference validation failed",
-            errors=[str(e)]
-        )
+    # NOTE: goldref_validator not available in demo version
+    return ValidationResponse(
+        success=False,
+        message="Gold reference validation not available in demo version",
+        errors=["goldref_validator agent not included in demo"]
+    )
 
 
 @app.get("/api/v1/goldref/compliance-report", tags=["Gold Reference"])
 async def generate_compliance_report(template: str = "img_0241"):
     """Generate comprehensive compliance report"""
-    try:
-        from agents.goldref_validator import create_goldref_validator
-        
-        # Create gold reference validator
-        goldref_validator = create_goldref_validator()
-        
-        # This would typically load recent validation results from database
-        # For now, return a sample report structure
-        sample_validations = []  # Would load from database
-        
-        # Generate report
-        report = await goldref_validator.generate_compliance_report(sample_validations)
-        
-        return APIResponse(
-            success=True,
-            message="Compliance report generated successfully",
-            data=report
-        )
-        
-    except Exception as e:
-        return APIResponse(
-            success=False,
-            message="Compliance report generation failed",
-            errors=[str(e)]
-        )
+    # NOTE: goldref_validator not available in demo version
+    return APIResponse(
+        success=False,
+        message="Compliance report generation not available in demo version",
+        errors=["goldref_validator agent not included in demo"]
+    )
 
 
 @app.post("/api/v1/excel/process-full", tags=["Excel Mapping"])
@@ -862,78 +749,35 @@ async def process_excel_full_pipeline(
     validate_goldref: bool = True
 ):
     """Process Excel mapping through full pipeline"""
+    # NOTE: Simplified demo version - some agents not available
     try:
-        from parsers.excel_mapping_parser import parse_excel_mappings, ExcelMappingParser
-        from agents.transformation_agent import create_transformation_agent
-        from agents.goldref_validator import create_goldref_validator
-        
-        # Step 1: Parse Excel file
-        excel_schema = parse_excel_mappings(request.file_path, request.sheet_name)
-        
-        # Step 2: Convert to standard models
-        parser = ExcelMappingParser()
-        field_definitions, mapping_rules = parser.to_standard_models(excel_schema)
+        # Step 1: Basic Excel parsing would go here
+        # NOTE: parsers.excel_mapping_parser not included in demo
         
         results = {
             "parsing": {
-                "success": True,
-                "field_count": len(excel_schema.field_mappings),
-                "transformation_count": len(excel_schema.transformation_rules)
+                "success": False,
+                "message": "Excel parsing not available in demo version"
+            },
+            "transformations": {
+                "success": False,
+                "message": "transformation_agent not included in demo"
+            },
+            "gold_reference": {
+                "success": False,
+                "message": "goldref_validator not included in demo"
+            },
+            "code_generation": {
+                "success": False,
+                "message": "Advanced code generation not available in demo"
             }
         }
         
-        # Step 3: Validate transformations
-        if excel_schema.transformation_rules:
-            transform_agent = create_transformation_agent()
-            transformation_validations = []
-            
-            for rule_text in excel_schema.transformation_rules.values():
-                analysis = await transform_agent.analyze_transformation(rule_text)
-                transformation_validations.append(analysis)
-            
-            results["transformations"] = {
-                "success": True,
-                "validations": transformation_validations
-            }
-        
-        # Step 4: Gold reference validation
-        if validate_goldref:
-            goldref_validator = create_goldref_validator()
-            
-            # Convert Excel mappings to validation format
-            field_mappings = []
-            for mapping in excel_schema.field_mappings:
-                field_mappings.append({
-                    "physical_table": mapping.physical_table,
-                    "logical_name": mapping.logical_name,
-                    "physical_name": mapping.physical_name,
-                    "data_type": mapping.data_type,
-                    "mapping_type": mapping.mapping_type,
-                    "transformation": mapping.transformation
-                })
-            
-            goldref_validation = await goldref_validator.validate_mapping_compliance(
-                field_mappings,
-                request.gold_reference_template
-            )
-            
-            results["gold_reference"] = {
-                "success": goldref_validation.is_valid,
-                "validation": goldref_validation.dict()
-            }
-        
-        # Step 5: Generate code (optional)
-        if generate_code:
-            # This would integrate with existing code generation
-            results["code_generation"] = {
-                "success": True,
-                "message": "Code generation capability integrated"
-            }
-        
         return APIResponse(
-            success=True,
-            message="Excel mapping processed through full pipeline",
-            data=results
+            success=False,
+            message="Full pipeline processing not available in demo version",
+            data=results,
+            errors=["parsers.excel_mapping_parser, transformation_agent, and goldref_validator not included in demo"]
         )
         
     except Exception as e:
