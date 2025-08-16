@@ -30,6 +30,8 @@ class AgentType(str, Enum):
     CODE_GENERATOR = "code_generator"
     TEST_GENERATOR = "test_generator"
     ORCHESTRATOR = "orchestrator"
+    CONVERSATIONAL = "conversational"
+    CHAT = "chat"
 
 
 class DataType(str, Enum):
@@ -275,3 +277,59 @@ class CodeGenerationResponse(APIResponse):
 class WorkflowResponse(APIResponse):
     """Workflow API response"""
     data: Optional[WorkflowDefinition] = None
+
+
+# Chat and Communication Models
+
+class ChatMessage(BaseModel):
+    """Chat message model for agent communication"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    sender: str  # "user" or "agent"
+    agent_type: Optional[AgentType] = None
+    message_type: str = "text"  # text, code, error, warning, success
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Optional[Dict[str, Any]] = None
+    parent_message_id: Optional[str] = None
+    is_processed: bool = False
+
+
+class ChatSession(BaseModel):
+    """Chat session model"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: Optional[str] = None
+    session_name: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    last_activity: datetime = Field(default_factory=datetime.utcnow)
+    status: str = "active"  # active, paused, completed, archived
+    context: Optional[Dict[str, Any]] = None
+
+
+class ChatResponse(BaseModel):
+    """Chat API response"""
+    success: bool
+    message: str
+    data: Optional[ChatMessage] = None
+    session_id: str
+    agent_responses: List[ChatMessage] = []
+    errors: Optional[List[str]] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AgentChatRequest(BaseModel):
+    """Request for agent chat interaction"""
+    session_id: str
+    message: str
+    agent_type: Optional[AgentType] = None
+    context: Optional[Dict[str, Any]] = None
+    user_preferences: Optional[Dict[str, Any]] = None
+
+
+class ChatHistory(BaseModel):
+    """Chat history for a session"""
+    session_id: str
+    messages: List[ChatMessage]
+    summary: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
