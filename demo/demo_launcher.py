@@ -44,31 +44,78 @@ def main():
     print("2. ⚡ Enhanced Main Application (Direct)")
     print("3. 🧪 Test Generator Agent Demo")
     print("4. 🔍 Metadata Validator Demo (NEW!)")
-    print("5. 📖 View Demo Documentation")
+    print("5. 📊 Setup Excel File (Required for demos)")
+    print("6. 📖 View Demo Documentation")
     print("0. 🚪 Exit")
     
-    choice = input("\nSelect option (0-5): ").strip()
+    choice = input("\nSelect option (0-6): ").strip()
     
     if choice == "1":
         print("\n🤖 Starting Agent Framework Demo...")
         print("💡 In the menu, select option 2: 'Run Enhanced Features Demo'")
-        subprocess.run([sys.executable, "agentic_mapping_ai/run_enhanced_application.py"])
+        
+        agent_app = Path("agentic_mapping_ai/run_enhanced_application.py")
+        if agent_app.exists():
+            subprocess.run([sys.executable, str(agent_app)])
+        else:
+            print("❌ Agent framework app not found")
+            print(f"Expected: {agent_app.absolute()}")
     
     elif choice == "2":
         print("\n⚡ Starting Enhanced Main Application...")
-        subprocess.run([sys.executable, "enhanced_main.py"])
+        
+        main_app = Path("enhanced_main.py")
+        if main_app.exists():
+            subprocess.run([sys.executable, str(main_app)])
+        else:
+            print("❌ Enhanced main application not found")
+            print(f"Expected: {main_app.absolute()}")
     
     elif choice == "3":
         print("\n🧪 Starting Test Generator Agent Demo...")
         print("💡 This demonstrates standalone test generation capabilities")
-        subprocess.run([sys.executable, "test_agent_demo.py"])
+        
+        test_demo = Path("test_agent_demo.py")
+        if test_demo.exists():
+            subprocess.run([sys.executable, str(test_demo)])
+        else:
+            print("❌ Test generator demo not found")
+            print(f"Expected: {test_demo.absolute()}")
     
     elif choice == "4":
         print("\n🔍 Starting Metadata Validator Demo...")
         print("💡 This validates real banking table metadata from results/ folder")
-        subprocess.run([sys.executable, "metadata_validator_demo.py"])
+        
+        # Check if the demo file exists
+        demo_file = Path("metadata_validator_demo.py")
+        if not demo_file.exists():
+            print("❌ metadata_validator_demo.py not found in current directory")
+            print(f"Current directory: {os.getcwd()}")
+            print("Available Python files:")
+            for py_file in Path(".").glob("*.py"):
+                print(f"  - {py_file}")
+            return
+        
+        try:
+            subprocess.run([sys.executable, str(demo_file)], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Error running demo: {e}")
+        except FileNotFoundError as e:
+            print(f"❌ File not found: {e}")
+            print(f"Trying absolute path...")
+            abs_path = demo_file.absolute()
+            subprocess.run([sys.executable, str(abs_path)])
     
     elif choice == "5":
+        print("\n📊 Setting up Excel File...")
+        
+        setup_script = Path("setup_excel.py")
+        if setup_script.exists():
+            subprocess.run([sys.executable, str(setup_script)])
+        else:
+            print("❌ Excel setup script not found")
+    
+    elif choice == "6":
         print("\n📖 Demo Documentation:")
         print("See README_DEMO.md for detailed instructions")
         if Path("README_DEMO.md").exists():
@@ -80,7 +127,7 @@ def main():
         print("👋 Demo ended. Good luck with your presentation!")
     
     else:
-        print("❌ Invalid option. Please select 0-5.")
+        print("❌ Invalid option. Please select 0-6.")
 
 if __name__ == "__main__":
     main()
