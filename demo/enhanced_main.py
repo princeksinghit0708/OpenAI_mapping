@@ -18,15 +18,16 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from dotenv import load_dotenv
 
-# Import enhanced modules
-from enhanced_prompt_engine import EnhancedGPT4PromptEngine
+# Import enhanced modules  
+from gpt4_prompt_engine import GPT4PromptEngine as EnhancedGPT4PromptEngine
 from faiss_integration import FAISSIntegration
 
 # Import LLM Service for token-based authentication
 import sys
 import os
 sys.path.append('./agentic_mapping_ai')
-from llm_service import llm_service
+sys.path.append('.')
+from agentic_mapping_ai.llm_service import llm_service
 
 logging.basicConfig(
     level=logging.INFO,

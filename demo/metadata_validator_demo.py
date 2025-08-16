@@ -12,6 +12,7 @@ from pathlib import Path
 
 # Add the agentic_mapping_ai to path
 sys.path.append('./agentic_mapping_ai')
+sys.path.append('.')
 
 async def demo_metadata_validator():
     """Demo the MetadataValidator with real metadata files"""
@@ -20,10 +21,10 @@ async def demo_metadata_validator():
     print("=" * 60)
     
     try:
-        # Import required modules
-        from agents.metadata_validator import MetadataValidatorAgent
-        from agents.base_agent import AgentConfig
-        from core.models import ValidationResult
+        # Import required modules with correct paths
+        from agentic_mapping_ai.agents.metadata_validator import MetadataValidatorAgent
+        from agentic_mapping_ai.agents.base_agent import AgentConfig
+        from agentic_mapping_ai.core.models import ValidationResult
         
         # Create metadata validator agent
         config = AgentConfig(

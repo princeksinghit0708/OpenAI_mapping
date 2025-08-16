@@ -43,12 +43,14 @@ def main():
     print("1. 🤖 Agent Framework Demo (Interactive)")
     print("2. ⚡ Enhanced Main Application (Direct)")
     print("3. 🧪 Test Generator Agent Demo")
-    print("4. 🔍 Metadata Validator Demo (NEW!)")
+    print("4. 🔍 Metadata Validator Demo")
     print("5. 📊 Setup Excel File (Required for demos)")
-    print("6. 📖 View Demo Documentation")
+    print("6. 🎨 Start React UI Only")
+    print("7. 🚀 Start Full Demo (API + UI)")
+    print("8. 📖 View Demo Documentation")
     print("0. 🚪 Exit")
     
-    choice = input("\nSelect option (0-6): ").strip()
+    choice = input("\nSelect option (0-8): ").strip()
     
     if choice == "1":
         print("\n🤖 Starting Agent Framework Demo...")
@@ -116,6 +118,26 @@ def main():
             print("❌ Excel setup script not found")
     
     elif choice == "6":
+        print("\n🎨 Starting React UI Only...")
+        print("💡 Make sure the API server is running separately!")
+        
+        ui_script = Path("start_react_ui.py")
+        if ui_script.exists():
+            subprocess.run([sys.executable, str(ui_script)])
+        else:
+            print("❌ React UI script not found")
+    
+    elif choice == "7":
+        print("\n🚀 Starting Full Demo (API + UI)...")
+        print("💡 This will start both backend and frontend together")
+        
+        full_demo_script = Path("start_full_demo.py")
+        if full_demo_script.exists():
+            subprocess.run([sys.executable, str(full_demo_script)])
+        else:
+            print("❌ Full demo script not found")
+    
+    elif choice == "8":
         print("\n📖 Demo Documentation:")
         print("See README_DEMO.md for detailed instructions")
         if Path("README_DEMO.md").exists():
@@ -127,7 +149,7 @@ def main():
         print("👋 Demo ended. Good luck with your presentation!")
     
     else:
-        print("❌ Invalid option. Please select 0-6.")
+        print("❌ Invalid option. Please select 0-8.")
 
 if __name__ == "__main__":
     main()

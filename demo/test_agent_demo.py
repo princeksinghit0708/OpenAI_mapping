@@ -11,6 +11,7 @@ from pathlib import Path
 
 # Add the agentic_mapping_ai to path
 sys.path.append('./agentic_mapping_ai')
+sys.path.append('.')
 
 async def demo_test_generator():
     """Demo the TestGeneratorAgent standalone"""
@@ -19,10 +20,10 @@ async def demo_test_generator():
     print("=" * 50)
     
     try:
-        # Import required modules
-        from agents.test_generator import TestGeneratorAgent
-        from agents.base_agent import AgentConfig
-        from core.models import (
+        # Import required modules with correct paths
+        from agentic_mapping_ai.agents.test_generator import TestGeneratorAgent
+        from agentic_mapping_ai.agents.base_agent import AgentConfig
+        from agentic_mapping_ai.core.models import (
             CodeGenerationRequest, GeneratedCode, 
             SchemaDefinition, FieldDefinition, DataType
         )
