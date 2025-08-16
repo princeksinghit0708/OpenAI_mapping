@@ -29,7 +29,7 @@ class DemoLauncher:
             backend_process = subprocess.Popen([
                 sys.executable, "-m", "uvicorn", 
                 "agentic_mapping_ai.api.main:app",
-                "--host", "0.0.0.0",
+                "--host", "localhost",
                 "--port", "8000",
                 "--reload"
             ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)

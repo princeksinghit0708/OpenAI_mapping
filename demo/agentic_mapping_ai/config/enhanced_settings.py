@@ -202,7 +202,7 @@ class EnhancedAppSettings(BaseSettings):
     chroma_persist_directory: str = Field(default="./data/chroma_db")
     
     # API settings
-    api_host: str = Field(default="0.0.0.0")
+    api_host: str = Field(default="localhost")
     api_port: int = Field(default=8000)
     
     # Performance settings

@@ -79,7 +79,7 @@ class CodeGenSettings(BaseSettings):
 
 class APISettings(BaseSettings):
     """API configuration"""
-    host: str = Field(default="0.0.0.0")
+    host: str = Field(default="localhost")
     port: int = Field(default=8000)
     reload: bool = Field(default=True)
     cors_origins: List[str] = Field(default=["*"])

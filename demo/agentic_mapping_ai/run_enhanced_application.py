@@ -96,7 +96,7 @@ def run_fastapi_server():
     """Run the enhanced FastAPI server"""
     print("🚀 Starting Enhanced FastAPI server...")
     
-    host = os.getenv("API_HOST", "0.0.0.0")
+            host = os.getenv("API_HOST", "localhost")
     port = int(os.getenv("API_PORT", "8000"))
     reload = os.getenv("API_RELOAD", "true").lower() == "true"
     
