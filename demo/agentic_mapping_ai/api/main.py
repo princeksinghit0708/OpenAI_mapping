@@ -20,12 +20,27 @@ from agentic_mapping_ai.core.models import (
 )
 from agentic_mapping_ai.agents.orchestrator import OrchestratorAgent, WorkflowType
 from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
+from agentic_mapping_ai.agents.chat_agent import ConversationalAgent
 
 
 # Pydantic models for API requests
 class DocumentValidationRequest(BaseModel):
     document: Dict[str, Any]
     validation_rules: Optional[List[str]] = []
+
+class ChatMessageRequest(BaseModel):
+    message: str
+    context: Optional[Dict[str, Any]] = {}
+    timestamp: Optional[str] = None
+
+class ChatMessageResponse(BaseModel):
+    message: str
+    intent: str
+    confidence: float
+    suggested_actions: List[Dict[str, str]] = []
+    requires_action: bool = False
+    context: Dict[str, Any] = {}
+    timestamp: str
 
 
 class WorkflowRequest(BaseModel):
@@ -84,12 +99,13 @@ app.add_middleware(
 # Global instances
 rag_engine: Optional[RAGEngine] = None
 orchestrator_agent = None  # Enhanced orchestrator instance
+chat_agent = None  # Conversational AI agent
 
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize components on startup"""
-    global rag_engine, orchestrator_agent
+    global rag_engine, orchestrator_agent, chat_agent
     
     try:
         # Initialize RAG engine
@@ -105,9 +121,19 @@ async def startup_event():
         )
         orchestrator_agent = OrchestratorAgent(config, rag_engine=rag_engine)
         
+        # Initialize chat agent
+        chat_config = AgentConfig(
+            name="Conversational Assistant",
+            description="AI chat assistant for natural language interaction",
+            model="gpt-4",
+            temperature=0.7
+        )
+        chat_agent = ConversationalAgent(chat_config)
+        
         print(f"🚀 {settings.name} v{settings.version} started successfully!")
         print(f"📚 RAG Engine initialized")
         print(f"🤖 Enhanced Orchestrator with LangChain + LiteLLM initialized")
+        print(f"💬 Conversational AI Agent initialized")
         print(f"✨ Multi-provider AI capabilities enabled")
         
     except Exception as e:
@@ -786,6 +812,99 @@ async def process_excel_full_pipeline(
             message="Full pipeline processing failed",
             errors=[str(e)]
         )
+
+
+# ============================================================================
+# CHAT & CONVERSATIONAL AI ENDPOINTS
+# ============================================================================
+
+@app.post("/api/v1/chat/message", response_model=ChatMessageResponse)
+async def chat_message(request: ChatMessageRequest) -> ChatMessageResponse:
+    """
+    Send a message to the conversational AI agent
+    Supports natural language interaction for all platform features
+    """
+    try:
+        if chat_agent is None:
+            raise HTTPException(status_code=503, detail="Chat agent not initialized")
+        
+        # Process the message
+        result = await chat_agent.process_message(request.message, request.context or {})
+        
+        return ChatMessageResponse(
+            message=result["message"],
+            intent=result["intent"],
+            confidence=result["confidence"],
+            suggested_actions=result.get("suggested_actions", []),
+            requires_action=result.get("requires_action", False),
+            context=result.get("context", {}),
+            timestamp=datetime.now().isoformat()
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat processing failed: {str(e)}")
+
+
+@app.get("/api/v1/chat/history")
+async def get_chat_history():
+    """Get conversation history for the current session"""
+    try:
+        # For demo purposes, return mock history
+        # In production, this would fetch from a database
+        return APIResponse(
+            success=True,
+            message="Chat history retrieved",
+            data={
+                "conversations": [],
+                "session_count": 0,
+                "last_activity": None
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get chat history: {str(e)}")
+
+
+@app.delete("/api/v1/chat/session")
+async def clear_chat_session():
+    """Clear the current chat session"""
+    try:
+        # For demo purposes, just return success
+        # In production, this would clear session data
+        return APIResponse(
+            success=True,
+            message="Chat session cleared successfully",
+            data={"session_id": "default", "cleared_at": datetime.now().isoformat()}
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to clear chat session: {str(e)}")
+
+
+@app.post("/api/v1/chat/intent")
+async def detect_intent(request: ChatMessageRequest):
+    """Detect user intent from a message (for debugging/testing)"""
+    try:
+        if chat_agent is None:
+            raise HTTPException(status_code=503, detail="Chat agent not initialized")
+        
+        intent, confidence = chat_agent.detect_intent(request.message)
+        entities = chat_agent.extract_entities(request.message, intent)
+        
+        return APIResponse(
+            success=True,
+            message="Intent detected successfully",
+            data={
+                "message": request.message,
+                "intent": intent,
+                "confidence": confidence,
+                "entities": entities,
+                "timestamp": datetime.now().isoformat()
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Intent detection failed: {str(e)}")
 
 
 if __name__ == "__main__":

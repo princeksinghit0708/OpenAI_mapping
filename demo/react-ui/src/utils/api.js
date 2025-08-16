@@ -159,4 +159,41 @@ export const searchKnowledge = async (query) => {
   }
 };
 
+// Chat with AI Agent
+export const chatWithAgent = async (message, context = {}) => {
+  try {
+    const response = await api.post('/api/v1/chat/message', {
+      message,
+      context,
+      timestamp: new Date().toISOString(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Chat Failed:', error);
+    throw error;
+  }
+};
+
+// Get Chat History
+export const getChatHistory = async () => {
+  try {
+    const response = await api.get('/api/v1/chat/history');
+    return response.data;
+  } catch (error) {
+    console.error('Chat History Failed:', error);
+    throw error;
+  }
+};
+
+// Clear Chat Session
+export const clearChatSession = async () => {
+  try {
+    const response = await api.delete('/api/v1/chat/session');
+    return response.data;
+  } catch (error) {
+    console.error('Clear Chat Failed:', error);
+    throw error;
+  }
+};
+
 export default api;

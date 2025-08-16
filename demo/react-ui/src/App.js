@@ -11,6 +11,7 @@ import MappingGeneration from './pages/MappingGeneration';
 import AgentWorkflow from './pages/AgentWorkflow';
 import MetadataValidation from './pages/MetadataValidation';
 import TestGeneration from './pages/TestGeneration';
+import ChatInterface from './pages/ChatInterface';
 import Settings from './pages/Settings';
 
 // Utils
@@ -79,6 +80,7 @@ function App() {
               <Route path="/agents" element={<AgentWorkflow />} />
               <Route path="/metadata" element={<MetadataValidation />} />
               <Route path="/tests" element={<TestGeneration />} />
+              <Route path="/chat" element={<ChatInterface />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </Box>

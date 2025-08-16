@@ -19,6 +19,7 @@ import {
   SmartToy as AgentIcon,
   CheckCircle as ValidateIcon,
   BugReport as TestIcon,
+  Chat as ChatIcon,
   Settings as SettingsIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
@@ -65,6 +66,7 @@ const Navbar = ({ apiStatus, onHealthCheck }) => {
     { label: 'Agent Workflow', path: '/agents', icon: <AgentIcon /> },
     { label: 'Metadata Validation', path: '/metadata', icon: <ValidateIcon /> },
     { label: 'Test Generation', path: '/tests', icon: <TestIcon /> },
+    { label: 'AI Chat Assistant', path: '/chat', icon: <ChatIcon /> },
     { label: 'Settings', path: '/settings', icon: <SettingsIcon /> },
   ];
 
