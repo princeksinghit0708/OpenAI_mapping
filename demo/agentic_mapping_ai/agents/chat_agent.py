@@ -47,6 +47,23 @@ class ConversationalAgent(BaseAgent):
         self.agent_type = AgentType.CONVERSATIONAL
         self.intent_patterns = self._load_intent_patterns()
         self.context_memory = {}
+    
+    def _get_system_prompt(self) -> str:
+        """Get the system prompt for this conversational agent"""
+        return """You are a conversational AI agent specialized in data mapping and transformation tasks.
+
+Your role is to:
+1. Understand user queries about data mapping, validation, and code generation
+2. Provide helpful, accurate responses about EBS IM Account DataHub operations
+3. Guide users through complex data transformation workflows
+4. Assist with Excel file processing and PySpark code generation
+5. Help with metadata validation and quality checks
+
+Always be helpful, professional, and focused on data engineering tasks."""
+    
+    def get_agent_type(self) -> AgentType:
+        """Get the agent type"""
+        return AgentType.CONVERSATIONAL
         
     def _load_intent_patterns(self) -> Dict[str, List[str]]:
         """Load intent recognition patterns"""
@@ -551,4 +568,41 @@ class ConversationalAgent(BaseAgent):
                 ],
                 "requires_action": False,
                 "context": context
+            }
+    
+    async def _execute_core_logic(
+        self, 
+        input_data: Dict[str, Any], 
+        context: str = ""
+    ) -> Dict[str, Any]:
+        """
+        Execute the core logic of the conversational agent
+        
+        Args:
+            input_data: Input data containing the message and context
+            context: RAG context if available
+            
+        Returns:
+            Chat response data
+        """
+        try:
+            message = input_data.get("message", "")
+            chat_context = input_data.get("context", {})
+            
+            # Process the message
+            result = await self.process_message(message, chat_context)
+            
+            return {
+                "success": True,
+                "response": result,
+                "agent_type": self.get_agent_type().value,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "agent_type": self.get_agent_type().value,
+                "timestamp": datetime.now().isoformat()
             }

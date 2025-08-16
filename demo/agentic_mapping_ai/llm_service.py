@@ -2,9 +2,16 @@ import os
 import subprocess
 from openai import AzureOpenAI, OpenAI
 from google.oauth2.credentials import Credentials
-from vertexai.generative_models import GenerativeModel
 
-import vertexai
+# Optional imports for Google Cloud services
+try:
+    from vertexai.generative_models import GenerativeModel
+    import vertexai
+    VERTEX_AI_AVAILABLE = True
+except ImportError:
+    VERTEX_AI_AVAILABLE = False
+    GenerativeModel = None
+    vertexai = None
 
 import dotenv
 
@@ -32,11 +39,11 @@ HTTP_PROXY = os.getenv("HTTP_PROXY", "")
 
 HTTPS_PROXY = os.getenv("HTTPS_PROXY", "")
 
-BASE_URL = os.getenv("BASE_URL")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
+# Make BASE_URL optional for demo purposes
 if not BASE_URL:
-
-    raise EnvironmentError("BASE_URL environment variable is required.")
+    BASE_URL = "http://localhost:8000"
 
 os.environ["HTTP_PROXY"] = HTTP_PROXY
 
@@ -349,6 +356,9 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
         conbined_messages = f"{messages[0]['content']}\n\n{messages[1]['content']}"
 
         if llm_provider == "gemini":
+            if not VERTEX_AI_AVAILABLE:
+                raise ImportError("vertexai is not available. Please install it with: pip install google-cloud-aiplatform")
+            
             vertexai.init(project=VERTEX_PROJECT, 
             api_transport="rest",
             api_endpoint=self.gemini_url,
