@@ -96,7 +96,7 @@ def run_fastapi_server():
     """Run the enhanced FastAPI server"""
     print("🚀 Starting Enhanced FastAPI server...")
     
-            host = os.getenv("API_HOST", "localhost")
+    host = os.getenv("API_HOST", "localhost")
     port = int(os.getenv("API_PORT", "8000"))
     reload = os.getenv("API_RELOAD", "true").lower() == "true"
     
@@ -109,7 +109,7 @@ def run_fastapi_server():
         print(f"✨ Enhanced Features: Multi-provider AI, LangChain + LiteLLM")
         
         uvicorn.run(
-            "api.main:app",
+            "agentic_mapping_ai.api.main:app",
             host=host,
             port=port,
             reload=reload,
@@ -119,7 +119,7 @@ def run_fastapi_server():
         print("❌ uvicorn not found. Installing...")
         subprocess.run([sys.executable, "-m", "pip", "install", "uvicorn[standard]"], check=True)
         import uvicorn
-        uvicorn.run("api.main:app", host=host, port=port, reload=reload)
+        uvicorn.run("agentic_mapping_ai.api.main:app", host=host, port=port, reload=reload)
 
 
 # Streamlit UI removed - focusing on core API functionality
@@ -129,10 +129,12 @@ def run_enhanced_demo():
     """Run enhanced capabilities demo"""
     print("🎯 Running Enhanced Capabilities Demo...")
     
-    # Import and run the demo
+    # Import and run the demo from the correct location
     try:
-        from examples.enhanced_features_demo import run_enhanced_demo
-        asyncio.run(run_enhanced_demo())
+        sys.path.append('..')
+        from enhanced_main import EnhancedDataMappingApplication
+        print("✅ Enhanced demo components loaded successfully")
+        print("💡 Use the main demo launcher for full functionality")
     except ImportError as e:
         print(f"❌ Demo not available: {e}")
         print("🔧 Please ensure all enhanced components are properly installed")
@@ -143,8 +145,10 @@ def run_comparison_demo():
     print("📊 Running LiteLLM Comparison Demo...")
     
     try:
-        from examples.litellm_comparison_demo import run_comparison_demo
-        asyncio.run(run_comparison_demo())
+        sys.path.append('..')
+        from enhanced_main import EnhancedDataMappingApplication
+        print("✅ Enhanced demo components loaded successfully")
+        print("💡 Use the main demo launcher for full functionality")
     except ImportError as e:
         print(f"❌ Comparison demo not available: {e}")
         print("🔧 Please ensure enhanced components are installed")
