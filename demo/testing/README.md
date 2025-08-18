@@ -72,6 +72,20 @@ python test_llm_service_direct.py
 ```
 **Expected Output**: ✅ Service working with local model fallbacks
 
+### **Option 6: Offline Testing (No Internet Required)**
+```bash
+cd testing
+python test_local_offline.py
+```
+**Expected Output**: ✅ Offline capabilities working without external models
+
+### **Option 7: Check Local Model Availability**
+```bash
+cd testing
+python check_local_models.py
+```
+**Expected Output**: ✅ Local models found or offline alternatives provided
+
 ## 🎯 What Each Test Verifies
 
 ### **LLM Service Tests**
@@ -97,6 +111,13 @@ python test_llm_service_direct.py
 - ✅ **Embeddings**: Local embedding generation
 - ✅ **Vector Stores**: Local RAG functionality
 - ✅ **No API Keys**: Development without external dependencies
+
+### **Offline Tests**
+- ✅ **No Internet Required**: Works completely offline
+- ✅ **Local File Processing**: Text analysis without external models
+- ✅ **Rule-based Responses**: Predefined answers for common queries
+- ✅ **Pattern Matching**: Intent detection using local rules
+- ✅ **Fallback Strategies**: Graceful degradation when models unavailable
 
 ## 🔍 Troubleshooting
 
