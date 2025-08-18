@@ -19,6 +19,16 @@ This folder contains comprehensive testing scripts to verify that your LLM servi
 - **Tests**: Agent creation, response generation, intent detection, async methods
 - **Usage**: When you specifically want to test chat capabilities
 
+### 4. **`test_langchain_huggingface.py`** - LangChain + Hugging Face Testing
+- **Purpose**: Test local models using LangChain and Hugging Face libraries
+- **Tests**: Local model loading, LangChain integration, embeddings, vector stores
+- **Usage**: When you want to test without API keys using local models
+
+### 5. **`test_llm_service_direct.py`** - Direct LLM Service Testing
+- **Purpose**: Test LLM service directly with local model fallbacks
+- **Tests**: Service capabilities, local integration, RAG functionality
+- **Usage**: When you want to test the service without external dependencies
+
 ## 🚀 How to Run Tests
 
 ### **Prerequisites**
@@ -48,6 +58,20 @@ python test_llm_service.py
 ```
 **Expected Output**: ✅ All tests passing with detailed results
 
+### **Option 4: LangChain + Hugging Face Testing**
+```bash
+cd testing
+python test_langchain_huggingface.py
+```
+**Expected Output**: ✅ Local models working without API keys
+
+### **Option 5: Direct LLM Service Testing**
+```bash
+cd testing
+python test_llm_service_direct.py
+```
+**Expected Output**: ✅ Service working with local model fallbacks
+
 ## 🎯 What Each Test Verifies
 
 ### **LLM Service Tests**
@@ -66,6 +90,13 @@ python test_llm_service.py
 - ✅ **Health Endpoint**: Server is running and healthy
 - ✅ **Chat Endpoint**: Chat API is functional
 - ✅ **Response Format**: API returns proper JSON responses
+
+### **Local Model Tests**
+- ✅ **LangChain Integration**: Local models working through LangChain
+- ✅ **Hugging Face Models**: Local model loading and inference
+- ✅ **Embeddings**: Local embedding generation
+- ✅ **Vector Stores**: Local RAG functionality
+- ✅ **No API Keys**: Development without external dependencies
 
 ## 🔍 Troubleshooting
 
