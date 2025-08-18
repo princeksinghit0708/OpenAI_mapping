@@ -28,13 +28,37 @@ def check_installation():
     
     for package, description in packages.items():
         try:
-            module = __import__(package)
-            version = getattr(module, '__version__', 'Unknown')
+            # Use a more robust import method
+            if package == "torch":
+                import torch
+                version = torch.__version__
+            elif package == "sentence-transformers":
+                # Handle hyphenated package name correctly
+                import sentence_transformers
+                version = sentence_transformers.__version__
+            elif package == "transformers":
+                import transformers
+                version = transformers.__version__
+            elif package == "langchain":
+                import langchain
+                version = langchain.__version__
+            elif package == "accelerate":
+                import accelerate
+                version = accelerate.__version__
+            else:
+                module = __import__(package)
+                version = getattr(module, '__version__', 'Unknown')
+            
             installed[package] = version
             print(f"✅ {package}: {version} - {description}")
-        except ImportError:
+        except ImportError as e:
             installed[package] = None
             print(f"❌ {package}: Not installed - {description}")
+            print(f"   Error: {e}")
+        except Exception as e:
+            installed[package] = None
+            print(f"❌ {package}: Error checking - {description}")
+            print(f"   Error: {e}")
     
     return installed
 
@@ -183,6 +207,7 @@ def test_offline_models():
         # Test 1: Load model from cache
         print("📥 Loading model from local cache...")
         from transformers import AutoTokenizer, AutoModelForCausalLM
+        import torch
         
         # Use local_files_only=True to prevent internet connection
         tokenizer = AutoTokenizer.from_pretrained('microsoft/DialoGPT-small', local_files_only=True)
@@ -208,7 +233,6 @@ def test_offline_models():
         return False
 
 if __name__ == "__main__":
-    import torch
     test_offline_models()
 '''
     
