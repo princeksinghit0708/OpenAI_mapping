@@ -7,27 +7,22 @@ Tests if agents can connect to llm_service.py and get responses
 import sys
 import os
 
-# Add the correct paths to import from demo/agentic_mapping_ai
+# Add the parent directory to the path to import ai_service_layer
 current_dir = os.path.dirname(os.path.abspath(__file__))
-demo_dir = os.path.dirname(current_dir)
-agentic_dir = os.path.join(demo_dir, "agentic_mapping_ai")
-
-# Add both the agentic_mapping_ai directory and its parent to the path
-sys.path.insert(0, agentic_dir)
-sys.path.insert(0, demo_dir)
+parent_dir = os.path.dirname(os.path.dirname(current_dir))  # Go up two levels to get to the root
+sys.path.append(parent_dir)
 
 print(f"Python path:")
 print(f"  Current dir: {current_dir}")
-print(f"  Demo dir: {demo_dir}")
-print(f"  Agentic dir: {agentic_dir}")
-print(f"  Added to sys.path: {agentic_dir}")
+print(f"  Parent dir: {parent_dir}")
+print(f"  Added to sys.path: {parent_dir}")
 
 def test_llm_service_import():
     """Test if llm_service can be imported"""
     print("\nTesting LLM Service Import...")
     
     try:
-        from llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         print("OK: LLM service imported successfully")
         return True
     except ImportError as e:
@@ -42,7 +37,7 @@ def test_llm_service_creation():
     print("\nTesting LLM Service Creation...")
     
     try:
-        from llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         
         # Try to create the service
         llm_service = LLMService()
@@ -57,7 +52,7 @@ def test_basic_response():
     print("\nTesting Basic Response...")
     
     try:
-        from llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         
         llm_service = LLMService()
         
@@ -85,27 +80,34 @@ def test_agent_connection():
     print("\nTesting Agent Connection...")
     
     try:
-        from agents.chat_agent import ConversationalAgent
-        from llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         
         # Create LLM service
         llm_service = LLMService()
         
-        # Create a chat agent
-        agent = ConversationalAgent(llm_service=llm_service)
-        print("  OK: Chat agent created successfully")
-        
-        # Test agent response
-        test_message = "Hello, I'm testing the agent connection"
-        print(f"  Testing agent with: {test_message}")
-        
-        response = agent.process_message(test_message)
-        
-        if response:
-            print(f"  OK: Agent responded: {response[:100]}...")
-            return True
-        else:
-            print("  ERROR: Agent did not respond")
+        # Try to import agents if available
+        try:
+            from demo.agentic_mapping_ai.agents.chat_agent import ConversationalAgent
+            
+            # Create a chat agent
+            agent = ConversationalAgent(llm_service=llm_service)
+            print("  OK: Chat agent created successfully")
+            
+            # Test agent response
+            test_message = "Hello, I'm testing the agent connection"
+            print(f"  Testing agent with: {test_message}")
+            
+            response = agent.process_message(test_message)
+            
+            if response:
+                print(f"  OK: Agent responded: {response[:100]}...")
+                return True
+            else:
+                print("  ERROR: Agent did not respond")
+                return False
+                
+        except ImportError:
+            print("  WARNING: Could not import agents module, skipping agent test")
             return False
             
     except Exception as e:
@@ -117,7 +119,7 @@ def test_claude_model():
     print("\nTesting Claude Model...")
     
     try:
-        from llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         
         llm_service = LLMService()
         
