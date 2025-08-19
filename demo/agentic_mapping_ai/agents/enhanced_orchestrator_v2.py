@@ -9,9 +9,9 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 from enum import Enum
 
-from agents.enhanced_base_agent import EnhancedBaseAgent, EnhancedAgentConfig
-from agents.enhanced_metadata_validator_v2 import create_enhanced_metadata_validator
-from agents.enhanced_code_generator_v2 import create_enhanced_code_generator
+from .enhanced_base_agent import EnhancedBaseAgent, EnhancedAgentConfig
+from .enhanced_metadata_validator_v2 import create_enhanced_metadata_validator
+from .enhanced_code_generator_v2 import create_enhanced_code_generator
 from agentic_mapping_ai.core.models import (
     AgentType, AgentTask, TaskStatus, WorkflowDefinition,
     CodeGenerationRequest, ValidationResult, SchemaDefinition, MappingRule, FieldDefinition, DataType

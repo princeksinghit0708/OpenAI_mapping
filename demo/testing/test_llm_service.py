@@ -88,6 +88,8 @@ def test_llm_providers(llm_service):
                 model = 'claude-3-7-sonnet@20250219'
             elif provider == 'azure':
                 model = 'gpt-4'
+            elif provider == 'stellar':
+                model = 'Meta-Llama-3.2-90B-Vision-Instruct'
             else:
                 model = 'gpt-4'
             

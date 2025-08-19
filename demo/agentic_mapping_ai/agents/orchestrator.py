@@ -10,10 +10,10 @@ from enum import Enum
 
 from loguru import logger
 
-from agents.base_agent import BaseAgent, AgentConfig, AgentFactory
-from agents.metadata_validator import MetadataValidatorAgent
-from agents.code_generator import CodeGeneratorAgent
-from agents.test_generator import TestGeneratorAgent
+from .base_agent import BaseAgent, AgentConfig, AgentFactory
+from .metadata_validator import MetadataValidatorAgent
+from .code_generator import CodeGeneratorAgent
+from .test_generator import TestGeneratorAgent
 from agentic_mapping_ai.core.models import (
     AgentType, AgentTask, TaskStatus, WorkflowDefinition,
     CodeGenerationRequest, ValidationResult
