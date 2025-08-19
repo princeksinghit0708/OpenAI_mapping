@@ -27,10 +27,10 @@ def test_llm_service_import():
     except ImportError:
         # Try alternative import path for demo environment
         try:
-            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'agentic_mapping_ai'))
+            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'ai_service_layer'))
             from llm_service import LLMService
             llm_service = LLMService()
-            print("✅ LLM Service imported successfully (demo path)")
+            print("✅ LLM Service imported successfully (ai_service_layer path)")
             print(f"Service type: {type(llm_service)}")
             print(f"Available methods: {[m for m in dir(llm_service) if not m.startswith('_')]}")
             return True, llm_service
