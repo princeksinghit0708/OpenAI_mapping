@@ -18,7 +18,8 @@ def test_llm_service_import():
     print("=" * 50)
     
     try:
-        from agentic_mapping_ai.llm_service import llm_service
+        from agentic_mapping_ai.llm_service import LLMService
+        llm_service = LLMService()
         print("✅ LLM Service imported successfully")
         print(f"Service type: {type(llm_service)}")
         print(f"Available methods: {[m for m in dir(llm_service) if not m.startswith('_')]}")
@@ -27,7 +28,8 @@ def test_llm_service_import():
         # Try alternative import path for demo environment
         try:
             sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'agentic_mapping_ai'))
-            from llm_service import llm_service
+            from llm_service import LLMService
+            llm_service = LLMService()
             print("✅ LLM Service imported successfully (demo path)")
             print(f"Service type: {type(llm_service)}")
             print(f"Available methods: {[m for m in dir(llm_service) if not m.startswith('_')]}")
