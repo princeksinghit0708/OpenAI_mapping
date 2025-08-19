@@ -7,13 +7,14 @@ This script fixes the import path and creates the LLMService instance correctly
 import sys
 import os
 
-# Add the correct path to the agentic_mapping_ai directory
+# Add the correct path to the ai_service_layer directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
-agentic_path = os.path.join(parent_dir, 'agentic_mapping_ai')
+parent_parent_dir = os.path.dirname(parent_dir)  # Go up one more level to reach the main Mapping directory
+ai_service_path = os.path.join(parent_parent_dir, 'ai_service_layer')
 
 # Add the path to sys.path
-sys.path.append(agentic_path)
+sys.path.append(ai_service_path)
 
 try:
     # Import the LLMService class
@@ -46,15 +47,15 @@ try:
 except ImportError as e:
     print(f"❌ Import failed: {e}")
     print(f"Current sys.path: {sys.path}")
-    print(f"Looking for llm_service.py in: {agentic_path}")
+    print(f"Looking for llm_service.py in: {ai_service_path}")
     
     # List files in the directory to help debug
-    if os.path.exists(agentic_path):
-        print(f"Files in {agentic_path}:")
-        for file in os.listdir(agentic_path):
+    if os.path.exists(ai_service_path):
+        print(f"Files in {ai_service_path}:")
+        for file in os.listdir(ai_service_path):
             print(f"  - {file}")
     else:
-        print(f"Directory {agentic_path} does not exist")
+        print(f"Directory {ai_service_path} does not exist")
         
 except Exception as e:
     print(f"❌ Unexpected error: {e}")

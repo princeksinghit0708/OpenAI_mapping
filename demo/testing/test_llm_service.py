@@ -18,7 +18,7 @@ def test_llm_service_import():
     print("=" * 50)
     
     try:
-        from agentic_mapping_ai.llm_service import LLMService
+        from ai_service_layer.llm_service import LLMService
         llm_service = LLMService()
         print("✅ LLM Service imported successfully")
         print(f"Service type: {type(llm_service)}")
