@@ -377,13 +377,53 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                 http_client=http_client,
                 credentials=credentials,
                 base_url=self.claude_url)
-            response =client.messages.create(
-            model=model,
-            messages=messages,
-            temperature=temperature,
-            stream=stream,
-            )
-            return response.choices[0].message.content.strip()
+            
+            try:
+                if stream:
+                    # Handle streaming response
+                    response = client.messages.create(
+                        model=model,
+                        messages=messages,
+                        temperature=temperature,
+                        stream=True,
+                        max_tokens=max_tokens
+                    )
+                    # Collect streaming response
+                    full_response = ""
+                    for chunk in response:
+                        if chunk.type == "content_block_delta":
+                            full_response += chunk.delta.text
+                    return full_response.strip()
+                else:
+                    # Handle non-streaming response
+                    response = client.messages.create(
+                        model=model,
+                        messages=messages,
+                        temperature=temperature,
+                        stream=False,
+                        max_tokens=max_tokens
+                    )
+                    return response.content[0].text.strip()
+                    
+            except Exception as e:
+                # If non-streaming fails, try with streaming as fallback
+                if "streaming is required" in str(e).lower():
+                    print("Falling back to streaming mode for Claude...")
+                    response = client.messages.create(
+                        model=model,
+                        messages=messages,
+                        temperature=temperature,
+                        stream=True,
+                        max_tokens=max_tokens
+                    )
+                    # Collect streaming response
+                    full_response = ""
+                    for chunk in response:
+                        if chunk.type == "content_block_delta":
+                            full_response += chunk.delta.text
+                    return full_response.strip()
+                else:
+                    raise e
 
         elif llm_provider == "stellar":
             client = OpenAI(
@@ -428,8 +468,8 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
         # return self.query_llm("Meta-Llama-3.3-70B-Instruct", messages, llm_provider="stellar")
         # return self.query_llm("Citi-GPT4-o", messages, llm_provider="openai")
         
-        # Currently using Gemini as default
-        return self.query_llm("gemini-2.5-pro", messages, llm_provider="gemini")
+        # Currently using Claude as default
+        return self.query_llm("claude-3-7-sonnet@20250219", messages, llm_provider="claude", stream=stream, max_tokens=max_tokens)
 
     def get_response(self, prompt: str, model: str = "claude-3-7-sonnet@20250219", temperature: float = 0.2) -> str:
         """
