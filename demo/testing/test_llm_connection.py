@@ -7,16 +7,24 @@ Tests if agents can connect to llm_service.py and get responses
 import sys
 import os
 
-# Add the correct path to import from demo/agentic_mapping_ai
+# Add the correct paths to import from demo/agentic_mapping_ai
 current_dir = os.path.dirname(os.path.abspath(__file__))
 demo_dir = os.path.dirname(current_dir)
 agentic_dir = os.path.join(demo_dir, "agentic_mapping_ai")
-sys.path.append(agentic_dir)
+
+# Add both the agentic_mapping_ai directory and its parent to the path
+sys.path.insert(0, agentic_dir)
+sys.path.insert(0, demo_dir)
+
+print(f"Python path:")
+print(f"  Current dir: {current_dir}")
+print(f"  Demo dir: {demo_dir}")
+print(f"  Agentic dir: {agentic_dir}")
+print(f"  Added to sys.path: {agentic_dir}")
 
 def test_llm_service_import():
     """Test if llm_service can be imported"""
-    print("Testing LLM Service Import...")
-    print(f"Looking for llm_service.py in: {agentic_dir}")
+    print("\nTesting LLM Service Import...")
     
     try:
         from llm_service import LLMService
