@@ -24,9 +24,11 @@ def quick_test():
         # Test basic response
         print("\n💬 Testing AI response...")
         messages = [
+            {'role': 'system', 'content': 'You are a helpful AI assistant.'},
             {'role': 'user', 'content': 'Say hello and tell me what you can do in one sentence.'}
         ]
         
+        print(f"📤 Sending messages: {messages}")
         response = llm_service.call_default_llm(messages=messages)
         print(f"🤖 AI Response: {response}")
         

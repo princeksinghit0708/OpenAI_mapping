@@ -203,27 +203,27 @@ Always be helpful, professional, and focused on data engineering tasks."""
         
         # Generate appropriate response based on intent
         if intent == "upload":
-            return self._handle_upload_intent(message, context, entities, confidence)
+            return self._handle_upload_intent(message, context, entities, confidence, intent)
         elif intent == "generate":
-            return self._handle_generate_intent(message, context, entities, confidence)
+            return self._handle_generate_intent(message, context, entities, confidence, intent)
         elif intent == "validate":
-            return self._handle_validate_intent(message, context, entities, confidence)
+            return self._handle_validate_intent(message, context, entities, confidence, intent)
         elif intent == "workflow":
-            return self._handle_workflow_intent(message, context, entities, confidence)
+            return self._handle_workflow_intent(message, context, entities, confidence, intent)
         elif intent == "test":
-            return self._handle_test_intent(message, context, entities, confidence)
+            return self._handle_test_intent(message, context, entities, confidence, intent)
         elif intent == "status":
-            return self._handle_status_intent(message, context, entities, confidence)
+            return self._handle_status_intent(message, context, entities, confidence, intent)
         elif intent == "help":
-            return self._handle_help_intent(message, context, entities, confidence)
+            return self._handle_help_intent(message, context, entities, confidence, intent)
         elif intent == "greeting":
-            return self._handle_greeting_intent(message, context, entities, confidence)
+            return self._handle_greeting_intent(message, context, entities, confidence, intent)
         elif intent == "thanks":
-            return self._handle_thanks_intent(message, context, entities, confidence)
+            return self._handle_thanks_intent(message, context, entities, confidence, intent)
         else:
-            return self._handle_general_intent(message, context, entities, confidence)
+            return self._handle_general_intent(message, context, entities, confidence, intent)
     
-    def _handle_upload_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_upload_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle file upload related queries"""
         if context.uploaded_files:
             response_text = f"I see you already have {len(context.uploaded_files)} file(s) uploaded. " \
@@ -257,7 +257,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             requires_action=True
         )
     
-    def _handle_generate_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_generate_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle code generation queries"""
         if not context.uploaded_files:
             response_text = "I'd love to generate code for you! However, I need an Excel mapping file first.\n\n" \
@@ -298,7 +298,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             requires_action=True
         )
     
-    def _handle_validate_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_validate_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle validation queries"""
         response_text = "I'll help you validate your data comprehensively!\n\n" \
                        "🔍 **Validation Types:**\n" \
@@ -323,7 +323,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             requires_action=True
         )
     
-    def _handle_workflow_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_workflow_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle workflow execution queries"""
         urgency = entities.get("urgency", "normal")
         
@@ -354,7 +354,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             requires_action=True
         )
     
-    def _handle_test_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_test_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle test generation queries"""
         response_text = "I'll create comprehensive test suites for your transformations!\n\n" \
                        "🧪 **Test Types:**\n" \
@@ -380,7 +380,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             requires_action=True
         )
     
-    def _handle_status_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_status_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle status and progress queries"""
         status_text = f"📊 **Current Status:**\n" \
                      f"• Workflow: {context.workflow_status.title()}\n" \
@@ -408,7 +408,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             suggested_actions=actions
         )
     
-    def _handle_help_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_help_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str) -> ChatResponse:
         """Handle help and guidance queries"""
         response_text = "I'm here to help! 🤝\n\n" \
                        "🎯 **What I Can Do:**\n" \
@@ -436,7 +436,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             suggested_actions=actions
         )
     
-    def _handle_greeting_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_greeting_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str = "greeting") -> ChatResponse:
         """Handle greetings and social interactions"""
         greetings = [
             "Hello! 👋 I'm your AI mapping assistant, ready to help with data transformation tasks!",
@@ -470,7 +470,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             suggested_actions=actions
         )
     
-    def _handle_thanks_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_thanks_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str = "thanks") -> ChatResponse:
         """Handle thanks and appreciation"""
         thanks_responses = [
             "You're very welcome! 😊 I'm here whenever you need help with data mapping!",
@@ -494,7 +494,7 @@ Always be helpful, professional, and focused on data engineering tasks."""
             suggested_actions=actions
         )
     
-    def _handle_general_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float) -> ChatResponse:
+    def _handle_general_intent(self, message: str, context: ChatContext, entities: Dict, confidence: float, intent: str = "general") -> ChatResponse:
         """Handle general queries that don't fit specific intents"""
         response_text = "I understand you're asking about data mapping and transformation. " \
                        "Let me help you clarify what you need!\n\n" \

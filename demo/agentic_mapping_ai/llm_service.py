@@ -3,6 +3,10 @@ import subprocess
 from openai import AzureOpenAI, OpenAI
 from google.oauth2.credentials import Credentials
 
+# Load environment variables from .env file
+import dotenv
+dotenv.load_dotenv()
+
 # Optional imports for Google Cloud services
 try:
     from vertexai.generative_models import GenerativeModel
@@ -12,8 +16,6 @@ except ImportError:
     VERTEX_AI_AVAILABLE = False
     GenerativeModel = None
     vertexai = None
-
-import dotenv
 
 import logging
 
@@ -95,29 +97,37 @@ def get_token_from_mongo():
 # exit()
 
 def get_coin_token() -> str:
+    """
+    Retrieve the authentication token using a shell command.
 
+    Returns:
+        str: The authentication token if found, None otherwise.
     """
 
-Retrieve the authentication token using a shell command.
+    # First try to get token from environment variables for testing
+    env_token = os.getenv('TEST_API_TOKEN') or os.getenv('OPENAI_API_KEY') or os.getenv('ANTHROPIC_API_KEY')
+    if env_token:
+        logging.info("Using token from environment variable for testing")
+        return env_token
 
-Returns:
+    # Try to get token from MongoDB
+    try:
+        mongo_token = get_token_from_mongo()
+        if mongo_token:
+            logging.info("Using token from MongoDB")
+            return mongo_token
+    except Exception as e:
+        logging.warning(f"Failed to get token from MongoDB: {e}")
 
-    str: The authentication token if found, None otherwise.
-    """
-
+    # Try helix command as last resort
     command = "helix auth access-token print -a"
 
     try:
-
         result = subprocess.check_output(command, shell=True)
-
         return result.decode().strip()
-
     except subprocess.CalledProcessError as e:
-
-            logging.error("Failed to retrieve token: %s", e)
-
-            raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured.")
+        logging.error("Failed to retrieve token: %s", e)
+        raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured, or set TEST_API_TOKEN environment variable for testing.")
 
 class LLMService:
     """
@@ -353,7 +363,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
 
 
             raise ValueError("Token is required.")
-        conbined_messages = f"{messages[0]['content']}\n\n{messages[1]['content']}"
+        combined_messages = f"{messages[0]['content']}\n\n{messages[1]['content']}"
 
         if llm_provider == "gemini":
             if not VERTEX_AI_AVAILABLE:
@@ -365,10 +375,10 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
             credentials=credentials,
             )
             llm=GenerativeModel(model)
-            return llm.generate_content(conbined_messages).text.strip()
+            return llm.generate_content(combined_messages).text.strip()
 
         elif llm_provider == "claude":
-            messages_formatted = [{"role": "user", "content": conbined_messages}]
+            messages_formatted = [{"role": "user", "content": combined_messages}]
             credentials = Credentials(self._get_fresh_token())
             http_client = httpx.Client()
             client = AnthropicVertex(
@@ -383,7 +393,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     # Handle streaming response
                     response = client.messages.create(
                         model=model,
-                        messages=messages,
+                        messages=messages_formatted,  # Use formatted messages
                         temperature=temperature,
                         stream=True,
                         max_tokens=max_tokens
@@ -398,7 +408,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     # Handle non-streaming response
                     response = client.messages.create(
                         model=model,
-                        messages=messages,
+                        messages=messages_formatted,  # Use formatted messages
                         temperature=temperature,
                         stream=False,
                         max_tokens=max_tokens
@@ -411,7 +421,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     print("Falling back to streaming mode for Claude...")
                     response = client.messages.create(
                         model=model,
-                        messages=messages,
+                        messages=messages_formatted,  # Use formatted messages
                         temperature=temperature,
                         stream=True,
                         max_tokens=max_tokens
@@ -462,6 +472,10 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
         Returns:
             Union[str, Generator[str, None, None]]: Response from the LLM.
         """
+        
+        # For Claude models, use streaming by default to avoid timeout issues
+        if "claude" in model.lower():
+            stream = True
         
         # You can uncomment and modify these lines based on which provider you want to use:
         # return self.query_llm("claude-3-7-sonnet@20250219", messages=messages, llm_provider="claude")

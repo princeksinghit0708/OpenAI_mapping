@@ -91,6 +91,7 @@ def test_llm_service_with_local_fallback():
         
         # Create a simple test message
         test_messages = [
+            {'role': 'system', 'content': 'You are a helpful AI assistant.'},
             {'role': 'user', 'content': 'Hello, can you help me with data mapping?'}
         ]
         
