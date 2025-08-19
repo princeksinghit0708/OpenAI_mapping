@@ -7,15 +7,19 @@ Tests if agents can connect to llm_service.py and get responses
 import sys
 import os
 
-# Add the parent directory to the path to import agentic_mapping_ai
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add the correct path to import from demo/agentic_mapping_ai
+current_dir = os.path.dirname(os.path.abspath(__file__))
+demo_dir = os.path.dirname(current_dir)
+agentic_dir = os.path.join(demo_dir, "agentic_mapping_ai")
+sys.path.append(agentic_dir)
 
 def test_llm_service_import():
     """Test if llm_service can be imported"""
     print("Testing LLM Service Import...")
+    print(f"Looking for llm_service.py in: {agentic_dir}")
     
     try:
-        from agentic_mapping_ai.llm_service import LLMService
+        from llm_service import LLMService
         print("OK: LLM service imported successfully")
         return True
     except ImportError as e:
@@ -30,7 +34,7 @@ def test_llm_service_creation():
     print("\nTesting LLM Service Creation...")
     
     try:
-        from agentic_mapping_ai.llm_service import LLMService
+        from llm_service import LLMService
         
         # Try to create the service
         llm_service = LLMService()
@@ -45,7 +49,7 @@ def test_basic_response():
     print("\nTesting Basic Response...")
     
     try:
-        from agentic_mapping_ai.llm_service import LLMService
+        from llm_service import LLMService
         
         llm_service = LLMService()
         
@@ -73,8 +77,8 @@ def test_agent_connection():
     print("\nTesting Agent Connection...")
     
     try:
-        from agentic_mapping_ai.agents.chat_agent import ConversationalAgent
-        from agentic_mapping_ai.llm_service import LLMService
+        from agents.chat_agent import ConversationalAgent
+        from llm_service import LLMService
         
         # Create LLM service
         llm_service = LLMService()
@@ -105,7 +109,7 @@ def test_claude_model():
     print("\nTesting Claude Model...")
     
     try:
-        from agentic_mapping_ai.llm_service import LLMService
+        from llm_service import LLMService
         
         llm_service = LLMService()
         
