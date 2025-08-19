@@ -3,10 +3,6 @@ import subprocess
 from openai import AzureOpenAI, OpenAI
 from google.oauth2.credentials import Credentials
 
-# Load environment variables from .env file
-import dotenv
-dotenv.load_dotenv()
-
 # Optional imports for Google Cloud services
 try:
     from vertexai.generative_models import GenerativeModel
@@ -104,22 +100,6 @@ def get_coin_token() -> str:
         str: The authentication token if found, None otherwise.
     """
 
-    # First try to get token from environment variables for testing
-    env_token = os.getenv('TEST_API_TOKEN') or os.getenv('OPENAI_API_KEY') or os.getenv('ANTHROPIC_API_KEY')
-    if env_token:
-        logging.info("Using token from environment variable for testing")
-        return env_token
-
-    # Try to get token from MongoDB
-    try:
-        mongo_token = get_token_from_mongo()
-        if mongo_token:
-            logging.info("Using token from MongoDB")
-            return mongo_token
-    except Exception as e:
-        logging.warning(f"Failed to get token from MongoDB: {e}")
-
-    # Try helix command as last resort
     command = "helix auth access-token print -a"
 
     try:
@@ -127,7 +107,7 @@ def get_coin_token() -> str:
         return result.decode().strip()
     except subprocess.CalledProcessError as e:
         logging.error("Failed to retrieve token: %s", e)
-        raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured, or set TEST_API_TOKEN environment variable for testing.")
+        raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured.")
 
 class LLMService:
     """
