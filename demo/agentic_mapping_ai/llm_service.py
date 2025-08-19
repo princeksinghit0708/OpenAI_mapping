@@ -407,13 +407,44 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
             )
             return response.choices[0].message.content.strip()
 
-    def call_default_llm(self, model: str = "claude-3-7-sonnet@20250219", messages: List[dict] = None, temperature: float = 0.2, stream: bool = False, raw_response: bool = False, max_tokens: int = 32000) -> Union[str, Generator[str, None, None]]:
+    def call_default_llm(self, messages: List[dict], model: str = "claude-3-7-sonnet@20250219", temperature: float = 0.2, stream: bool = False, raw_response: bool = False, max_tokens: int = 32000) -> Union[str, Generator[str, None, None]]:
         """
-        Call the default LLM with the given model, messages, temperature, stream, raw_response, and max_tokens.
+        Call the default LLM with the given messages and optional parameters.
+        
+        Args:
+            messages (List[dict]): List of messages to send to the model.
+            model (str, optional): The model to use. Defaults to "claude-3-7-sonnet@20250219".
+            temperature (float, optional): Sampling temperature. Defaults to 0.2.
+            stream (bool, optional): Whether to stream the response. Defaults to False.
+            raw_response (bool, optional): Whether to return raw response. Defaults to False.
+            max_tokens (int, optional): Maximum tokens to generate. Defaults to 32000.
+            
+        Returns:
+            Union[str, Generator[str, None, None]]: Response from the LLM.
         """
         
-        return self.query_llm(model="claude-3-7-sonnet@20250219", messages=messages, temperature=temperature, stream=stream, raw_response=raw_response, max_tokens=max_tokens, llm_provider="claude")   
+        # You can uncomment and modify these lines based on which provider you want to use:
+        # return self.query_llm("claude-3-7-sonnet@20250219", messages=messages, llm_provider="claude")
+        # return self.query_llm("Meta-Llama-3.3-70B-Instruct", messages, llm_provider="stellar")
+        # return self.query_llm("Citi-GPT4-o", messages, llm_provider="openai")
+        
+        # Currently using Gemini as default
+        return self.query_llm("gemini-2.5-pro", messages, llm_provider="gemini")
 
+    def get_response(self, prompt: str, model: str = "claude-3-7-sonnet@20250219", temperature: float = 0.2) -> str:
+        """
+        Get a response from the LLM for a simple prompt.
+        
+        Args:
+            prompt (str): The prompt to send to the LLM.
+            model (str, optional): The model to use. Defaults to "claude-3-7-sonnet@20250219".
+            temperature (float, optional): Sampling temperature. Defaults to 0.2.
+            
+        Returns:
+            str: Response from the LLM.
+        """
+        messages = [{"role": "user", "content": prompt}]
+        return self.call_default_llm(messages=messages, model=model, temperature=temperature)
 
 
 llm_service = LLMService()
