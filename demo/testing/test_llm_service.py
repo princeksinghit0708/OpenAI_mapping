@@ -23,25 +23,35 @@ def test_llm_service_import():
         print(f"Service type: {type(llm_service)}")
         print(f"Available methods: {[m for m in dir(llm_service) if not m.startswith('_')]}")
         return True, llm_service
+    except ImportError:
+        # Try alternative import path for demo environment
+        try:
+            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'agentic_mapping_ai'))
+            from llm_service import llm_service
+            print("✅ LLM Service imported successfully (demo path)")
+            print(f"Service type: {type(llm_service)}")
+            print(f"Available methods: {[m for m in dir(llm_service) if not m.startswith('_')]}")
+            return True, llm_service
+        except Exception as e2:
+            print(f"❌ Import failed (both paths): {e2}")
+            return False, None
     except Exception as e:
         print(f"❌ Import failed: {e}")
         return False, None
 
 def test_llm_basic_response(llm_service):
-    """Test 2: Basic LLM Response Generation"""
+    """Test 2: Basic LLM response generation"""
     print("\n🧪 Test 2: Basic LLM Response")
     print("=" * 50)
     
     try:
-        # Test with a simple message - ensure at least 2 messages as required by the service
+        # Test with a simple message
         messages = [
             {'role': 'system', 'content': 'You are a helpful data mapping assistant.'},
             {'role': 'user', 'content': 'Hello! Can you explain what data mapping is in 2 sentences?'}
         ]
         
         print("📤 Sending test message...")
-        print(f"Message format: {messages}")
-        
         response = llm_service.call_default_llm(messages=messages, temperature=0.2)
         
         print("✅ LLM Response received:")
@@ -100,8 +110,15 @@ def test_chat_agent():
     print("=" * 50)
     
     try:
-        from agentic_mapping_ai.agents.chat_agent import ConversationalAgent
-        from agentic_mapping_ai.agents.base_agent import AgentConfig
+        # Try main import path first
+        try:
+            from agentic_mapping_ai.agents.chat_agent import ConversationalAgent
+            from agentic_mapping_ai.agents.base_agent import AgentConfig
+        except ImportError:
+            # Try demo path
+            sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'agentic_mapping_ai'))
+            from agents.chat_agent import ConversationalAgent
+            from agents.base_agent import AgentConfig
         
         # Create a test config
         config = AgentConfig(
