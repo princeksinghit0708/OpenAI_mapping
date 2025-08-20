@@ -13,6 +13,8 @@ except ImportError:
     GenerativeModel = None
     vertexai = None
 
+import dotenv
+
 import logging
 
 from typing import List, Union, Generator, Any
@@ -93,21 +95,29 @@ def get_token_from_mongo():
 # exit()
 
 def get_coin_token() -> str:
-    """
-    Retrieve the authentication token using a shell command.
 
-    Returns:
-        str: The authentication token if found, None otherwise.
+    """
+
+Retrieve the authentication token using a shell command.
+
+Returns:
+
+    str: The authentication token if found, None otherwise.
     """
 
     command = "helix auth access-token print -a"
 
     try:
+
         result = subprocess.check_output(command, shell=True)
+
         return result.decode().strip()
+
     except subprocess.CalledProcessError as e:
-        logging.error("Failed to retrieve token: %s", e)
-        raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured.")
+
+            logging.error("Failed to retrieve token: %s", e)
+
+            raise RuntimeError("Failed to retrieve token. Ensure 'helix' is installed and configured.")
 
 class LLMService:
     """
@@ -343,7 +353,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
 
 
             raise ValueError("Token is required.")
-        combined_messages = f"{messages[0]['content']}\n\n{messages[1]['content']}"
+        conbined_messages = f"{messages[0]['content']}\n\n{messages[1]['content']}"
 
         if llm_provider == "gemini":
             if not VERTEX_AI_AVAILABLE:
@@ -355,10 +365,10 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
             credentials=credentials,
             )
             llm=GenerativeModel(model)
-            return llm.generate_content(combined_messages).text.strip()
+            return llm.generate_content(conbined_messages).text.strip()
 
         elif llm_provider == "claude":
-            messages_formatted = [{"role": "user", "content": combined_messages}]
+            messages_formatted = [{"role": "user", "content": conbined_messages}]
             credentials = Credentials(self._get_fresh_token())
             http_client = httpx.Client()
             client = AnthropicVertex(
@@ -373,7 +383,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     # Handle streaming response
                     response = client.messages.create(
                         model=model,
-                        messages=messages_formatted,  # Use formatted messages
+                        messages=messages,
                         temperature=temperature,
                         stream=True,
                         max_tokens=max_tokens
@@ -388,7 +398,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     # Handle non-streaming response
                     response = client.messages.create(
                         model=model,
-                        messages=messages_formatted,  # Use formatted messages
+                        messages=messages,
                         temperature=temperature,
                         stream=False,
                         max_tokens=max_tokens
@@ -401,7 +411,7 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
                     print("Falling back to streaming mode for Claude...")
                     response = client.messages.create(
                         model=model,
-                        messages=messages_formatted,  # Use formatted messages
+                        messages=messages,
                         temperature=temperature,
                         stream=True,
                         max_tokens=max_tokens
@@ -452,10 +462,6 @@ Unified class for handling OpenAI, Gemini, Stellar, and Anthropic streaming serv
         Returns:
             Union[str, Generator[str, None, None]]: Response from the LLM.
         """
-        
-        # For Claude models, use streaming by default to avoid timeout issues
-        if "claude" in model.lower():
-            stream = True
         
         # You can uncomment and modify these lines based on which provider you want to use:
         # return self.query_llm("claude-3-7-sonnet@20250219", messages=messages, llm_provider="claude")
