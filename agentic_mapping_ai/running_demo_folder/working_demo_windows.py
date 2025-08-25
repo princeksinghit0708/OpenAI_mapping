@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 WORKING END-TO-END DEMO - Windows Compatible
-Demonstrates the complete workflow with working components
+Demonstrates the complete workflow with core logic for agents
 """
 
 import asyncio
@@ -42,158 +42,13 @@ class WorkingDemo:
             "outputs": {}
         }
     
-    async def create_sample_excel_file(self):
-        """Create a comprehensive sample Excel file for demo"""
-        logger.info("Creating comprehensive sample Excel file...")
-        
-        # Sample data with different mapping types
-        sample_data = [
-            # ACCT_DLY table - Direct mappings
-            {
-                'physical_table': 'ACCT_DLY',
-                'logical_name': 'Account Number',
-                'physical_name': 'ACCT_NUM',
-                'data_type': 'VARCHAR(20)',
-                'name_for': 'acct_num',
-                'column_name': 'acct_num',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            },
-            {
-                'physical_table': 'ACCT_DLY',
-                'logical_name': 'Account Balance',
-                'physical_name': 'ACCT_BAL',
-                'data_type': 'DECIMAL(15,2)',
-                'name_for': 'acct_bal',
-                'column_name': 'acct_bal',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            },
-            # ACCT_DLY table - Derived mappings
-            {
-                'physical_table': 'ACCT_DLY',
-                'logical_name': 'Account Status',
-                'physical_name': 'ACCT_STATUS',
-                'data_type': 'VARCHAR(10)',
-                'name_for': 'acct_status',
-                'column_name': 'acct_status',
-                'mapping_type': 'Derived',
-                'transformation': "CASE WHEN ACCT_BAL > 0 THEN 'ACTIVE' ELSE 'INACTIVE' END"
-            },
-            {
-                'physical_table': 'ACCT_DLY',
-                'logical_name': 'High Value Flag',
-                'physical_name': 'HIGH_VALUE_FLG',
-                'data_type': 'CHAR(1)',
-                'name_for': 'high_value_flg',
-                'column_name': 'high_value_flg',
-                'mapping_type': 'Derived',
-                'transformation': "CASE WHEN ACCT_BAL > 100000 THEN 'Y' ELSE 'N' END"
-            },
-            # ACCT_DLY table - Goldref mappings
-            {
-                'physical_table': 'ACCT_DLY',
-                'logical_name': 'Account Type',
-                'physical_name': 'ACCT_TYPE',
-                'data_type': 'VARCHAR(50)',
-                'name_for': 'acct_type',
-                'column_name': 'acct_type',
-                'mapping_type': 'Goldref',
-                'transformation': 'Lookup from ACCT_TYPE_REF table'
-            },
-            # TXN_DLY table - Direct mappings
-            {
-                'physical_table': 'TXN_DLY',
-                'logical_name': 'Transaction ID',
-                'physical_name': 'TXN_ID',
-                'data_type': 'BIGINT',
-                'name_for': 'txn_id',
-                'column_name': 'txn_id',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            },
-            {
-                'physical_table': 'TXN_DLY',
-                'logical_name': 'Transaction Amount',
-                'physical_name': 'TXN_AMT',
-                'data_type': 'DECIMAL(15,2)',
-                'name_for': 'txn_amt',
-                'column_name': 'txn_amt',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            },
-            # TXN_DLY table - Derived mappings
-            {
-                'physical_table': 'TXN_DLY',
-                'logical_name': 'Transaction Category',
-                'physical_name': 'TXN_CATEGORY',
-                'data_type': 'VARCHAR(50)',
-                'name_for': 'txn_category',
-                'column_name': 'txn_category',
-                'mapping_type': 'Derived',
-                'transformation': "CASE WHEN TXN_AMT > 1000 THEN 'HIGH_VALUE' WHEN TXN_AMT > 100 THEN 'MEDIUM_VALUE' ELSE 'LOW_VALUE' END"
-            },
-            # CUST_DLY table - Direct mappings
-            {
-                'physical_table': 'CUST_DLY',
-                'logical_name': 'Customer ID',
-                'physical_name': 'CUST_ID',
-                'data_type': 'VARCHAR(20)',
-                'name_for': 'cust_id',
-                'column_name': 'cust_id',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            },
-            {
-                'physical_table': 'CUST_DLY',
-                'logical_name': 'Customer Name',
-                'physical_name': 'CUST_NAME',
-                'data_type': 'VARCHAR(100)',
-                'name_for': 'cust_name',
-                'column_name': 'cust_name',
-                'mapping_type': 'Direct',
-                'transformation': 'direct'
-            }
-        ]
-        
-        # Create DataFrame
-        df = pd.DataFrame(sample_data)
-        
-        # Save to Excel with multiple sheets
-        excel_file = self.output_dir / "sample_mapping_data.xlsx"
-        
-        with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-            # Main mapping sheet
-            df.to_excel(writer, sheet_name='datahub standard mapping', index=False)
-            
-            # Gold reference sheet
-            goldref_data = [
-                {
-                    'Reference_Table': 'ACCT_TYPE_REF',
-                    'Reference_Key': 'ACCT_TYPE_CODE',
-                    'Reference_Value': 'ACCT_TYPE_DESC',
-                    'Description': 'Account Type Reference'
-                },
-                {
-                    'Reference_Table': 'CUST_STATUS_REF',
-                    'Reference_Key': 'STATUS_CODE',
-                    'Reference_Value': 'STATUS_DESC',
-                    'Description': 'Customer Status Reference'
-                }
-            ]
-            goldref_df = pd.DataFrame(goldref_data)
-            goldref_df.to_excel(writer, sheet_name='goldref', index=False)
-        
-        logger.info(f"Sample Excel file created: {excel_file}")
-        return excel_file
-    
-    async def process_excel_file(self, excel_file: Path):
+    async def process_excel_file(self, excel_file_path: str):
         """Process Excel file and extract mapping information"""
         logger.info("Processing Excel file...")
         
         try:
             # Read Excel file directly
-            df = pd.read_excel(excel_file, sheet_name='datahub standard mapping')
+            df = pd.read_excel(excel_file_path, sheet_name='datahub standard mapping')
             
             # Group by table
             table_mappings = {}
@@ -229,7 +84,7 @@ class WorkingDemo:
             
             # Save parsed data
             parsed_data = {
-                'excel_file': str(excel_file),
+                'excel_file': excel_file_path,
                 'parsed_at': datetime.now().isoformat(),
                 'table_mappings': mapping_analysis,
                 'total_tables': len(table_mappings),
@@ -552,7 +407,7 @@ def transform_{table_name.lower()}(spark, input_df):
         print(f"\nDemo completed successfully!")
         print("="*80)
     
-    async def run_complete_workflow(self):
+    async def run_complete_workflow(self, excel_file_path: str):
         """Run the complete end-to-end workflow"""
         logger.info("Starting Working End-to-End Agentic Mapping AI Demo")
         
@@ -560,33 +415,30 @@ def transform_{table_name.lower()}(spark, input_df):
             # Start timing
             self.workflow_status["start_time"] = datetime.now()
             
-            # Step 1: Create sample Excel file
-            excel_file = await self.create_sample_excel_file()
-            
-            # Step 2: Process Excel file
-            mapping_analysis = await self.process_excel_file(excel_file)
+            # Step 1: Process Excel file
+            mapping_analysis = await self.process_excel_file(excel_file_path)
             if not mapping_analysis:
                 raise Exception("Excel processing failed")
             
-            # Step 3: Validate metadata
+            # Step 2: Validate metadata
             validation_results = await self.validate_metadata(mapping_analysis)
             if not validation_results:
                 raise Exception("Metadata validation failed")
             
-            # Step 4: Generate test cases
+            # Step 3: Generate test cases
             test_cases = await self.generate_test_cases(mapping_analysis)
             if not test_cases:
                 raise Exception("Test case generation failed")
             
-            # Step 5: Generate code
+            # Step 4: Generate code
             generated_code = await self.generate_code(mapping_analysis)
             if not generated_code:
                 raise Exception("Code generation failed")
             
-            # Step 6: Orchestrate workflow
+            # Step 5: Orchestrate workflow
             orchestration_result = await self.orchestrate_workflow(mapping_analysis)
             
-            # Step 7: Generate final report
+            # Step 6: Generate final report
             final_report = await self.generate_final_report()
             
             # End timing
@@ -617,9 +469,16 @@ async def main():
     print("6. End-to-end reporting")
     print("="*50)
     
+    # Get Excel file path from user
+    excel_file_path = input("\nPlease enter the path to your Excel file: ").strip()
+    
+    if not excel_file_path or not os.path.exists(excel_file_path):
+        print("Error: Please provide a valid Excel file path")
+        return False
+    
     # Create and run demo
     demo = WorkingDemo()
-    success = await demo.run_complete_workflow()
+    success = await demo.run_complete_workflow(excel_file_path)
     
     if success:
         print("\nDemo completed successfully! Check the 'demo_output' directory for all generated files.")
