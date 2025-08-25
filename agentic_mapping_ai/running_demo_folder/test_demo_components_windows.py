@@ -53,17 +53,22 @@ def test_agent_config():
     
     try:
         from agents.base_agent import AgentConfig
+        from config.settings import LLMSettings
+        
+        # Get default model from settings
+        llm_settings = LLMSettings()
+        default_model = llm_settings.default_model
         
         config = AgentConfig(
             name="Test Agent",
             description="Test agent for validation",
-            model="gpt-4",
+            model=default_model,  # Use default model from settings
             temperature=0.1
         )
         
         print(f"OK - AgentConfig created: {config.name}")
         print(f"   Description: {config.description}")
-        print(f"   Model: {config.model}")
+        print(f"   Model: {config.model} (default LLM service model)")
         print(f"   Temperature: {config.temperature}")
         
         return True

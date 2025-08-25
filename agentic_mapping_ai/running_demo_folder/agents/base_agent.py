@@ -33,7 +33,7 @@ class AgentConfig(BaseModel):
     """Configuration for agents"""
     name: str
     description: str
-    model: str = "gpt-4"
+    model: str = "claude-3-7-sonnet@20250219"  # Updated to use actual default model
     temperature: float = 0.1
     max_tokens: int = 2000
     max_iterations: int = 5

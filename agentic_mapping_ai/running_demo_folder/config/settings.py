@@ -35,10 +35,10 @@ class VectorDBSettings(BaseSettings):
 class LLMSettings(BaseSettings):
     """LLM configuration - Now using token-based authentication"""
     # API keys are no longer required - using token-based auth
-    default_model: str = Field(default="gpt-4")
+    default_model: str = Field(default="claude-3-7-sonnet@20250219")  # Updated to use actual default model
     temperature: float = Field(default=0.1)
     max_tokens: int = Field(default=2000)
-    default_provider: str = Field(default="azure")  # azure, stellar, gemini, claude
+    default_provider: str = Field(default="claude")  # Updated to use claude as default provider
     
     class Config:
         env_prefix = "LLM_"
