@@ -18,8 +18,9 @@ sys.path.append('..')
 sys.path.append('../agentic_mapping_ai')
 sys.path.append('../demo')
 
-# Import the agent manager
+# Import the agent manager and suggestion manager
 from agents.agent_manager import agent_manager
+from agents.chat_suggestion_manager import chat_suggestion_manager
 
 class ChatBasedAgenticDemo:
     """
@@ -42,15 +43,16 @@ class ChatBasedAgenticDemo:
         self.chat_history = []
         self.current_workflow = None
         self.excel_file_path = None
+        self.user_context = {}
         
-        # Initialize the system with agent manager
+        # Initialize the system with agent manager and suggestion manager
         self._initialize_system()
     
     def _initialize_system(self):
-        """Initialize the chat-based system with AI agents"""
+        """Initialize the chat-based system with AI agents and FAISS suggestions"""
         print("Chat-Based Agentic AI Demo System")
         print("=" * 60)
-        print("Initializing AI agents and workflow system...")
+        print("Initializing AI agents and FAISS similarity engine...")
         
         # Get agent status
         agent_status = agent_manager.get_agent_status()
@@ -58,7 +60,7 @@ class ChatBasedAgenticDemo:
         print(f"Total Agents: {agent_status['total_agents']}")
         print(f"Available Agents: {', '.join(agent_status['available_agent_types'])}")
         
-        print("System ready for interactive chat!")
+        print("System ready for interactive chat with intelligent suggestions!")
         print("=" * 60)
         print("\nYou can now chat with the AI agents!")
         print("Available commands:")
@@ -70,12 +72,14 @@ class ChatBasedAgenticDemo:
         print("   • 'validate' - Run metadata validation")
         print("   • 'generate' - Generate PySpark code")
         print("   • 'workflow' - Run complete workflow")
+        print("   • 'suggestions' - View suggestion history")
+        print("   • 'export' - Export training data")
         print("   • 'status' - Show current status")
         print("   • 'quit' - Exit the application")
         print("=" * 60)
     
     async def process_chat_input(self, user_input: str) -> str:
-        """Process user chat input and return AI response"""
+        """Process user chat input and return AI response with intelligent suggestions"""
         try:
             # Add to chat history
             self.chat_history.append({
@@ -86,13 +90,19 @@ class ChatBasedAgenticDemo:
             
             # Process commands
             if user_input.lower().startswith('help'):
-                return self._get_help_response()
+                return await self._get_help_response(user_input)
             
             elif user_input.lower() == 'agents':
                 return agent_manager.get_agent_info()
             
             elif user_input.lower() == 'test':
                 return await self._handle_agent_testing()
+            
+            elif user_input.lower() == 'suggestions':
+                return await self._handle_suggestions_command()
+            
+            elif user_input.lower() == 'export':
+                return await self._handle_export_command()
             
             elif user_input.lower().startswith('upload'):
                 return await self._handle_file_upload(user_input)
@@ -116,7 +126,7 @@ class ChatBasedAgenticDemo:
                 return "Goodbye! Thanks for using the Chat-Based Agentic AI Demo!"
             
             else:
-                return self._get_general_response(user_input)
+                return await self._get_general_response(user_input)
                 
         except Exception as e:
             error_msg = f"Error processing input: {str(e)}"
@@ -126,6 +136,123 @@ class ChatBasedAgenticDemo:
                 'type': 'error'
             })
             return error_msg
+    
+    async def _get_help_response(self, user_input: str) -> str:
+        """Get contextual help based on user input"""
+        try:
+            # Get contextual help from suggestion manager
+            contextual_help = await chat_suggestion_manager.get_contextual_help(
+                current_input=user_input,
+                user_context=self.user_context
+            )
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input=user_input,
+                ai_response=contextual_help,
+                context=self.user_context,
+                category='help'
+            )
+            
+            return contextual_help
+            
+        except Exception as e:
+            # Fallback to basic help
+            return self._get_basic_help_response()
+    
+    def _get_basic_help_response(self) -> str:
+        """Get basic help response"""
+        return """Available Commands:
+
+AI Agent Operations:
+   • `agents` - Show AI agent status and capabilities
+   • `test` - Test all AI agents functionality
+
+File Operations:
+   • `upload <file_path>` - Upload Excel file for processing
+   • `analyze` - Analyze uploaded Excel file
+
+AI Agent Operations:
+   • `validate` - Run AI-powered metadata validation
+   • `generate` - Generate PySpark code with AI agents
+
+Workflow Operations:
+   • `workflow` - Run complete end-to-end workflow
+   • `status` - Show current system status
+
+Learning & Suggestions:
+   • `suggestions` - View your suggestion history
+   • `export` - Export training data for model training
+
+General:
+   • `help` - Show this help message
+   • `quit` - Exit the application
+
+Example Usage:
+   ```
+   agents                    # Check AI agent status
+   test                     # Test all AI agents
+   upload /path/to/file.xlsx
+   analyze
+   validate
+   generate
+   workflow
+   suggestions              # View learning history
+   export                   # Export training data
+   ```
+
+AI Agents Available:
+   • Enhanced Orchestrator Agent
+   • Enhanced Metadata Validator Agent
+   • Enhanced Code Generator Agent
+   • Test Generator Agent"""
+    
+    async def _handle_suggestions_command(self) -> str:
+        """Handle suggestions command"""
+        try:
+            # Get user's suggestion history
+            suggestions = await chat_suggestion_manager.get_user_suggestions_history(limit=10)
+            
+            if not suggestions:
+                return "No suggestions found yet. Start chatting to build your suggestion history!"
+            
+            response = "Your Chat Suggestion History:\n\n"
+            
+            for i, suggestion in enumerate(suggestions, 1):
+                response += f"{i}. **{suggestion.get('category', 'General').title()}**\n"
+                response += f"   User: {suggestion.get('user_input', '')[:80]}...\n"
+                response += f"   AI: {suggestion.get('ai_response', '')[:80]}...\n"
+                response += f"   Feedback: {suggestion.get('feedback_score', 'N/A')}\n"
+                response += f"   Time: {suggestion.get('timestamp', '')[:19]}\n\n"
+            
+            response += "These suggestions help improve the AI's responses over time!"
+            
+            return response
+            
+        except Exception as e:
+            return f"Error getting suggestions: {str(e)}"
+    
+    async def _handle_export_command(self) -> str:
+        """Handle export command for training data"""
+        try:
+            # Export training data
+            output_path = await chat_suggestion_manager.export_training_data(
+                format="json",
+                include_embeddings=True
+            )
+            
+            response = f"Training data exported successfully!\n\n"
+            response += f"Output file: {output_path}\n"
+            response += "This data can be used for:\n"
+            response += "• Fine-tuning language models\n"
+            response += "• Training custom AI agents\n"
+            response += "• Improving response quality\n"
+            response += "• Pattern analysis and insights"
+            
+            return response
+            
+        except Exception as e:
+            return f"Error exporting training data: {str(e)}"
     
     async def _handle_agent_testing(self) -> str:
         """Handle AI agent testing"""
@@ -146,51 +273,18 @@ class ChatBasedAgenticDemo:
             
             response += f"\nOverall Status: {len([r for r in test_results.values() if r['status'] == 'success'])}/{len(test_results)} agents working"
             
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input="test",
+                ai_response=response,
+                context={'agent_used': 'test', 'test_results': test_results},
+                category='ai_agents'
+            )
+            
             return response
             
         except Exception as e:
             return f"Error testing agents: {str(e)}"
-    
-    def _get_help_response(self) -> str:
-        """Get help response"""
-        return """Available Commands:
-
-AI Agent Operations:
-   • `agents` - Show AI agent status and capabilities
-   • `test` - Test all AI agents functionality
-
-File Operations:
-   • `upload <file_path>` - Upload Excel file for processing
-   • `analyze` - Analyze uploaded Excel file
-
-AI Agent Operations:
-   • `validate` - Run AI-powered metadata validation
-   • `generate` - Generate PySpark code with AI agents
-
-Workflow Operations:
-   • `workflow` - Run complete end-to-end workflow
-   • `status` - Show current system status
-
-General:
-   • `help` - Show this help message
-   • `quit` - Exit the application
-
-Example Usage:
-   ```
-   agents                    # Check AI agent status
-   test                     # Test all AI agents
-   upload /path/to/file.xlsx
-   analyze
-   validate
-   generate
-   workflow
-   ```
-
-AI Agents Available:
-   • Enhanced Orchestrator Agent
-   • Enhanced Metadata Validator Agent
-   • Enhanced Code Generator Agent
-   • Test Generator Agent"""
     
     async def _handle_file_upload(self, user_input: str) -> str:
         """Handle file upload command"""
@@ -211,6 +305,10 @@ AI Agents Available:
             
             # Store file path
             self.excel_file_path = str(file_path)
+            
+            # Update user context
+            self.user_context['file_path'] = str(file_path)
+            self.user_context['file_name'] = file_path.name
             
             # Get file info
             file_size = file_path.stat().st_size
@@ -240,6 +338,14 @@ Ready for AI agent processing!"""
                 'file_size_mb': file_size_mb,
                 'type': 'file_upload'
             })
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input=user_input,
+                ai_response=response,
+                context=self.user_context,
+                category='file_operations'
+            )
             
             return response
             
@@ -283,18 +389,29 @@ Ready for AI agent processing!
    • Use `generate` for code generation
    • Use `workflow` for complete pipeline"""
             
+            # Update user context
+            self.user_context['analysis_results'] = {
+                'total_rows': total_rows,
+                'total_columns': total_columns,
+                'tables': tables.tolist() if hasattr(tables, 'tolist') else tables,
+                'columns': df.columns.tolist()
+            }
+            
             # Add to chat history
             self.chat_history.append({
                 'timestamp': datetime.now().isoformat(),
                 'system': 'File analyzed',
-                'analysis': {
-                    'total_rows': total_rows,
-                    'total_columns': total_columns,
-                    'tables': tables.tolist() if hasattr(tables, 'tolist') else tables,
-                    'columns': df.columns.tolist()
-                },
+                'analysis': self.user_context['analysis_results'],
                 'type': 'file_analysis'
             })
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input="analyze",
+                ai_response=response,
+                context=self.user_context,
+                category='file_operations'
+            )
             
             return response
             
@@ -346,6 +463,10 @@ Validation Process:
 Please wait while AI agents process your data...
    (This would normally take a few minutes for large files)"""
             
+            # Update user context
+            self.user_context['agent_used'] = 'metadata_validator'
+            self.user_context['current_task'] = 'validation'
+            
             # Add to chat history
             self.chat_history.append({
                 'timestamp': datetime.now().isoformat(),
@@ -353,6 +474,14 @@ Please wait while AI agents process your data...
                 'agent_used': 'metadata_validator',
                 'type': 'validation_started'
             })
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input="validate",
+                ai_response=response,
+                context=self.user_context,
+                category='validation'
+            )
             
             return response
             
@@ -388,6 +517,10 @@ Code Generation Process:
 Please wait while AI agents generate your code...
    (This would normally take a few minutes for complex mappings)"""
             
+            # Update user context
+            self.user_context['agent_used'] = 'code_generator'
+            self.user_context['current_task'] = 'code_generation'
+            
             # Add to chat history
             self.chat_history.append({
                 'timestamp': datetime.now().isoformat(),
@@ -395,6 +528,14 @@ Please wait while AI agents generate your code...
                 'agent_used': 'code_generator',
                 'type': 'code_generation_started'
             })
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input="generate",
+                ai_response=response,
+                context=self.user_context,
+                category='code_generation'
+            )
             
             return response
             
@@ -440,6 +581,10 @@ AI Agents Orchestrating Complete Pipeline:
 Please wait while AI agents process your complete workflow...
    (This would normally take 5-10 minutes for large files)"""
             
+            # Update user context
+            self.user_context['agent_used'] = 'orchestrator'
+            self.user_context['current_task'] = 'complete_workflow'
+            
             # Add to chat history
             self.chat_history.append({
                 'timestamp': datetime.now().isoformat(),
@@ -448,10 +593,71 @@ Please wait while AI agents process your complete workflow...
                 'type': 'workflow_started'
             })
             
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input="workflow",
+                ai_response=response,
+                context=self.user_context,
+                category='workflow'
+            )
+            
             return response
             
         except Exception as e:
             return f"Error starting workflow: {str(e)}"
+    
+    async def _get_general_response(self, user_input: str) -> str:
+        """Get intelligent response with suggestions"""
+        try:
+            # Get smart suggestions based on current input
+            suggestions = await chat_suggestion_manager.get_smart_suggestions(
+                current_input=user_input,
+                user_context=self.user_context,
+                top_k=2
+            )
+            
+            response = f"""AI Agent Response:
+
+I understand you said: "{user_input}"
+
+How I can help you:
+
+• Check AI agents with `agents` command
+• Test AI agents with `test` command
+• Upload Excel files for AI processing
+• Run metadata validation with AI agents
+• Generate PySpark code using AI intelligence
+• Execute complete workflows with AI orchestration
+
+Try these commands:
+   • `help` - See all available commands
+   • `agents` - Check AI agent status
+   • `upload <file_path>` - Upload your Excel file
+   • `analyze` - Analyze your data
+   • `workflow` - Run complete AI pipeline
+   • `suggestions` - View your learning history
+   • `export` - Export training data
+
+I'm ready to help you with your data mapping needs!"""
+            
+            # Add contextual suggestions if available
+            if suggestions:
+                response += "\n\nBased on similar interactions, you might also want to try:\n"
+                for i, suggestion in enumerate(suggestions, 1):
+                    response += f"{i}. {suggestion.get('ai_response', '')[:80]}...\n"
+            
+            # Add to chat suggestions for learning
+            await chat_suggestion_manager.add_chat_interaction(
+                user_input=user_input,
+                ai_response=response,
+                context=self.user_context,
+                category='general'
+            )
+            
+            return response
+            
+        except Exception as e:
+            return f"Error generating response: {str(e)}"
     
     def _get_status_response(self) -> str:
         """Get current system status"""
@@ -473,6 +679,11 @@ AI Agent Status:
    • Total Agents: {agent_status['total_agents']}
    • Available Agents: {', '.join(agent_status['available_agent_types'])}
 
+Learning & Suggestions:
+   • FAISS Similarity Engine: Active
+   • Chat Suggestion Manager: Active
+   • Training Data Collection: Enabled
+
 Output Directories:
    • Excel Parsed: Ready
    • Validation Reports: Ready
@@ -481,7 +692,7 @@ Output Directories:
    • Workflow Logs: Ready
    • Final Reports: Ready
 
-Ready for AI agent processing!"""
+Ready for AI agent processing and learning!"""
         
         return status
     
@@ -495,30 +706,6 @@ Ready for AI agent processing!"""
         duration = current_time - start_time
         minutes = int(duration.total_seconds() / 60)
         return f"{minutes} minutes"
-    
-    def _get_general_response(self, user_input: str) -> str:
-        """Get general response for unrecognized input"""
-        return f"""AI Agent Response:
-
-I understand you said: "{user_input}"
-
-How I can help you:
-
-• Check AI agents with `agents` command
-• Test AI agents with `test` command
-• Upload Excel files for AI processing
-• Run metadata validation with AI agents
-• Generate PySpark code using AI intelligence
-• Execute complete workflows with AI orchestration
-
-Try these commands:
-   • `help` - See all available commands
-   • `agents` - Check AI agent status
-   • `upload <file_path>` - Upload your Excel file
-   • `analyze` - Analyze your data
-   • `workflow` - Run complete AI pipeline
-
-I'm ready to help you with your data mapping needs!"""
     
     async def run_chat_interface(self):
         """Run the interactive chat interface"""

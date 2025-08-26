@@ -1,0 +1,42 @@
+# Enhanced Chat-Based Agentic AI Demo Requirements
+# Includes FAISS similarity engine and advanced features
+
+# Core dependencies
+pandas>=2.0.0
+openpyxl>=3.1.0
+loguru>=0.7.0
+asyncio
+pathlib
+typing
+datetime
+json
+os
+sys
+
+# FAISS and vector similarity
+faiss-cpu>=1.7.4
+numpy>=1.21.0
+scikit-learn>=1.0.0
+
+# Sentence transformers for embeddings
+sentence-transformers>=2.2.0
+torch>=1.9.0
+transformers>=4.20.0
+
+# Data processing and analysis
+scipy>=1.7.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# AI and machine learning
+langchain>=0.0.200
+litellm>=1.0.0
+openai>=1.0.0
+
+# Utilities
+tqdm>=4.64.0
+colorama>=0.4.5
+rich>=12.0.0
+
+# Optional: GPU support for FAISS (uncomment if you have CUDA)
+# faiss-gpu>=1.7.4
