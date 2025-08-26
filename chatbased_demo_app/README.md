@@ -1,20 +1,20 @@
-# 🚀 Chat-Based Agentic AI Demo Application
+# Chat-Based Agentic AI Demo Application
 
-## 📋 Overview
+## Overview
 
 This is a **chat-based interface** for the **Agentic AI Mapping System** that allows you to interact with AI agents through natural language commands. The system integrates with all the enhanced agents we built for intelligent Excel processing, metadata validation, and code generation.
 
-## 🎯 Features
+## Features
 
-- **💬 Interactive Chat Interface** - Natural language interaction with AI agents
-- **🤖 AI Agent Integration** - Uses all enhanced agents (Orchestrator, Metadata Validator, Code Generator)
-- **📊 Excel File Processing** - Handles large datasets (380+ rows) efficiently
-- **🔍 Intelligent Validation** - AI-powered metadata analysis and validation
-- **💻 Code Generation** - Professional PySpark transformation code
-- **🧪 Test Generation** - Comprehensive test case creation
-- **🎯 Workflow Orchestration** - Complete end-to-end pipeline management
+- **Interactive Chat Interface** - Natural language interaction with AI agents
+- **AI Agent Integration** - Uses all enhanced agents (Orchestrator, Metadata Validator, Code Generator)
+- **Excel File Processing** - Handles large datasets (380+ rows) efficiently
+- **Intelligent Validation** - AI-powered metadata analysis and validation
+- **Code Generation** - Professional PySpark transformation code
+- **Test Generation** - Comprehensive test case creation
+- **Workflow Orchestration** - Complete end-to-end pipeline management
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. **Install Dependencies**
 ```bash
@@ -29,26 +29,26 @@ python main.py
 ### 3. **Start Chatting!**
 The system will initialize and show you available commands.
 
-## 📋 Available Commands
+## Available Commands
 
-### 🚀 **File Operations**
+### **File Operations**
 - `upload <file_path>` - Upload Excel file for processing
 - `analyze` - Analyze uploaded Excel file
 
-### 🔍 **AI Agent Operations**
+### **AI Agent Operations**
 - `validate` - Run AI-powered metadata validation
 - `generate` - Generate PySpark code with AI agents
 - `test` - Generate comprehensive test cases
 
-### 🎯 **Workflow Operations**
+### **Workflow Operations**
 - `workflow` - Run complete end-to-end workflow
 - `status` - Show current system status
 
-### 💬 **General**
+### **General**
 - `help` - Show help message
 - `quit` - Exit the application
 
-## 📊 Example Usage
+## Example Usage
 
 ```bash
 # Start the chat interface
@@ -76,7 +76,7 @@ status
 quit
 ```
 
-## 🤖 AI Agents Available
+## AI Agents Available
 
 ### **Enhanced Orchestrator Agent**
 - Coordinates all other agents
@@ -98,7 +98,7 @@ quit
 - Edge case coverage
 - Quality assurance
 
-## 📁 Output Structure
+## Output Structure
 
 ```
 chatbased_demo_app/
@@ -114,23 +114,23 @@ chatbased_demo_app/
 └── README.md                # This file
 ```
 
-## 🔧 Integration with Existing System
+## Integration with Existing System
 
 This chat-based demo integrates with:
 - **`../agentic_mapping_ai/`** - All enhanced AI agents
 - **`../demo/`** - Existing agentic workflow system
 - **`../demo/agentic_mapping_ai/agents/`** - Enhanced agent implementations
 
-## 💡 Key Benefits
+## Key Benefits
 
-1. **🎯 User-Friendly** - Natural language interface instead of command line
-2. **🤖 AI-Powered** - Uses actual AI agents for intelligent processing
-3. **📊 Scalable** - Handles large datasets efficiently
-4. **🔄 Interactive** - Real-time feedback and progress updates
-5. **💾 Persistent** - Saves chat history and workflow results
-6. **🔗 Integrated** - Works with all existing enhanced agents
+1. **User-Friendly** - Natural language interface instead of command line
+2. **AI-Powered** - Uses actual AI agents for intelligent processing
+3. **Scalable** - Handles large datasets efficiently
+4. **Interactive** - Real-time feedback and progress updates
+5. **Persistent** - Saves chat history and workflow results
+6. **Integrated** - Works with all existing enhanced agents
 
-## 🚀 Next Steps
+## Next Steps
 
 1. **Test the chat interface** with sample Excel files
 2. **Integrate with your actual 380+ row Excel files**
@@ -138,7 +138,7 @@ This chat-based demo integrates with:
 4. **Extend functionality** with additional commands
 5. **Deploy to production** for team use
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### **Common Issues:**
 - **Import errors**: Make sure you're in the `chatbased_demo_app` directory
@@ -150,6 +150,6 @@ This chat-based demo integrates with:
 - Check the `output/workflow_logs/` for error details
 - Verify all dependencies are installed
 
-## 🎉 Ready to Chat with AI Agents!
+## Ready to Chat with AI Agents!
 
-Start the application and begin your interactive journey with the Agentic AI Mapping System! 🚀
+Start the application and begin your interactive journey with the Agentic AI Mapping System!

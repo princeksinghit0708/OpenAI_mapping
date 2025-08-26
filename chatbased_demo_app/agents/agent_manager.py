@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🤖 Agent Manager for Chat-Based Demo
+Agent Manager for Chat-Based Demo
 Manages and integrates all available AI agents from different directories
 """
 
@@ -27,7 +27,7 @@ class AgentManager:
     
     def _discover_agents(self):
         """Discover all available agents from different directories"""
-        print("🔍 Discovering available AI agents...")
+        print("Discovering available AI agents...")
         
         # Check main agentic_mapping_ai directory
         main_agents_dir = Path(__file__).parent.parent.parent / "agentic_mapping_ai" / "agents"
@@ -39,32 +39,32 @@ class AgentManager:
         if main_agents_dir.exists():
             main_agents = list(main_agents_dir.glob("*.py"))
             if main_agents:
-                print(f"✅ Found {len(main_agents)} agents in main directory")
+                print(f"Found {len(main_agents)} agents in main directory")
                 self.available_agents.extend([f"main:{agent.stem}" for agent in main_agents])
         
         # Check demo agents
         if demo_agents_dir.exists():
             demo_agents = list(demo_agents_dir.glob("*.py"))
             if demo_agents:
-                print(f"✅ Found {len(demo_agents)} agents in demo directory")
+                print(f"Found {len(demo_agents)} agents in demo directory")
                 self.available_agents.extend([f"demo:{agent.stem}" for agent in demo_agents])
         
-        print(f"📊 Total agents discovered: {len(self.available_agents)}")
+        print(f"Total agents discovered: {len(self.available_agents)}")
     
     def _initialize_agents(self):
         """Initialize available agents"""
-        print("🚀 Initializing AI agents...")
+        print("Initializing AI agents...")
         
         try:
             # Try to import from main directory first (most advanced)
             self._import_main_agents()
         except Exception as e:
-            print(f"⚠️  Main agents import failed: {e}")
+            print(f"Main agents import failed: {e}")
             try:
                 # Fallback to demo agents
                 self._import_demo_agents()
             except Exception as e:
-                print(f"⚠️  Demo agents import failed: {e}")
+                print(f"Demo agents import failed: {e}")
                 self._setup_fallback_agents()
     
     def _import_main_agents(self):
@@ -77,7 +77,7 @@ class AgentManager:
             if main_agents_path_str not in sys.path:
                 sys.path.insert(0, main_agents_path_str)
             
-            print(f"🔧 Added to path: {main_agents_path_str}")
+            print(f"Added to path: {main_agents_path_str}")
             
             # Import enhanced agents
             import enhanced_orchestrator_v2
@@ -92,7 +92,7 @@ class AgentManager:
             self.agents['config'] = enhanced_base_agent.EnhancedAgentConfig
             
             self.agents_source = "main_advanced"
-            print("✅ Successfully imported advanced agents from main directory")
+            print("Successfully imported advanced agents from main directory")
             
         except Exception as e:
             raise Exception(f"Failed to import main agents: {e}")
@@ -107,7 +107,7 @@ class AgentManager:
             if demo_agents_path_str not in sys.path:
                 sys.path.insert(0, demo_agents_path_str)
             
-            print(f"🔧 Added to path: {demo_agents_path_str}")
+            print(f"Added to path: {demo_agents_path_str}")
             
             # Import demo agents
             import enhanced_orchestrator_v2
@@ -122,14 +122,14 @@ class AgentManager:
             self.agents['test_generator'] = test_generator.TestGeneratorAgent
             
             self.agents_source = "demo"
-            print("✅ Successfully imported demo agents")
+            print("Successfully imported demo agents")
             
         except Exception as e:
             raise Exception(f"Failed to import demo agents: {e}")
     
     def _setup_fallback_agents(self):
         """Setup fallback agents when imports fail"""
-        print("⚠️  Setting up fallback agents...")
+        print("Setting up fallback agents...")
         
         self.agents_source = "fallback"
         
@@ -150,7 +150,7 @@ class AgentManager:
         self.agents['code_generator'] = MockAgent("Code Generator")
         self.agents['test_generator'] = MockAgent("Test Generator")
         
-        print("✅ Fallback agents configured")
+        print("Fallback agents configured")
     
     def get_agent(self, agent_type: str):
         """Get a specific agent by type"""
@@ -180,7 +180,7 @@ class AgentManager:
     
     async def test_agents(self) -> Dict[str, Any]:
         """Test all available agents"""
-        print("🧪 Testing all AI agents...")
+        print("Testing all AI agents...")
         
         test_results = {}
         
@@ -213,27 +213,27 @@ class AgentManager:
                     'error': str(e)
                 }
         
-        print("✅ Agent testing completed")
+        print("Agent testing completed")
         return test_results
     
     def get_agent_info(self) -> str:
         """Get formatted agent information"""
-        info = f"""🤖 **AI Agent Status Report**
+        info = f"""AI Agent Status Report
 
-📊 **Agent Source**: {self.agents_source}
-🔢 **Total Agents**: {len(self.agents)}
-📋 **Available Agents**: {', '.join(self.agents.keys())}
+Agent Source: {self.agents_source}
+Total Agents: {len(self.agents)}
+Available Agents: {', '.join(self.agents.keys())}
 
-📁 **Agent Details**:"""
+Agent Details:"""
         
         for agent_type, agent in self.agents.items():
             agent_class = type(agent).__name__
-            info += f"\n   • **{agent_type}**: {agent_class} ({self.agents_source})"
+            info += f"\n   • {agent_type}: {agent_class} ({self.agents_source})"
         
         info += f"""
 
-💡 **Integration Status**: {'✅ Fully Integrated' if self.agents_source != 'fallback' else '⚠️ Fallback Mode'}
-🚀 **Ready for**: {'Production Use' if self.agents_source == 'main_advanced' else 'Demo/Testing' if self.agents_source == 'demo' else 'Basic Operations'}"""
+Integration Status: {'Fully Integrated' if self.agents_source != 'fallback' else 'Fallback Mode'}
+Ready for: {'Production Use' if self.agents_source == 'main_advanced' else 'Demo/Testing' if self.agents_source == 'demo' else 'Basic Operations'}"""
         
         return info
 
