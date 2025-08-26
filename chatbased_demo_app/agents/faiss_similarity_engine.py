@@ -55,8 +55,8 @@ class FAISSSimilarityEngine:
         self.index_to_id: Dict[int, str] = {}
         self.next_index = 0
         
-        # Initialize asynchronously
-        asyncio.create_task(self._initialize())
+        # Don't initialize automatically - will be done on first use
+        # asyncio.create_task(self._initialize())
     
     async def _initialize(self):
         """Initialize the FAISS similarity engine"""
@@ -561,8 +561,15 @@ class FAISSSimilarityEngine:
         except Exception as e:
             logger.error(f"Index rebuild failed: {str(e)}")
 
-# Create global instance
-faiss_similarity_engine = FAISSSimilarityEngine()
+# Create global instance (lazy initialization)
+faiss_similarity_engine = None
+
+def get_faiss_engine():
+    """Get or create the FAISS similarity engine instance"""
+    global faiss_similarity_engine
+    if faiss_similarity_engine is None:
+        faiss_similarity_engine = FAISSSimilarityEngine()
+    return faiss_similarity_engine
 
 # Export for easy access
-__all__ = ['FAISSSimilarityEngine', 'faiss_similarity_engine']
+__all__ = ['FAISSSimilarityEngine', 'get_faiss_engine']

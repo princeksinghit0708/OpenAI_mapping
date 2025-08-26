@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import logging
 
-from .faiss_similarity_engine import faiss_similarity_engine
+from .faiss_similarity_engine import get_faiss_engine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +27,8 @@ class ChatSuggestionManager:
         self.user_preferences = {}
         self.context_cache = {}
         
-        # Initialize FAISS engine
-        self.faiss_engine = faiss_similarity_engine
+        # Initialize FAISS engine (lazy)
+        self.faiss_engine = None
         
         # Suggestion categories
         self.categories = {
@@ -40,6 +40,12 @@ class ChatSuggestionManager:
             'help': 'Help and documentation',
             'general': 'General chat and questions'
         }
+    
+    def _get_faiss_engine(self):
+        """Get the FAISS engine instance"""
+        if self.faiss_engine is None:
+            self.faiss_engine = get_faiss_engine()
+        return self.faiss_engine
     
     async def add_chat_interaction(self, 
                                   user_input: str, 
@@ -63,7 +69,7 @@ class ChatSuggestionManager:
             category = self._categorize_interaction(user_input, ai_response)
             
             # Add to FAISS database
-            suggestion_id = await self.faiss_engine.add_chat_suggestion(
+            suggestion_id = await self._get_faiss_engine().add_chat_suggestion(
                 user_input=user_input,
                 ai_response=ai_response,
                 context=context or {},
@@ -137,7 +143,7 @@ class ChatSuggestionManager:
         """
         try:
             # Find similar suggestions using FAISS
-            similar_suggestions = await self.faiss_engine.find_similar_suggestions(
+            similar_suggestions = await self._get_faiss_engine().find_similar_suggestions(
                 query=current_input,
                 top_k=top_k * 2,  # Get more for filtering
                 min_similarity=0.3
@@ -279,7 +285,7 @@ class ChatSuggestionManager:
         """Update feedback for a suggestion"""
         try:
             # Update in FAISS engine
-            success = await self.faiss_engine.update_feedback(suggestion_id, feedback_score)
+            success = await self._get_faiss_engine().update_feedback(suggestion_id, feedback_score)
             
             if success:
                 # Update local history
@@ -302,7 +308,7 @@ class ChatSuggestionManager:
                                   include_embeddings: bool = True) -> str:
         """Export training data for model training"""
         try:
-            return await self.faiss_engine.export_training_data(
+            return await self._get_faiss_engine().export_training_data(
                 output_path=output_path,
                 format=format,
                 include_embeddings=include_embeddings
@@ -316,7 +322,7 @@ class ChatSuggestionManager:
         """Get suggestion manager statistics"""
         try:
             # Get FAISS engine stats
-            faiss_stats = await self.faiss_engine.get_statistics()
+            faiss_stats = await self._get_faiss_engine().get_statistics()
             
             # Add local stats
             stats = {
@@ -338,7 +344,7 @@ class ChatSuggestionManager:
         """Clean up old suggestions"""
         try:
             # Clean up FAISS engine
-            removed_count = await self.faiss_engine.cleanup_old_suggestions(days_old)
+            removed_count = await self._get_faiss_engine().cleanup_old_suggestions(days_old)
             
             # Clean up local history
             cutoff_date = datetime.now().timestamp() - (days_old * 24 * 60 * 60)
@@ -361,7 +367,7 @@ class ChatSuggestionManager:
     async def get_suggestions_by_category(self, category: str, limit: int = 10) -> List[Dict[str, Any]]:
         """Get suggestions filtered by category"""
         try:
-            return await self.faiss_engine.get_suggestions_by_category(category, limit)
+            return await self._get_faiss_engine().get_suggestions_by_category(category, limit)
             
         except Exception as e:
             logger.error(f"Failed to get suggestions by category: {str(e)}")
@@ -373,7 +379,7 @@ class ChatSuggestionManager:
                                        top_k: int = 10) -> List[Dict[str, Any]]:
         """Complex suggestion search with advanced filtering"""
         try:
-            return await self.faiss_engine.search_complex_similarity(
+            return await self._get_faiss_engine().search_complex_similarity(
                 query=query,
                 filters=filters,
                 top_k=top_k

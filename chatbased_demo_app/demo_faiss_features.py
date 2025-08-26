@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import logging
 
 # Import the FAISS similarity engine and chat suggestion manager
-from agents.faiss_similarity_engine import faiss_similarity_engine
+from agents.faiss_similarity_engine import get_faiss_engine
 from agents.chat_suggestion_manager import chat_suggestion_manager
 
 # Configure logging
@@ -25,6 +25,7 @@ class FAISSFeaturesDemo:
     
     def __init__(self):
         self.demo_data = []
+        self.faiss_engine = None
         self.setup_demo_data()
     
     def setup_demo_data(self):
@@ -80,6 +81,12 @@ class FAISSFeaturesDemo:
             }
         ]
     
+    def _get_faiss_engine(self):
+        """Get the FAISS engine instance"""
+        if self.faiss_engine is None:
+            self.faiss_engine = get_faiss_engine()
+        return self.faiss_engine
+    
     async def demo_basic_functionality(self):
         """Demo basic FAISS functionality"""
         logger.info("=== Demo 1: Basic FAISS Functionality ===")
@@ -90,7 +97,7 @@ class FAISSFeaturesDemo:
             suggestion_ids = []
             
             for data in self.demo_data:
-                suggestion_id = await faiss_similarity_engine.add_chat_suggestion(
+                suggestion_id = await self._get_faiss_engine().add_chat_suggestion(
                     user_input=data['user_input'],
                     ai_response=data['ai_response'],
                     context={'demo': True, 'category': data['category']},
@@ -101,7 +108,7 @@ class FAISSFeaturesDemo:
                 logger.info(f"Added suggestion: {suggestion_id}")
             
             # Get statistics
-            stats = await faiss_similarity_engine.get_statistics()
+            stats = await self._get_faiss_engine().get_statistics()
             logger.info(f"Database statistics: {json.dumps(stats, indent=2)}")
             
             logger.info("Basic functionality demo completed successfully!")
@@ -130,7 +137,7 @@ class FAISSFeaturesDemo:
                 logger.info(f"\nSearching for: '{query}'")
                 
                 # Basic similarity search
-                results = await faiss_similarity_engine.find_similar_suggestions(
+                results = await self._get_faiss_engine().find_similar_suggestions(
                     query=query,
                     top_k=3,
                     min_similarity=0.3
@@ -177,7 +184,7 @@ class FAISSFeaturesDemo:
                 logger.info(f"Query: '{scenario['query']}'")
                 logger.info(f"Filters: {scenario['filters']}")
                 
-                results = await faiss_similarity_engine.search_complex_similarity(
+                results = await self._get_faiss_engine().search_complex_similarity(
                     query=scenario['query'],
                     filters=scenario['filters'],
                     top_k=5
@@ -274,7 +281,7 @@ class FAISSFeaturesDemo:
             categories = ['file_operations', 'ai_agents', 'validation', 'code_generation']
             
             for category in categories:
-                suggestions = await faiss_similarity_engine.get_suggestions_by_category(
+                suggestions = await self._get_faiss_engine().get_suggestions_by_category(
                     category=category,
                     limit=3
                 )
@@ -283,7 +290,7 @@ class FAISSFeaturesDemo:
             # Test feedback updates
             logger.info("\nTesting feedback updates...")
             # Get a suggestion to update
-            results = await faiss_similarity_engine.find_similar_suggestions(
+            results = await self._get_faiss_engine().find_similar_suggestions(
                 query="upload file",
                 top_k=1
             )
@@ -293,7 +300,7 @@ class FAISSFeaturesDemo:
                 suggestion_id = suggestion.get('suggestion_id')
                 if suggestion_id:
                     # Update feedback
-                    success = await faiss_similarity_engine.update_feedback(
+                    success = await self._get_faiss_engine().update_feedback(
                         suggestion_id=suggestion_id,
                         feedback_score=0.95
                     )
@@ -301,7 +308,7 @@ class FAISSFeaturesDemo:
             
             # Test cleanup functionality
             logger.info("\nTesting cleanup functionality...")
-            removed_count = await faiss_similarity_engine.cleanup_old_suggestions(days_old=365)  # Very old
+            removed_count = await self._get_faiss_engine().cleanup_old_suggestions(days_old=365)  # Very old
             logger.info(f"Cleaned up {removed_count} old suggestions")
             
             logger.info("Advanced features demo completed successfully!")
@@ -315,7 +322,7 @@ class FAISSFeaturesDemo:
         
         try:
             # Get comprehensive statistics
-            stats = await faiss_similarity_engine.get_statistics()
+            stats = await self._get_faiss_engine().get_statistics()
             suggestion_stats = await chat_suggestion_manager.get_statistics()
             
             logger.info("FAISS Engine Statistics:")
