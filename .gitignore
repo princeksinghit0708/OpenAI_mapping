@@ -126,3 +126,4 @@ htmlcov/
 agentic_mapping_ai/llm_service.py.py
 agentic_mapping_ai/llm_service.pydemo/react-ui/node_modules/
 demo/react-ui/package-lock.json
+demo/react-ui/node_modules/
