@@ -1,54 +1,71 @@
 """
 Agents package for Agentic Mapping AI Platform
-Contains all AI agents for different tasks including enhanced v2 agents
+Contains all AI agents organized by functionality and capability level
 """
 
-# Base and core agents
-from .base_agent import BaseAgent, AgentConfig, AgentFactory
-from .metadata_validator import MetadataValidatorAgent
-from .code_generator import CodeGeneratorAgent  
-from .orchestrator import OrchestratorAgent
+# Core and base agents
+from .core import (
+    BaseAgent, AgentConfig, AgentFactory,
+    EnhancedAgentConfig, EnhancedAgentV2
+)
 
-# Enhanced v2 agents (most advanced)
-from .enhanced_orchestrator_v2 import EnhancedOrchestrator
-from .enhanced_metadata_validator_v2 import create_enhanced_metadata_validator
-from .enhanced_code_generator_v2 import create_enhanced_code_generator
-from .enhanced_base_agent import EnhancedAgentConfig
+# Enhanced V2 agents (most advanced)
+from .enhanced_v2 import (
+    EnhancedOrchestrator,
+    create_enhanced_metadata_validator,
+    create_enhanced_code_generator
+)
 
-# Additional enhanced agents
-from .enhanced_agent_v2 import EnhancedAgentV2
-from .enhanced_metadata_validator import EnhancedMetadataValidator
-from .enhanced_orchestrator_v2 import EnhancedOrchestratorV2
-from .pragmatic_enhanced_agent import PragmaticEnhancedAgent
+# Enhanced agents
+from .enhanced import PragmaticEnhancedAgent
+
+# Basic agents
+from .basic import (
+    CodeGeneratorAgent,
+    MetadataValidatorAgent,
+    OrchestratorAgent
+)
 
 # Specialized agents
-from .transformation_agent import TransformationAgent
-from .pyspark_code_generator import PySparkCodeGenerator
-from .goldref_validator import GoldRefValidator
+from .specialized import (
+    GoldRefValidator,
+    PySparkCodeGenerator,
+    TransformationAgent
+)
+
+# Chat-specific agents
+from .chat import (
+    TestGeneratorAgent,
+    ChatAgent
+)
 
 __all__ = [
-    # Base and core agents
+    # Core and base agents
     "BaseAgent",
     "AgentConfig", 
     "AgentFactory",
-    "MetadataValidatorAgent",
-    "CodeGeneratorAgent",
-    "OrchestratorAgent",
+    "EnhancedAgentConfig",
+    "EnhancedAgentV2",
     
-    # Enhanced v2 agents (most advanced)
+    # Enhanced V2 agents (most advanced)
     "EnhancedOrchestrator",
     "create_enhanced_metadata_validator",
-    "create_enhanced_code_generator", 
-    "EnhancedAgentConfig",
+    "create_enhanced_code_generator",
     
-    # Additional enhanced agents
-    "EnhancedAgentV2",
-    "EnhancedMetadataValidator",
-    "EnhancedOrchestratorV2",
+    # Enhanced agents
     "PragmaticEnhancedAgent",
     
+    # Basic agents
+    "CodeGeneratorAgent",
+    "MetadataValidatorAgent",
+    "OrchestratorAgent",
+    
     # Specialized agents
-    "TransformationAgent",
-    "PySparkCodeGenerator",
     "GoldRefValidator",
+    "PySparkCodeGenerator",
+    "TransformationAgent",
+    
+    # Chat-specific agents
+    "TestGeneratorAgent",
+    "ChatAgent"
 ]

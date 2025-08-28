@@ -18,14 +18,22 @@ from langchain.tools import BaseTool
 from loguru import logger
 from pydantic import BaseModel
 
-from core.models import AgentTask, AgentType, TaskStatus
-from knowledge.rag_engine import RAGEngine
+try:
+    from core.models import AgentTask, AgentType, TaskStatus
+    from knowledge.rag_engine import RAGEngine
+except ImportError:
+    # Fallback for when running from different context
+    AgentTask = None
+    AgentType = None
+    TaskStatus = None
+    RAGEngine = None
 
 # Import the LLM Service for token-based authentication
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from llm_service import llm_service
+# Commented out for demo to avoid vertexai dependency
+# import sys
+# import os
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# from llm_service import llm_service
 
 
 class AgentConfig(BaseModel):
@@ -67,7 +75,8 @@ class BaseAgent(ABC):
         self.current_task: Optional[AgentTask] = None
         
         # Initialize LLM using token-based authentication
-        self.llm_service = llm_service
+        # Commented out for demo to avoid vertexai dependency
+        # self.llm_service = llm_service
         self.model = config.model
         self.temperature = config.temperature
         self.max_tokens = config.max_tokens

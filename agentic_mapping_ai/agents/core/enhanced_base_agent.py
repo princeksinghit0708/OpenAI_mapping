@@ -24,8 +24,12 @@ from langchain.globals import set_llm_cache
 # Token-based LLM Service
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from llm_service import llm_service
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+try:
+    from llm_service import llm_service
+except ImportError:
+    # Fallback for when running from different context
+    llm_service = None
 
 # Observability
 from prometheus_client import Counter, Histogram, Gauge
@@ -34,9 +38,17 @@ import structlog
 from pydantic import BaseModel
 
 # Internal imports
-from core.models import AgentTask, AgentType, TaskStatus
-from knowledge.rag_engine import RAGEngine
-from config.enhanced_settings import enhanced_settings
+try:
+    from agentic_mapping_ai.core.models import AgentTask, AgentType, TaskStatus
+    from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
+    from agentic_mapping_ai.config.enhanced_settings import enhanced_settings
+except ImportError:
+    # Fallback for when running from different context
+    AgentTask = None
+    AgentType = None
+    TaskStatus = None
+    RAGEngine = None
+    enhanced_settings = None
 
 
 # Metrics
