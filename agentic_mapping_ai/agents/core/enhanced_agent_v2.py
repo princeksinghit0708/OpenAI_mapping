@@ -35,9 +35,17 @@ import structlog
 from loguru import logger
 
 # Internal imports
-from core.models import AgentTask, AgentType, TaskStatus
-from knowledge.rag_engine import RAGEngine
-from config.settings import settings
+try:
+    from agentic_mapping_ai.core.models import AgentTask, AgentType, TaskStatus
+    from agentic_mapping_ai.knowledge.rag_engine import RAGEngine
+    from agentic_mapping_ai.config.settings import settings
+except ImportError:
+    # Fallback for when running from different context
+    AgentTask = None
+    AgentType = None
+    TaskStatus = None
+    RAGEngine = None
+    settings = None
 
 
 # Set up structured logging

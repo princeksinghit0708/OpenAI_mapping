@@ -6,7 +6,7 @@ Contains all AI agents organized by functionality and capability level
 # Core and base agents
 from .core import (
     BaseAgent, AgentConfig, AgentFactory,
-    EnhancedAgentConfig, EnhancedAgentV2
+    EnhancedAgentConfig, EnhancedAgentV2Config, EnhancedBaseAgent
 )
 
 # Enhanced V2 agents (most advanced)
@@ -45,7 +45,8 @@ __all__ = [
     "AgentConfig", 
     "AgentFactory",
     "EnhancedAgentConfig",
-    "EnhancedAgentV2",
+    "EnhancedAgentV2Config",
+    "EnhancedBaseAgent",
     
     # Enhanced V2 agents (most advanced)
     "EnhancedOrchestrator",

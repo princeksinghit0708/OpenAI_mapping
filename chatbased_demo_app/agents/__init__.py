@@ -17,7 +17,7 @@ try:
     from agentic_mapping_ai.agents import (
         # Core and base agents
         BaseAgent, AgentConfig, AgentFactory,
-        EnhancedAgentConfig, EnhancedAgentV2,
+        EnhancedAgentConfig, EnhancedAgentV2Config, EnhancedBaseAgent,
         
         # Enhanced V2 agents (most advanced)
         EnhancedOrchestrator,
@@ -71,7 +71,7 @@ except ImportError as e:
 __all__ = [
     # Core and base agents
     'BaseAgent', 'AgentConfig', 'AgentFactory',
-    'EnhancedAgentConfig', 'EnhancedAgentV2',
+    'EnhancedAgentConfig', 'EnhancedAgentV2Config', 'EnhancedBaseAgent',
     
     # Enhanced V2 agents (most advanced)
     'EnhancedOrchestrator',
