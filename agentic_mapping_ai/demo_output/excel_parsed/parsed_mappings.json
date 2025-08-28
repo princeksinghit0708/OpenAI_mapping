@@ -1,0 +1,102 @@
+{
+  "excel_file": "demo_output/sample_mapping_data.xlsx",
+  "parsed_at": "2025-08-25T19:45:24.277860",
+  "table_mappings": {
+    "ACCT_DLY": {
+      "total_fields": 5,
+      "direct_mappings": 2,
+      "derived_mappings": 2,
+      "goldref_mappings": 1,
+      "mappings": [
+        {
+          "logical_name": "Account Number",
+          "physical_name": "ACCT_NUM",
+          "data_type": "VARCHAR(20)",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        },
+        {
+          "logical_name": "Account Balance",
+          "physical_name": "ACCT_BAL",
+          "data_type": "DECIMAL(15,2)",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        },
+        {
+          "logical_name": "Account Status",
+          "physical_name": "ACCT_STATUS",
+          "data_type": "VARCHAR(10)",
+          "mapping_type": "Derived",
+          "transformation": "CASE WHEN ACCT_BAL > 0 THEN 'ACTIVE' ELSE 'INACTIVE' END"
+        },
+        {
+          "logical_name": "High Value Flag",
+          "physical_name": "HIGH_VALUE_FLG",
+          "data_type": "CHAR(1)",
+          "mapping_type": "Derived",
+          "transformation": "CASE WHEN ACCT_BAL > 100000 THEN 'Y' ELSE 'N' END"
+        },
+        {
+          "logical_name": "Account Type",
+          "physical_name": "ACCT_TYPE",
+          "data_type": "VARCHAR(50)",
+          "mapping_type": "Goldref",
+          "transformation": "Lookup from ACCT_TYPE_REF table"
+        }
+      ]
+    },
+    "TXN_DLY": {
+      "total_fields": 3,
+      "direct_mappings": 2,
+      "derived_mappings": 1,
+      "goldref_mappings": 0,
+      "mappings": [
+        {
+          "logical_name": "Transaction ID",
+          "physical_name": "TXN_ID",
+          "data_type": "BIGINT",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        },
+        {
+          "logical_name": "Transaction Amount",
+          "physical_name": "TXN_AMT",
+          "data_type": "DECIMAL(15,2)",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        },
+        {
+          "logical_name": "Transaction Category",
+          "physical_name": "TXN_CATEGORY",
+          "data_type": "VARCHAR(50)",
+          "mapping_type": "Derived",
+          "transformation": "CASE WHEN TXN_AMT > 1000 THEN 'HIGH_VALUE' WHEN TXN_AMT > 100 THEN 'MEDIUM_VALUE' ELSE 'LOW_VALUE' END"
+        }
+      ]
+    },
+    "CUST_DLY": {
+      "total_fields": 2,
+      "direct_mappings": 2,
+      "derived_mappings": 0,
+      "goldref_mappings": 0,
+      "mappings": [
+        {
+          "logical_name": "Customer ID",
+          "physical_name": "CUST_ID",
+          "data_type": "VARCHAR(20)",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        },
+        {
+          "logical_name": "Customer Name",
+          "physical_name": "CUST_NAME",
+          "data_type": "VARCHAR(100)",
+          "mapping_type": "Direct",
+          "transformation": "direct"
+        }
+      ]
+    }
+  },
+  "total_tables": 3,
+  "total_fields": 10
+}

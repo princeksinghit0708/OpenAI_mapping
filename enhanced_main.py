@@ -19,7 +19,8 @@ from rich.prompt import Prompt
 from dotenv import load_dotenv
 
 # Import enhanced modules
-from enhanced_prompt_engine import EnhancedGPT4PromptEngine
+# Replace line 22 with:
+from gpt4_prompt_engine import GPT4PromptEngine as EnhancedGPT4PromptEngine
 from faiss_integration import FAISSIntegration
 
 # Import LLM Service for token-based authentication

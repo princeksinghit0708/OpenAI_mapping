@@ -17,8 +17,8 @@ from langchain.memory import ConversationBufferWindowMemory, ConversationSummary
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import BaseMessage, HumanMessage, AIMessage
 from langchain.tools import BaseTool
-from langchain.callbacks import get_openai_callback
-from langchain.cache import InMemoryCache
+from langchain_community.callbacks.manager import get_openai_callback
+from langchain_community.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 
 # Token-based LLM Service

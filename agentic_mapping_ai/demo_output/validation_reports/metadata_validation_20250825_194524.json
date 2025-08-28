@@ -1,0 +1,80 @@
+{
+  "validation_timestamp": "2025-08-25T19:45:24.278417",
+  "tables_validated": 3,
+  "validation_results": {
+    "ACCT_DLY": {
+      "validation_result": {
+        "is_valid": true,
+        "errors": [],
+        "warnings": [],
+        "suggestions": [
+          "Table ACCT_DLY has 5 fields",
+          "Direct mappings: 2",
+          "Derived mappings: 2",
+          "Gold reference mappings: 1"
+        ],
+        "validation_metadata": {
+          "validated_at": "2025-08-25T19:45:24.278364",
+          "validation_method": "simulated_validation"
+        }
+      },
+      "field_count": 5,
+      "mapping_types": {
+        "direct": 2,
+        "derived": 2,
+        "goldref": 1
+      }
+    },
+    "TXN_DLY": {
+      "validation_result": {
+        "is_valid": true,
+        "errors": [],
+        "warnings": [],
+        "suggestions": [
+          "Table TXN_DLY has 3 fields",
+          "Direct mappings: 2",
+          "Derived mappings: 1",
+          "Gold reference mappings: 0"
+        ],
+        "validation_metadata": {
+          "validated_at": "2025-08-25T19:45:24.278391",
+          "validation_method": "simulated_validation"
+        }
+      },
+      "field_count": 3,
+      "mapping_types": {
+        "direct": 2,
+        "derived": 1,
+        "goldref": 0
+      }
+    },
+    "CUST_DLY": {
+      "validation_result": {
+        "is_valid": true,
+        "errors": [],
+        "warnings": [],
+        "suggestions": [
+          "Table CUST_DLY has 2 fields",
+          "Direct mappings: 2",
+          "Derived mappings: 0",
+          "Gold reference mappings: 0"
+        ],
+        "validation_metadata": {
+          "validated_at": "2025-08-25T19:45:24.278415",
+          "validation_method": "simulated_validation"
+        }
+      },
+      "field_count": 2,
+      "mapping_types": {
+        "direct": 2,
+        "derived": 0,
+        "goldref": 0
+      }
+    }
+  },
+  "summary": {
+    "total_tables": 3,
+    "total_fields": 10,
+    "validation_status": "completed"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "ACCT_DLY": {
+    "table_name": "ACCT_DLY",
+    "test_scenarios": [
+      {
+        "scenario": "Direct Mapping Validation",
+        "description": "Verify direct field mappings work correctly",
+        "test_type": "data_integrity",
+        "priority": "high"
+      },
+      {
+        "scenario": "Derived Field Calculation",
+        "description": "Verify derived field calculations are accurate",
+        "test_type": "business_logic",
+        "priority": "high"
+      },
+      {
+        "scenario": "Gold Reference Lookup",
+        "description": "Verify gold reference lookups return correct values",
+        "test_type": "data_quality",
+        "priority": "medium"
+      }
+    ],
+    "data_quality_tests": [
+      {
+        "test_name": "Null Value Check",
+        "description": "Check for unexpected null values in required fields",
+        "sql_query": "SELECT COUNT(*) FROM ACCT_DLY WHERE ACCT_NUM IS NULL"
+      },
+      {
+        "test_name": "Data Type Validation",
+        "description": "Verify data types match expected schema",
+        "sql_query": "SELECT * FROM ACCT_DLY WHERE ACCT_BAL NOT REGEXP '^[0-9]+(\\.[0-9]2)?$'"
+      }
+    ],
+    "business_rule_tests": [
+      {
+        "test_name": "Account Balance Validation",
+        "description": "Verify account balances are within valid range",
+        "sql_query": "SELECT * FROM ACCT_DLY WHERE ACCT_BAL < 0 OR ACCT_BAL > 999999999.99"
+      },
+      {
+        "test_name": "Transaction Amount Validation",
+        "description": "Verify transaction amounts are reasonable",
+        "sql_query": "SELECT * FROM ACCT_DLY WHERE TXN_AMT < 0 OR TXN_AMT > 1000000.00"
+      }
+    ]
+  },
+  "TXN_DLY": {
+    "table_name": "TXN_DLY",
+    "test_scenarios": [
+      {
+        "scenario": "Direct Mapping Validation",
+        "description": "Verify direct field mappings work correctly",
+        "test_type": "data_integrity",
+        "priority": "high"
+      },
+      {
+        "scenario": "Derived Field Calculation",
+        "description": "Verify derived field calculations are accurate",
+        "test_type": "business_logic",
+        "priority": "high"
+      }
+    ],
+    "data_quality_tests": [
+      {
+        "test_name": "Null Value Check",
+        "description": "Check for unexpected null values in required fields",
+        "sql_query": "SELECT COUNT(*) FROM TXN_DLY WHERE ACCT_NUM IS NULL"
+      },
+      {
+        "test_name": "Data Type Validation",
+        "description": "Verify data types match expected schema",
+        "sql_query": "SELECT * FROM TXN_DLY WHERE ACCT_BAL NOT REGEXP '^[0-9]+(\\.[0-9]2)?$'"
+      }
+    ],
+    "business_rule_tests": [
+      {
+        "test_name": "Account Balance Validation",
+        "description": "Verify account balances are within valid range",
+        "sql_query": "SELECT * FROM TXN_DLY WHERE ACCT_BAL < 0 OR ACCT_BAL > 999999999.99"
+      },
+      {
+        "test_name": "Transaction Amount Validation",
+        "description": "Verify transaction amounts are reasonable",
+        "sql_query": "SELECT * FROM TXN_DLY WHERE TXN_AMT < 0 OR TXN_AMT > 1000000.00"
+      }
+    ]
+  },
+  "CUST_DLY": {
+    "table_name": "CUST_DLY",
+    "test_scenarios": [
+      {
+        "scenario": "Direct Mapping Validation",
+        "description": "Verify direct field mappings work correctly",
+        "test_type": "data_integrity",
+        "priority": "high"
+      }
+    ],
+    "data_quality_tests": [
+      {
+        "test_name": "Null Value Check",
+        "description": "Check for unexpected null values in required fields",
+        "sql_query": "SELECT COUNT(*) FROM CUST_DLY WHERE ACCT_NUM IS NULL"
+      },
+      {
+        "test_name": "Data Type Validation",
+        "description": "Verify data types match expected schema",
+        "sql_query": "SELECT * FROM CUST_DLY WHERE ACCT_BAL NOT REGEXP '^[0-9]+(\\.[0-9]2)?$'"
+      }
+    ],
+    "business_rule_tests": [
+      {
+        "test_name": "Account Balance Validation",
+        "description": "Verify account balances are within valid range",
+        "sql_query": "SELECT * FROM CUST_DLY WHERE ACCT_BAL < 0 OR ACCT_BAL > 999999999.99"
+      },
+      {
+        "test_name": "Transaction Amount Validation",
+        "description": "Verify transaction amounts are reasonable",
+        "sql_query": "SELECT * FROM CUST_DLY WHERE TXN_AMT < 0 OR TXN_AMT > 1000000.00"
+      }
+    ]
+  }
+}

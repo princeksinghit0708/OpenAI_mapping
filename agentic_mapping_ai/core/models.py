@@ -66,7 +66,7 @@ class SchemaDefinition(BaseModel):
     """Schema definition model"""
     name: str
     fields: List[FieldDefinition]
-    metadata: Optional[Dict[str, Any]] = None
+    schema_metadata: Optional[Dict[str, Any]] = None
     version: str = "1.0"
 
 
@@ -89,7 +89,7 @@ class ValidationResult(BaseModel):
     errors: List[str] = []
     warnings: List[str] = []
     suggestions: List[str] = []
-    metadata: Optional[Dict[str, Any]] = None
+    validation_metadata: Optional[Dict[str, Any]] = None
 
 
 class CodeGenerationRequest(BaseModel):
@@ -120,7 +120,7 @@ class AgentTask(BaseModel):
     input_data: Dict[str, Any]
     output_data: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = None
     parent_task_id: Optional[str] = None
 
@@ -132,7 +132,7 @@ class WorkflowDefinition(BaseModel):
     description: Optional[str] = None
     tasks: List[AgentTask]
     dependencies: Dict[str, List[str]] = {}  # task_id -> [dependency_task_ids]
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class GoldReferenceDefinition(BaseModel):
@@ -144,7 +144,7 @@ class GoldReferenceDefinition(BaseModel):
     standard_values: Dict[str, Any]
     business_rules: List[str] = []
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class TransformationRule(BaseModel):
@@ -158,7 +158,7 @@ class TransformationRule(BaseModel):
     conditions: List[str] = []  # Conditional statements
     parameters: Dict[str, Any] = {}
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class ExcelMappingProject(BaseModel):
@@ -170,8 +170,8 @@ class ExcelMappingProject(BaseModel):
     gold_references: List[GoldReferenceDefinition]
     transformation_rules: List[TransformationRule]
     validation_results: Optional[ValidationResult] = None
-    metadata: Dict[str, Any] = {}
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    project_metadata: Dict[str, Any] = {}
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 # SQLAlchemy Models for Database
@@ -184,10 +184,10 @@ class Document(Base):
     name = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)
     content_hash = Column(String(64), nullable=False)
-    metadata = Column(JSON)
+    doc_metadata = Column(JSON)
     schema_extracted = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
 
 class MappingProject(Base):
@@ -201,8 +201,8 @@ class MappingProject(Base):
     target_schema = Column(JSON)
     mapping_rules = Column(JSON)
     status = Column(String(50), default="active")
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
 
 class GeneratedArtifact(Base):
@@ -215,8 +215,8 @@ class GeneratedArtifact(Base):
     content = Column(Text, nullable=False)
     language = Column(String(50))
     file_path = Column(String(500))
-    metadata = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    artifact_metadata = Column(JSON)
+    created_at = Column(DateTime, default=datetime.now)
 
 
 class AgentExecution(Base):
@@ -231,7 +231,7 @@ class AgentExecution(Base):
     output_data = Column(JSON)
     error_message = Column(Text)
     execution_time_ms = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     completed_at = Column(DateTime)
 
 
@@ -247,8 +247,8 @@ class KnowledgeBase(Base):
     tags = Column(JSON)
     usage_count = Column(Integer, default=0)
     rating = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
 
 # Response Models
@@ -259,7 +259,7 @@ class APIResponse(BaseModel):
     message: str
     data: Optional[Any] = None
     errors: Optional[List[str]] = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=datetime.now)
 
 
 class ValidationResponse(APIResponse):

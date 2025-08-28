@@ -5,7 +5,8 @@ Provides multi-provider LLM support, advanced agent features, and better scalabi
 
 import os
 from typing import List, Optional, Dict, Any
-from pydantic import BaseSettings, Field
+from pydantic_settings import BaseSettings
+from pydantic import Field
 from pathlib import Path
 
 

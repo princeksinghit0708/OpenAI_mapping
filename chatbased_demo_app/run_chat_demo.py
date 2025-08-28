@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Chat-Based Agentic AI Demo Launcher
-Simple launcher script for the chat-based interface
+Simple launcher script for the chat-based interface with consolidated agents
 """
 
 import os
@@ -33,6 +33,29 @@ def main():
         print("Make sure the AI framework is properly installed")
         return 1
     
+    # Check for consolidated agents structure
+    consolidated_agents_dir = parent_dir / "agentic_mapping_ai" / "agents"
+    if not consolidated_agents_dir.exists():
+        print("Consolidated agents directory not found!")
+        print("Make sure the agents are properly organized")
+        return 1
+    
+    print("✅ Consolidated agents directory found")
+    
+    # Check agent categories
+    expected_categories = ['core', 'enhanced_v2', 'enhanced', 'basic', 'specialized', 'chat']
+    available_categories = []
+    
+    for category in expected_categories:
+        category_dir = consolidated_agents_dir / category
+        if category_dir.exists():
+            py_files = list(category_dir.glob("*.py"))
+            agent_files = [f for f in py_files if f.name != "__init__.py"]
+            if agent_files:
+                available_categories.append(f"{category}({len(agent_files)})")
+    
+    print(f"✅ Available agent categories: {', '.join(available_categories)}")
+    
     if not (parent_dir / "demo").exists():
         print("demo directory not found!")
         print("Make sure the demo system is properly installed")
@@ -55,11 +78,12 @@ def main():
     # Confirm before running
     print(f"\nReady to launch chat-based demo!")
     print("\nThis will start the interactive chat interface with:")
-    print("• AI Agent integration")
+    print("• Consolidated AI Agent integration")
     print("• Natural language commands")
     print("• Excel file processing")
     print("• Intelligent validation")
     print("• Code generation")
+    print("• Enhanced agent management")
     
     confirm = input("\nProceed? (y/n): ").strip().lower()
     if confirm != 'y':

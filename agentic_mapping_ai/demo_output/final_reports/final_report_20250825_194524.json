@@ -1,0 +1,37 @@
+{
+  "workflow_summary": {
+    "title": "Working End-to-End Agentic Mapping AI Demo",
+    "execution_date": "2025-08-25T19:45:24.279813",
+    "duration_seconds": 0,
+    "status": "completed",
+    "steps_completed": [
+      "excel_processing",
+      "metadata_validation",
+      "test_case_generation",
+      "code_generation",
+      "workflow_orchestration"
+    ],
+    "errors": []
+  },
+  "output_files": {
+    "excel_parsed": "demo_output/excel_parsed/parsed_mappings.json",
+    "validation_report": "demo_output/validation_reports/metadata_validation_20250825_194524.json",
+    "test_cases": "demo_output/test_cases/test_cases_20250825_194524.json",
+    "generated_code": "demo_output/generated_code/generated_code_20250825_194524.json"
+  },
+  "demo_highlights": [
+    "Complete Excel file processing with intelligent parsing",
+    "Simulated AI-powered metadata validation",
+    "Comprehensive test case generation for all mapping types",
+    "PySpark code generation with business logic",
+    "Workflow orchestration simulation",
+    "End-to-end data lineage tracking"
+  ],
+  "next_steps": [
+    "Review generated code and test cases",
+    "Execute test cases against sample data",
+    "Customize transformations based on business requirements",
+    "Deploy to development environment",
+    "Set up monitoring and alerting"
+  ]
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Integration Test Script
-Tests if all components are properly integrated and working
+Tests if all components are properly integrated and working with consolidated agents
 """
 
 import asyncio
@@ -37,6 +37,34 @@ def test_imports():
         
     except Exception as e:
         print(f"❌ Import failed: {str(e)}")
+        return False
+
+def test_consolidated_agents():
+    """Test if consolidated agents can be imported"""
+    print("\nTesting consolidated agents...")
+    
+    try:
+        # Test importing from consolidated agents
+        from agents import (
+            EnhancedOrchestrator,
+            create_enhanced_metadata_validator,
+            create_enhanced_code_generator,
+            EnhancedAgentConfig
+        )
+        print("✅ Consolidated agents import: SUCCESS")
+        
+        # Test agent manager functionality
+        from agents.agent_manager import agent_manager
+        
+        # Get agent status
+        agent_status = agent_manager.get_agent_status()
+        print(f"✅ Agent manager status: {agent_status['agents_source']}")
+        print(f"✅ Total agents available: {agent_status['total_agents']}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Consolidated agents test failed: {str(e)}")
         return False
 
 def test_dependencies():
@@ -98,6 +126,48 @@ def test_file_structure():
     
     return all_exist
 
+def test_consolidated_structure():
+    """Test if the consolidated agents structure exists"""
+    print("\nTesting consolidated agents structure...")
+    
+    try:
+        # Check if consolidated agents directory exists
+        parent_dir = Path(__file__).parent.parent
+        consolidated_dir = parent_dir / "agentic_mapping_ai" / "agents"
+        
+        if not consolidated_dir.exists():
+            print(f"❌ Consolidated agents directory not found: {consolidated_dir}")
+            return False
+        
+        print(f"✅ Consolidated agents directory: {consolidated_dir}")
+        
+        # Check subdirectories
+        expected_categories = ['core', 'enhanced_v2', 'enhanced', 'basic', 'specialized', 'chat']
+        
+        for category in expected_categories:
+            category_dir = consolidated_dir / category
+            if category_dir.exists():
+                py_files = list(category_dir.glob("*.py"))
+                agent_files = [f for f in py_files if f.name != "__init__.py"]
+                print(f"   ✅ {category}/: {len(agent_files)} agent files")
+            else:
+                print(f"   ❌ {category}/: Missing")
+                return False
+        
+        # Check main __init__.py
+        main_init = consolidated_dir / "__init__.py"
+        if main_init.exists():
+            print(f"✅ Main __init__.py: EXISTS")
+        else:
+            print(f"❌ Main __init__.py: MISSING")
+            return False
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Consolidated structure test failed: {str(e)}")
+        return False
+
 async def test_basic_functionality():
     """Test basic functionality of key components"""
     print("\nTesting basic functionality...")
@@ -136,6 +206,12 @@ def main():
     # Test imports
     imports_ok = test_imports()
     
+    # Test consolidated agents
+    consolidated_agents_ok = test_consolidated_agents()
+    
+    # Test consolidated structure
+    consolidated_structure_ok = test_consolidated_structure()
+    
     # Test dependencies
     deps_ok = test_dependencies()
     
@@ -156,11 +232,13 @@ def main():
     print("=" * 50)
     
     print(f"Imports: {'✅ PASS' if imports_ok else '❌ FAIL'}")
+    print(f"Consolidated Agents: {'✅ PASS' if consolidated_agents_ok else '❌ FAIL'}")
+    print(f"Consolidated Structure: {'✅ PASS' if consolidated_structure_ok else '❌ FAIL'}")
     print(f"Dependencies: {'✅ PASS' if deps_ok else '❌ PASS'}")
     print(f"File Structure: {'✅ PASS' if files_ok else '❌ FAIL'}")
     print(f"Basic Functionality: {'✅ PASS' if func_ok else '❌ FAIL'}")
     
-    if all([imports_ok, deps_ok, files_ok, func_ok]):
+    if all([imports_ok, consolidated_agents_ok, consolidated_structure_ok, deps_ok, files_ok, func_ok]):
         print("\n🎉 ALL TESTS PASSED! System is properly integrated.")
         print("\nYou can now run:")
         print("  • python main.py - Chat-based application")

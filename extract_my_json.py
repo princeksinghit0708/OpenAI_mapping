@@ -39,7 +39,7 @@ def find_dictionary_name_simple(field_info, original_json_data, db_name):
                             print(f"✅ DB name ends with '_db': {db_name_extracted}")
                             return db_name_extracted
                         else:
-                            print(f"❌ DB name doesn't end with '_db', skipping: {db_name_extracted}")
+                                                                                                                                                                     print(f"❌ DB name doesn't end with '_db', skipping: {db_name_extracted}")
     
     # Method 2: Search recursively for any "providedKey" field
     def search_for_provided_key(obj, path="root"):
