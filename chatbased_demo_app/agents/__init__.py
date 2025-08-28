@@ -5,10 +5,12 @@ Imports and integrates all available AI agents from the parent directories
 
 # Import from main agentic_mapping_ai directory (most advanced)
 try:
-    from ...agentic_mapping_ai.agents.enhanced_orchestrator_v2 import EnhancedOrchestrator
-    from ...agentic_mapping_ai.agents.enhanced_metadata_validator_v2 import create_enhanced_metadata_validator
-    from ...agentic_mapping_ai.agents.enhanced_code_generator_v2 import create_enhanced_code_generator
-    from ...agentic_mapping_ai.agents.enhanced_base_agent import EnhancedAgentConfig
+    from ...agentic_mapping_ai.agents import (
+        EnhancedOrchestrator,
+        create_enhanced_metadata_validator,
+        create_enhanced_code_generator,
+        EnhancedAgentConfig
+    )
     
     print("Successfully imported advanced agents from main directory")
     AGENTS_SOURCE = "main_advanced"
@@ -16,10 +18,14 @@ try:
 except ImportError:
     # Fallback to demo agents
     try:
-        from ...demo.agentic_mapping_ai.agents.enhanced_orchestrator_v2 import EnhancedOrchestrator
-        from ...demo.agentic_mapping_ai.agents.metadata_validator import MetadataValidatorAgent
-        from ...demo.agentic_mapping_ai.agents.code_generator import CodeGeneratorAgent
-        from ...demo.agentic_mapping_ai.agents.test_generator import TestGeneratorAgent
+        from ...demo.agentic_mapping_ai.agents import (
+            EnhancedOrchestrator,
+            create_enhanced_metadata_validator,
+            create_enhanced_code_generator,
+            EnhancedAgentConfig,
+            MetadataValidatorAgent,
+            CodeGeneratorAgent
+        )
         
         print("Successfully imported demo agents")
         AGENTS_SOURCE = "demo"
@@ -27,6 +33,14 @@ except ImportError:
     except ImportError:
         print("Could not import agents - using fallback mode")
         AGENTS_SOURCE = "fallback"
+
+# Try to import test generator if available
+try:
+    from ...demo.agentic_mapping_ai.agents import TestGeneratorAgent
+    TEST_GENERATOR_AVAILABLE = True
+except ImportError:
+    TestGeneratorAgent = None
+    TEST_GENERATOR_AVAILABLE = False
 
 # Export available agents
 __all__ = [
@@ -36,6 +50,9 @@ __all__ = [
     'EnhancedAgentConfig',
     'MetadataValidatorAgent',
     'CodeGeneratorAgent',
-    'TestGeneratorAgent',
-    'AGENTS_SOURCE'
+    'AGENTS_SOURCE',
 ]
+
+# Add test generator if available
+if TEST_GENERATOR_AVAILABLE:
+    __all__.append('TestGeneratorAgent')
