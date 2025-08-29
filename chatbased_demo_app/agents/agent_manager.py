@@ -59,16 +59,11 @@ class AgentManager:
         print("Initializing AI agents from consolidated structure...")
         
         try:
-            # Try to import from consolidated agents directory
+            # Import from consolidated agents directory
             self._import_consolidated_agents()
         except Exception as e:
             print(f"Consolidated agents import failed: {e}")
-            try:
-                # Fallback to demo agents
-                self._import_demo_agents()
-            except Exception as e:
-                print(f"Demo agents import failed: {e}")
-                self._setup_fallback_agents()
+            self._setup_fallback_agents()
     
     def _import_consolidated_agents(self):
         """Import agents from consolidated agents directory"""
@@ -135,41 +130,11 @@ class AgentManager:
         except Exception as e:
             raise Exception(f"Failed to import consolidated agents: {e}")
     
-    def _import_demo_agents(self):
-        """Import agents from demo directory as fallback"""
-        try:
-            # Add parent directory to path for imports
-            parent_dir = Path(__file__).parent.parent.parent
-            if str(parent_dir) not in sys.path:
-                sys.path.insert(0, str(parent_dir))
-            
-            print(f"Added to path: {parent_dir}")
-            
-            # Import demo agents
-            from demo.agentic_mapping_ai.agents import (
-                EnhancedOrchestrator,
-                MetadataValidatorAgent,
-                CodeGeneratorAgent,
-                TestGeneratorAgent,
-                EnhancedAgentConfig
-            )
-            
-            # Store agent classes
-            self.agents['orchestrator'] = EnhancedOrchestrator
-            self.agents['metadata_validator'] = MetadataValidatorAgent
-            self.agents['code_generator'] = CodeGeneratorAgent
-            self.agents['test_generator'] = TestGeneratorAgent
-            self.agents['config'] = EnhancedAgentConfig
-            
-            self.agents_source = "demo"
-            print("Successfully imported demo agents as fallback")
-            
-        except Exception as e:
-            raise Exception(f"Failed to import demo agents: {e}")
+
     
     def _setup_fallback_agents(self):
-        """Setup fallback agents when imports fail"""
-        print("Setting up fallback agents...")
+        """Setup fallback agents when consolidated agents import fails"""
+        print("⚠️ Consolidated agents import failed - setting up minimal fallback agents...")
         
         self.agents_source = "fallback"
         
@@ -185,12 +150,14 @@ class AgentManager:
                     'agent_type': 'mock'
                 }
         
+        # Essential agents only
         self.agents['orchestrator'] = MockAgent("Orchestrator")
         self.agents['metadata_validator'] = MockAgent("Metadata Validator")
         self.agents['code_generator'] = MockAgent("Code Generator")
         self.agents['test_generator'] = MockAgent("Test Generator")
         
-        print("Fallback agents configured")
+        print("⚠️ Minimal fallback agents configured - some functionality may be limited")
+        print("💡 Check consolidated agents configuration if this persists")
     
     def get_agent(self, agent_type: str):
         """Get a specific agent by type"""

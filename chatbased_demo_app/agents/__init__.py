@@ -42,30 +42,13 @@ try:
         ChatAgent
     )
     
-    print("Successfully imported all agents from consolidated main directory")
-    AGENTS_SOURCE = "main_consolidated"
+    print("✅ Successfully imported all agents from consolidated structure")
+    AGENTS_SOURCE = "consolidated"
     
 except ImportError as e:
-    print(f"Main consolidated agents import failed: {e}")
-    print("Falling back to demo agents...")
-    
-    # Fallback to demo agents
-    try:
-        from demo.agentic_mapping_ai.agents import (
-            EnhancedOrchestrator,
-            MetadataValidatorAgent,
-            CodeGeneratorAgent,
-            TestGeneratorAgent,
-            EnhancedAgentConfig
-        )
-        
-        print("Successfully imported demo agents")
-        AGENTS_SOURCE = "demo"
-        
-    except ImportError as e2:
-        print(f"Demo agents import also failed: {e2}")
-        AGENTS_SOURCE = "failed"
-        print("All agent imports failed - system may not function properly")
+    print(f"❌ Consolidated agents import failed: {e}")
+    AGENTS_SOURCE = "failed"
+    print("⚠️ Agent imports failed - system may not function properly")
 
 # Export available agents
 __all__ = [
