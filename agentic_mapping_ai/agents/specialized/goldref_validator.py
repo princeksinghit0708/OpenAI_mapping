@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from datetime import datetime
 from loguru import logger
 
-from agents.base_agent import BaseAgent, AgentConfig
-from core.models import (
+from ..core.base_agent import BaseAgent, AgentConfig
+from ...core.models import (
     GoldReferenceDefinition, ValidationResult, FieldDefinition,
     TransformationRule
 )

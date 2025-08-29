@@ -7,8 +7,8 @@ import json
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-from agents.enhanced_agent_v2 import EnhancedBaseAgent, EnhancedAgentConfig, create_enhanced_agent
-from core.models import (
+from ..core.enhanced_agent_v2 import EnhancedBaseAgent, EnhancedAgentConfig, create_enhanced_agent
+from ...core.models import (
     AgentType, SchemaDefinition, MappingRule, 
     GeneratedCode, CodeGenerationRequest
 )

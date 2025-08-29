@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from loguru import logger
 from datetime import datetime
 
-from core.models import TransformationRule, FieldDefinition
+from ...core.models import TransformationRule, FieldDefinition
 
 
 class PySparkCodeGenerator:

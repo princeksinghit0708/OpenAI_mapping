@@ -5,11 +5,17 @@ Self-contained demo agents that don't depend on main agents directory
 
 # Import local demo agents only
 try:
-    from .enhanced_orchestrator_v2 import EnhancedOrchestrator
     from .metadata_validator import MetadataValidatorAgent
     from .code_generator import CodeGeneratorAgent
     from .test_generator import TestGeneratorAgent
     from .enhanced_base_agent import EnhancedAgentConfig
+    from .base_agent import BaseAgent
+    
+    # Try to import orchestrator, but make it optional
+    try:
+        from .orchestrator import OrchestratorAgent as EnhancedOrchestrator
+    except ImportError:
+        EnhancedOrchestrator = None
     
     AGENTS_SOURCE = "demo_local"
     print("Successfully imported demo agents locally")

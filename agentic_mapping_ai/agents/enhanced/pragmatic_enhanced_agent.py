@@ -10,9 +10,9 @@ from datetime import datetime
 import json
 
 # Core imports
-from agents.base_agent import BaseAgent, AgentConfig
-from core.models import AgentTask, AgentType, TaskStatus
-from knowledge.rag_engine import RAGEngine
+from ..core.base_agent import BaseAgent, AgentConfig
+from ...core.models import AgentTask, AgentType, TaskStatus
+from ...knowledge.rag_engine import RAGEngine
 
 # Conditional imports based on environment
 try:

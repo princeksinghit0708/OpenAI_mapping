@@ -6,8 +6,8 @@ import json
 from typing import Any, Dict, List, Optional
 from loguru import logger
 
-from .base_agent import BaseAgent, AgentConfig, AgentFactory
-from agentic_mapping_ai.core.models import (
+from ..core.base_agent import BaseAgent, AgentConfig, AgentFactory
+from ...core.models import (
     AgentType, SchemaDefinition, MappingRule, 
     GeneratedCode, CodeGenerationRequest, ValidationResult
 )

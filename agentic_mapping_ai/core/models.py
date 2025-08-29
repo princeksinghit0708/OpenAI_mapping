@@ -5,7 +5,7 @@ Core data models for Agentic Mapping AI Platform
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field as PydanticField
 from sqlalchemy import Column, Integer, String, Text, DateTime, JSON, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
@@ -114,42 +114,42 @@ class GeneratedCode(BaseModel):
 
 class AgentTask(BaseModel):
     """Agent task model"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = PydanticField(default_factory=lambda: str(uuid.uuid4()))
     agent_type: AgentType
     status: TaskStatus = TaskStatus.PENDING
     input_data: Dict[str, Any]
     output_data: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = PydanticField(default_factory=datetime.now)
     updated_at: Optional[datetime] = None
     parent_task_id: Optional[str] = None
 
 
 class WorkflowDefinition(BaseModel):
     """Workflow definition model"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = PydanticField(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: Optional[str] = None
     tasks: List[AgentTask]
     dependencies: Dict[str, List[str]] = {}  # task_id -> [dependency_task_ids]
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = PydanticField(default_factory=datetime.now)
 
 
 class GoldReferenceDefinition(BaseModel):
     """Gold reference data definition"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = PydanticField(default_factory=lambda: str(uuid.uuid4()))
     name: str
     lookup_table: str
     key_fields: List[str]
     standard_values: Dict[str, Any]
     business_rules: List[str] = []
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = PydanticField(default_factory=datetime.now)
 
 
 class TransformationRule(BaseModel):
     """Complex transformation rule definition"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = PydanticField(default_factory=lambda: str(uuid.uuid4()))
     name: str
     rule_type: str  # conditional, lookup, calculation, derivation
     source_fields: List[str]
@@ -158,12 +158,12 @@ class TransformationRule(BaseModel):
     conditions: List[str] = []  # Conditional statements
     parameters: Dict[str, Any] = {}
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = PydanticField(default_factory=datetime.now)
 
 
 class ExcelMappingProject(BaseModel):
     """Excel-based mapping project"""
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = PydanticField(default_factory=lambda: str(uuid.uuid4()))
     name: str
     source_file: str
     field_mappings: List[MappingRule]
@@ -171,7 +171,7 @@ class ExcelMappingProject(BaseModel):
     transformation_rules: List[TransformationRule]
     validation_results: Optional[ValidationResult] = None
     project_metadata: Dict[str, Any] = {}
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = PydanticField(default_factory=datetime.now)
 
 
 # SQLAlchemy Models for Database
@@ -259,7 +259,7 @@ class APIResponse(BaseModel):
     message: str
     data: Optional[Any] = None
     errors: Optional[List[str]] = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = PydanticField(default_factory=datetime.now)
 
 
 class ValidationResponse(APIResponse):

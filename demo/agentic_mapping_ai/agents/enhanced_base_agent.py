@@ -17,8 +17,8 @@ from langchain.memory import ConversationBufferWindowMemory, ConversationSummary
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import BaseMessage, HumanMessage, AIMessage
 from langchain.tools import BaseTool
-from langchain.callbacks import get_openai_callback
-from langchain.cache import InMemoryCache
+from langchain_community.callbacks.manager import get_openai_callback
+from langchain_community.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 
 # Token-based LLM Service
@@ -47,12 +47,21 @@ except ImportError:
     enhanced_settings = None
 
 
-# Metrics
-llm_requests_total = Counter('llm_requests_total', 'Total LLM requests', ['provider', 'model', 'agent_type'])
-llm_response_time = Histogram('llm_response_time_seconds', 'LLM response time', ['provider', 'model'])
-llm_tokens_used = Counter('llm_tokens_used_total', 'Total tokens used', ['provider', 'model', 'type'])
-llm_cost_usd = Counter('llm_cost_usd_total', 'Total cost in USD', ['provider', 'model'])
-agent_execution_time = Histogram('agent_execution_time_seconds', 'Agent execution time', ['agent_type'])
+# Metrics - prevent duplicate registration
+try:
+    llm_requests_total = Counter('llm_requests_total', 'Total LLM requests', ['provider', 'model', 'agent_type'])
+    llm_response_time = Histogram('llm_response_time_seconds', 'LLM response time', ['provider', 'model'])
+    llm_tokens_used = Counter('llm_tokens_used_total', 'Total tokens used', ['provider', 'model', 'type'])
+    llm_cost_usd = Counter('llm_cost_usd_total', 'Total cost in USD', ['provider', 'model'])
+    agent_execution_time = Histogram('agent_execution_time_seconds', 'Agent execution time', ['agent_type'])
+except ValueError:
+    # Metrics already registered, get existing ones
+    from prometheus_client import REGISTRY
+    llm_requests_total = REGISTRY.get_sample_value('llm_requests_total')
+    llm_response_time = REGISTRY.get_sample_value('llm_response_time_seconds')
+    llm_tokens_used = REGISTRY.get_sample_value('llm_tokens_used_total')
+    llm_cost_usd = REGISTRY.get_sample_value('llm_cost_usd_total')
+    agent_execution_time = REGISTRY.get_sample_value('agent_execution_time_seconds')
 
 # Set up structured logging
 structlog.configure(

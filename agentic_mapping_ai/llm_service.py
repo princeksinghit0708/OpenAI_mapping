@@ -32,11 +32,11 @@ HTTP_PROXY = os.getenv("HTTP_PROXY", "")
 
 HTTPS_PROXY = os.getenv("HTTPS_PROXY", "")
 
-BASE_URL = os.getenv("BASE_URL")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
+# Make BASE_URL optional for demo purposes
 if not BASE_URL:
-
-    raise EnvironmentError("BASE_URL environment variable is required.")
+    BASE_URL = "http://localhost:8000"
 
 os.environ["HTTP_PROXY"] = HTTP_PROXY
 

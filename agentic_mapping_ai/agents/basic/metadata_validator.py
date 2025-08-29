@@ -6,8 +6,8 @@ import json
 from typing import Any, Dict, List, Optional
 from loguru import logger
 
-from agents.base_agent import BaseAgent, AgentConfig, AgentFactory
-from core.models import (
+from ..core.base_agent import BaseAgent, AgentConfig, AgentFactory
+from ...core.models import (
     AgentType, ValidationResult, FieldDefinition, 
     SchemaDefinition, DataType
 )

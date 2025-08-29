@@ -9,9 +9,9 @@ from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 from pydantic import BaseModel
 
-from .base_agent import BaseAgent, AgentConfig
-from agentic_mapping_ai.core.models import (
-    AgentTask, AgentType, TaskStatus, ChatMessage, ChatSession
+from ..core.base_agent import BaseAgent, AgentConfig
+from ...core.models import (
+    AgentTask, AgentType, TaskStatus
 )
 
 
