@@ -51,7 +51,8 @@ class ChatSuggestionManager:
                                   user_input: str, 
                                   ai_response: str, 
                                   context: Dict[str, Any] = None,
-                                  feedback_score: float = None) -> str:
+                                  feedback_score: float = None,
+                                  category: str = "general") -> str:
         """
         Add a chat interaction to the suggestion database
         
@@ -65,8 +66,9 @@ class ChatSuggestionManager:
             Suggestion ID
         """
         try:
-            # Determine category based on content
-            category = self._categorize_interaction(user_input, ai_response)
+            # Use provided category or determine based on content
+            if category == "general":
+                category = self._categorize_interaction(user_input, ai_response)
             
             # Add to FAISS database
             suggestion_id = await self._get_faiss_engine().add_chat_suggestion(
