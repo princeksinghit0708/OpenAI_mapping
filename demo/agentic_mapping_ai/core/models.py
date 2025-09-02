@@ -68,7 +68,7 @@ class SchemaDefinition(BaseModel):
     """Schema definition model"""
     name: str
     fields: List[FieldDefinition]
-    metadata: Optional[Dict[str, Any]] = None
+    schema_metadata: Optional[Dict[str, Any]] = None
     version: str = "1.0"
 
 
@@ -91,7 +91,7 @@ class ValidationResult(BaseModel):
     errors: List[str] = []
     warnings: List[str] = []
     suggestions: List[str] = []
-    metadata: Optional[Dict[str, Any]] = None
+    validation_metadata: Optional[Dict[str, Any]] = None
 
 
 class CodeGenerationRequest(BaseModel):
@@ -172,7 +172,7 @@ class ExcelMappingProject(BaseModel):
     gold_references: List[GoldReferenceDefinition]
     transformation_rules: List[TransformationRule]
     validation_results: Optional[ValidationResult] = None
-    metadata: Dict[str, Any] = {}
+    project_metadata: Dict[str, Any] = {}
     created_at: datetime = PydanticField(default_factory=datetime.utcnow)
 
 
@@ -290,7 +290,7 @@ class ChatMessage(BaseModel):
     message_type: str = "text"  # text, code, error, warning, success
     content: str
     timestamp: datetime = PydanticField(default_factory=datetime.utcnow)
-    metadata: Optional[Dict[str, Any]] = None
+    message_metadata: Optional[Dict[str, Any]] = None
     parent_message_id: Optional[str] = None
     is_processed: bool = False
 
