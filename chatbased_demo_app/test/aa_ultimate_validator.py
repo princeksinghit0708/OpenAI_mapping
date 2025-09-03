@@ -43,6 +43,10 @@ class AAUltimateValidator:
         """Validate all test records comprehensively"""
         print("🔍 Starting comprehensive validation of all test records...")
         
+        if not self.test_data:
+            print("❌ No test data available for validation!")
+            return
+        
         self.validation_results['total_records'] = len(self.test_data)
         
         for i, record in enumerate(self.test_data):
@@ -275,8 +279,12 @@ class AAUltimateValidator:
         
         print(f"📊 OVERALL STATISTICS:")
         print(f"  Total Records: {total}")
-        print(f"  Passed: {passed} ({passed/total*100:.1f}%)")
-        print(f"  Failed: {failed} ({failed/total*100:.1f}%)")
+        if total > 0:
+            print(f"  Passed: {passed} ({passed/total*100:.1f}%)")
+            print(f"  Failed: {failed} ({failed/total*100:.1f}%)")
+        else:
+            print(f"  Passed: {passed} (0.0%)")
+            print(f"  Failed: {failed} (0.0%)")
         print(f"  Errors: {len(self.validation_results['errors'])}")
         
         # Scenario results
@@ -310,7 +318,9 @@ class AAUltimateValidator:
         
         # Validation conclusion
         print(f"\n🎯 VALIDATION CONCLUSION:")
-        if failed == 0:
+        if total == 0:
+            print("  ❌ NO DATA - No test records available for validation")
+        elif failed == 0:
             print("  ✅ ALL TESTS PASSED - Data quality is excellent!")
         elif failed < total * 0.05:  # Less than 5% failure rate
             print("  ✅ EXCELLENT - Data quality is very good with minimal issues")
