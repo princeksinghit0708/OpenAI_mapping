@@ -1,0 +1,19 @@
+# Pure Offline Requirements - Minimal Dependencies
+# Only essential libraries - No external model downloads required
+
+# Core data processing (lightweight)
+pandas>=2.0.0
+openpyxl>=3.1.0
+numpy>=1.21.0
+
+# Local vector search (lightweight)
+faiss-cpu>=1.7.4
+
+# Local machine learning (lightweight)
+scikit-learn>=1.0.0
+
+# Built-in Python modules (no installation needed)
+# json, os, sys, pathlib, datetime, typing, re, math, collections, random, asyncio, logging
+
+# Total: Only 5 external dependencies
+# All other functionality uses built-in Python libraries
