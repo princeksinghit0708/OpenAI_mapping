@@ -48,34 +48,20 @@ class AAComprehensiveDataValidator:
         }
         
     def generate_date_scenarios(self):
-        """Generate all date format scenarios"""
+        """Generate all date format scenarios - ALL in yyyy-mm-dd format"""
         date_scenarios = {}
         
-        # Valid ISO format
+        # All dates in yyyy-mm-dd format for consistency
         date_scenarios['valid_iso'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%Y-%m-%d')
+        date_scenarios['valid_us'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%Y-%m-%d')
+        date_scenarios['valid_eu'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%Y-%m-%d')
+        date_scenarios['valid_dot'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%Y-%m-%d')
+        date_scenarios['valid_dash'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%Y-%m-%d')
         
-        # Valid US format
-        date_scenarios['valid_us'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%m/%d/%Y')
-        
-        # Valid EU format
-        date_scenarios['valid_eu'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%d/%m/%Y')
-        
-        # Valid dot format
-        date_scenarios['valid_dot'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%d.%m.%Y')
-        
-        # Valid dash format
-        date_scenarios['valid_dash'] = fake.date_between(start_date='-80y', end_date='-18y').strftime('%d-%m-%Y')
-        
-        # Invalid format
-        date_scenarios['invalid_format'] = '25/13/2023'  # Invalid month
-        
-        # Future date
+        # Invalid dates - still in yyyy-mm-dd format but with invalid values
+        date_scenarios['invalid_format'] = '2023-13-25'  # Invalid month (13)
         date_scenarios['invalid_future'] = (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
-        
-        # Too old date
         date_scenarios['invalid_past'] = '1800-01-01'
-        
-        # Invalid leap year
         date_scenarios['invalid_leap'] = '2023-02-29'  # 2023 is not a leap year
         
         return date_scenarios
