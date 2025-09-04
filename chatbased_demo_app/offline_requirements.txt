@@ -1,0 +1,32 @@
+# Offline Chat-Based Demo App Requirements
+# No Internet Required - All libraries work offline after installation
+
+# Core data processing (offline)
+pandas>=2.0.0
+openpyxl>=3.1.0
+numpy>=1.21.0
+
+# Local vector search (offline)
+faiss-cpu>=1.7.4
+
+# Local machine learning (offline)
+scikit-learn>=1.0.0
+
+# Local text processing (offline)
+nltk>=3.8.0
+
+# Local utilities (offline)
+loguru>=0.7.0
+tqdm>=4.64.0
+colorama>=0.4.5
+rich>=12.0.0
+python-dotenv>=1.0.0
+
+# Local data generation (offline)
+faker>=18.0.0
+
+# Local database (offline)
+sqlalchemy>=1.4.0
+
+# Built-in Python modules (no installation needed)
+# asyncio, json, os, sys, pathlib, datetime, typing, re, math, collections, random

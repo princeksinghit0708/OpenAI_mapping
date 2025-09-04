@@ -1,0 +1,47 @@
+# Offline-Compatible Requirements for Privacy-Sensitive Environment
+# All libraries work without internet connectivity after initial installation
+
+# Core data processing (offline)
+pandas>=2.0.0
+openpyxl>=3.1.0
+numpy>=1.21.0
+scipy>=1.7.0
+
+# Local vector search (offline)
+faiss-cpu>=1.7.4
+
+# Local machine learning (offline)
+scikit-learn>=1.0.0
+
+# Local text processing (offline)
+nltk>=3.8.0
+spacy>=3.4.0
+
+# Local embeddings (offline after download)
+# Note: Download models once with internet, then use offline
+sentence-transformers>=2.2.0
+torch>=1.9.0
+transformers>=4.20.0
+
+# Local utilities (offline)
+loguru>=0.7.0
+tqdm>=4.64.0
+colorama>=0.4.5
+rich>=12.0.0
+python-dotenv>=1.0.0
+
+# Local data generation (offline)
+faker>=18.0.0
+
+# Local web framework (offline)
+fastapi>=0.100.0
+uvicorn>=0.20.0
+
+# Local database (offline)
+sqlite3  # Built-in Python module
+sqlalchemy>=1.4.0
+
+# Local file processing (offline)
+pathlib  # Built-in Python module
+json  # Built-in Python module
+csv  # Built-in Python module
