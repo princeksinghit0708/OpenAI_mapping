@@ -1,0 +1,46 @@
+# Hybrid Agentic Requirements - LLM Integration without Hugging Face
+# Uses llm_service.py for online responses but removes Hugging Face dependencies
+
+# Core data processing (lightweight)
+pandas>=2.0.0
+openpyxl>=3.1.0
+numpy>=1.21.0
+
+# Local vector search (lightweight)
+faiss-cpu>=1.7.4
+
+# Local machine learning (lightweight)
+scikit-learn>=1.0.0
+
+# LLM Service Dependencies (for llm_service.py)
+openai>=1.0.0
+anthropic>=0.7.0
+google-cloud-aiplatform>=1.0.0
+vertexai>=1.0.0
+
+# HTTP client for API calls
+httpx>=0.24.0
+
+# MongoDB for data storage (if needed)
+pymongo>=4.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Local utilities (offline)
+loguru>=0.7.0
+tqdm>=4.64.0
+colorama>=0.4.5
+rich>=12.0.0
+
+# Built-in Python modules (no installation needed)
+# json, os, sys, pathlib, datetime, typing, re, math, collections, random, asyncio, logging
+
+# EXCLUDED (Hugging Face dependencies that cause issues):
+# sentence-transformers
+# torch
+# transformers
+# huggingface-hub
+
+# Total: Only essential dependencies + LLM service support
+# No Hugging Face libraries that cause privacy/connectivity issues
