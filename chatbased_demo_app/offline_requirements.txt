@@ -12,8 +12,9 @@ faiss-cpu>=1.7.4
 # Local machine learning (offline)
 scikit-learn>=1.0.0
 
-# Local text processing (offline)
-nltk>=3.8.0
+# Local text processing (completely offline)
+# Using built-in Python libraries only
+# No external model downloads required
 
 # Local utilities (offline)
 loguru>=0.7.0
