@@ -10,7 +10,7 @@ from datetime import datetime
 import os
 
 class AAUltimateExcelConverter:
-    def __init__(self, json_file='aa_ultimate_test_data.json'):
+    def __init__(self, json_file='aa_comprehensive_test_data_with_georef_enhanced.json'):
         self.json_file = json_file
         self.test_data = []
         self.load_data()
