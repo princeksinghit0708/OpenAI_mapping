@@ -1,0 +1,452 @@
+[
+  {
+    "member_id": "AA000001",
+    "street_address": "5527 Madison Ave",
+    "city_nm": "Castlewood",
+    "zip_code": "24224",
+    "state": "VA",
+    "state_name": "Virginia",
+    "full_address": "5527 Second St, Castlewood, VA 24224"
+  },
+  {
+    "member_id": "AA000002",
+    "street_address": "1587 First St",
+    "city_nm": "South Prairie",
+    "zip_code": "98385",
+    "state": "WA",
+    "state_name": "Washington",
+    "full_address": "1587 Oak Ave, South Prairie, WA 98385"
+  },
+  {
+    "member_id": "AA000003",
+    "street_address": "4386 Jefferson St",
+    "city_nm": "Athol",
+    "zip_code": "66932",
+    "state": "KS",
+    "state_name": "Kansas",
+    "full_address": "4386 Pine St, Athol, KS 66932"
+  },
+  {
+    "member_id": "AA000004",
+    "street_address": "4419 Oak Ave",
+    "city_nm": "Lafayette",
+    "zip_code": "70503",
+    "state": "LA",
+    "state_name": "Louisiana",
+    "full_address": "4419 Madison Ave, Lafayette, LA 70503"
+  },
+  {
+    "member_id": "AA000005",
+    "street_address": "154 Main St",
+    "city_nm": "Blanchard",
+    "zip_code": "83804",
+    "state": "ID",
+    "state_name": "Idaho",
+    "full_address": "154 Maple St, Blanchard, ID 83804"
+  },
+  {
+    "member_id": "AA000006",
+    "street_address": "3545 Oak Ave",
+    "city_nm": "Medinah",
+    "zip_code": "60157",
+    "state": "IL",
+    "state_name": "Illinois",
+    "full_address": "3545 Main St, Medinah, IL 60157"
+  },
+  {
+    "member_id": "AA000007",
+    "street_address": "2076 Washington St",
+    "city_nm": "Amo",
+    "zip_code": "46103",
+    "state": "IN",
+    "state_name": "Indiana",
+    "full_address": "2076 Main St, Amo, IN 46103"
+  },
+  {
+    "member_id": "AA000008",
+    "street_address": "2137 Cedar Ave",
+    "city_nm": "Buffalo",
+    "zip_code": "14207",
+    "state": "NY",
+    "state_name": "New York",
+    "full_address": "2137 Washington St, Buffalo, NY 14207"
+  },
+  {
+    "member_id": "AA000009",
+    "street_address": "1600 Second St",
+    "city_nm": "Seattle",
+    "zip_code": "98125",
+    "state": "WA",
+    "state_name": "Washington",
+    "full_address": "1600 First St, Seattle, WA 98125"
+  },
+  {
+    "member_id": "AA000010",
+    "street_address": "3798 Pine St",
+    "city_nm": "Dora",
+    "zip_code": "88115",
+    "state": "NM",
+    "state_name": "New Mexico",
+    "full_address": "3798 Oak Ave, Dora, NM 88115"
+  },
+  {
+    "member_id": "AA000011",
+    "street_address": "7573 Maple St",
+    "city_nm": "Neshanic Station",
+    "zip_code": "8853",
+    "state": "NJ",
+    "state_name": "New Jersey",
+    "full_address": "7573 Pine St, Neshanic Station, NJ 8853"
+  },
+  {
+    "member_id": "AA000012",
+    "street_address": "6214 Jefferson St",
+    "city_nm": "Whittier",
+    "zip_code": "28789",
+    "state": "NC",
+    "state_name": "North Carolina",
+    "full_address": "6214 Lincoln Ave, Whittier, NC 28789"
+  },
+  {
+    "member_id": "AA000013",
+    "street_address": "1997 Oak Ave",
+    "city_nm": "Spring Grove",
+    "zip_code": "55974",
+    "state": "MN",
+    "state_name": "Minnesota",
+    "full_address": "1997 Maple St, Spring Grove, MN 55974"
+  },
+  {
+    "member_id": "AA000014",
+    "street_address": "1551 Oak Ave",
+    "city_nm": "Decatur",
+    "zip_code": "76234",
+    "state": "TX",
+    "state_name": "Texas",
+    "full_address": "1551 Cedar Ave, Decatur, TX 76234"
+  },
+  {
+    "member_id": "AA000015",
+    "street_address": "9898 Lincoln Ave",
+    "city_nm": "Augusta",
+    "zip_code": "67010",
+    "state": "KS",
+    "state_name": "Kansas",
+    "full_address": "9898 Madison Ave, Augusta, KS 67010"
+  },
+  {
+    "member_id": "AA000016",
+    "street_address": "4368 Washington St",
+    "city_nm": "Gatesville",
+    "zip_code": "76599",
+    "state": "TX",
+    "state_name": "Texas",
+    "full_address": "4368 Elm St, Gatesville, TX 76599"
+  },
+  {
+    "member_id": "AA000017",
+    "street_address": "1460 Pine St",
+    "city_nm": "Ten Mile",
+    "zip_code": "37880",
+    "state": "TN",
+    "state_name": "Tennessee",
+    "full_address": "1460 Oak Ave, Ten Mile, TN 37880"
+  },
+  {
+    "member_id": "AA000018",
+    "street_address": "1078 Jefferson St",
+    "city_nm": "Marshall",
+    "zip_code": "28753",
+    "state": "NC",
+    "state_name": "North Carolina",
+    "full_address": "1078 Cedar Ave, Marshall, NC 28753"
+  },
+  {
+    "member_id": "AA000019",
+    "street_address": "7889 Park Ave",
+    "city_nm": "Lowell",
+    "zip_code": "45744",
+    "state": "OH",
+    "state_name": "Ohio",
+    "full_address": "7889 Maple St, Lowell, OH 45744"
+  },
+  {
+    "member_id": "AA000020",
+    "street_address": "9432 First St",
+    "city_nm": "Allardt",
+    "zip_code": "38504",
+    "state": "TN",
+    "state_name": "Tennessee",
+    "full_address": "9432 Washington St, Allardt, TN 38504"
+  },
+  {
+    "member_id": "AA000021",
+    "street_address": "8086 Oak Ave",
+    "city_nm": "Fromberg",
+    "zip_code": "59029",
+    "state": "MT",
+    "state_name": "Montana",
+    "full_address": "8086 First St, Fromberg, MT 59029"
+  },
+  {
+    "member_id": "AA000022",
+    "street_address": "6209 Cedar Ave",
+    "city_nm": "Saint Onge",
+    "zip_code": "57779",
+    "state": "SD",
+    "state_name": "South Dakota",
+    "full_address": "6209 Oak Ave, Saint Onge, SD 57779"
+  },
+  {
+    "member_id": "AA000023",
+    "street_address": "6624 Oak Ave",
+    "city_nm": "Danville",
+    "zip_code": "31017",
+    "state": "GA",
+    "state_name": "Georgia",
+    "full_address": "6624 Pine St, Danville, GA 31017"
+  },
+  {
+    "member_id": "AA000024",
+    "street_address": "5906 First St",
+    "city_nm": "Austinville",
+    "zip_code": "24312",
+    "state": "VA",
+    "state_name": "Virginia",
+    "full_address": "5906 First St, Austinville, VA 24312"
+  },
+  {
+    "member_id": "AA000025",
+    "street_address": "2764 Washington St",
+    "city_nm": "Clinton",
+    "zip_code": "47842",
+    "state": "IN",
+    "state_name": "Indiana",
+    "full_address": "2764 Maple St, Clinton, IN 47842"
+  },
+  {
+    "member_id": "AA000026",
+    "street_address": "6151 Cedar Ave",
+    "city_nm": "Sawyer",
+    "zip_code": "58781",
+    "state": "ND",
+    "state_name": "North Dakota",
+    "full_address": "6151 Maple St, Sawyer, ND 58781"
+  },
+  {
+    "member_id": "AA000027",
+    "street_address": "2128 Park Ave",
+    "city_nm": "Hoagland",
+    "zip_code": "46745",
+    "state": "IN",
+    "state_name": "Indiana",
+    "full_address": "2128 Main St, Hoagland, IN 46745"
+  },
+  {
+    "member_id": "AA000028",
+    "street_address": "2831 Lincoln Ave",
+    "city_nm": "Bucyrus",
+    "zip_code": "65444",
+    "state": "MO",
+    "state_name": "Missouri",
+    "full_address": "2831 Second St, Bucyrus, MO 65444"
+  },
+  {
+    "member_id": "AA000029",
+    "street_address": "573 Madison Ave",
+    "city_nm": "Cold Spring",
+    "zip_code": "56320",
+    "state": "MN",
+    "state_name": "Minnesota",
+    "full_address": "573 Elm St, Cold Spring, MN 56320"
+  },
+  {
+    "member_id": "AA000030",
+    "street_address": "7173 Second St",
+    "city_nm": "Batesville",
+    "zip_code": "78829",
+    "state": "TX",
+    "state_name": "Texas",
+    "full_address": "7173 Cedar Ave, Batesville, TX 78829"
+  },
+  {
+    "member_id": "AA000031",
+    "street_address": "9064 Park Ave",
+    "city_nm": "Premier",
+    "zip_code": "24878",
+    "state": "WV",
+    "state_name": "West Virginia",
+    "full_address": "9064 Oak Ave, Premier, WV 24878"
+  },
+  {
+    "member_id": "AA000032",
+    "street_address": "2599 Pine St",
+    "city_nm": "Greenbush",
+    "zip_code": "4418",
+    "state": "ME",
+    "state_name": "Maine",
+    "full_address": "2599 Main St, Greenbush, ME 4418"
+  },
+  {
+    "member_id": "AA000033",
+    "street_address": "7176 Elm St",
+    "city_nm": "Conetoe",
+    "zip_code": "27819",
+    "state": "NC",
+    "state_name": "North Carolina",
+    "full_address": "7176 Park Ave, Conetoe, NC 27819"
+  },
+  {
+    "member_id": "AA000034",
+    "street_address": "1101 Oak Ave",
+    "city_nm": "Centereach",
+    "zip_code": "11720",
+    "state": "NY",
+    "state_name": "New York",
+    "full_address": "1101 Madison Ave, Centereach, NY 11720"
+  },
+  {
+    "member_id": "AA000035",
+    "street_address": "6426 Washington St",
+    "city_nm": "Underwood",
+    "zip_code": "56586",
+    "state": "MN",
+    "state_name": "Minnesota",
+    "full_address": "6426 Cedar Ave, Underwood, MN 56586"
+  },
+  {
+    "member_id": "AA000036",
+    "street_address": "3120 Washington St",
+    "city_nm": "Volcano",
+    "zip_code": "95689",
+    "state": "CA",
+    "state_name": "California",
+    "full_address": "3120 Main St, Volcano, CA 95689"
+  },
+  {
+    "member_id": "AA000037",
+    "street_address": "4590 Washington St",
+    "city_nm": "Zurich",
+    "zip_code": "59547",
+    "state": "MT",
+    "state_name": "Montana",
+    "full_address": "4590 Washington St, Zurich, MT 59547"
+  },
+  {
+    "member_id": "AA000038",
+    "street_address": "6246 Maple St",
+    "city_nm": "McFall",
+    "zip_code": "64657",
+    "state": "MO",
+    "state_name": "Missouri",
+    "full_address": "6246 Second St, McFall, MO 64657"
+  },
+  {
+    "member_id": "AA000039",
+    "street_address": "5271 Cedar Ave",
+    "city_nm": "Sacramento",
+    "zip_code": "95864",
+    "state": "CA",
+    "state_name": "California",
+    "full_address": "5271 Park Ave, Sacramento, CA 95864"
+  },
+  {
+    "member_id": "AA000040",
+    "street_address": "9825 First St",
+    "city_nm": "San Antonio",
+    "zip_code": "78226",
+    "state": "TX",
+    "state_name": "Texas",
+    "full_address": "9825 Pine St, San Antonio, TX 78226"
+  },
+  {
+    "member_id": "AA000041",
+    "street_address": "4155 Main St",
+    "city_nm": "Saint Cloud",
+    "zip_code": "34773",
+    "state": "FL",
+    "state_name": "Florida",
+    "full_address": "4155 Washington St, Saint Cloud, FL 34773"
+  },
+  {
+    "member_id": "AA000042",
+    "street_address": "3690 Washington St",
+    "city_nm": "Columbia Station",
+    "zip_code": "44028",
+    "state": "OH",
+    "state_name": "Ohio",
+    "full_address": "3690 Park Ave, Columbia Station, OH 44028"
+  },
+  {
+    "member_id": "AA000043",
+    "street_address": "6569 Main St",
+    "city_nm": "Plant City",
+    "zip_code": "33563",
+    "state": "FL",
+    "state_name": "Florida",
+    "full_address": "6569 Oak Ave, Plant City, FL 33563"
+  },
+  {
+    "member_id": "AA000044",
+    "street_address": "3757 Jefferson St",
+    "city_nm": "Sunnyvale",
+    "zip_code": "94089",
+    "state": "CA",
+    "state_name": "California",
+    "full_address": "3757 Maple St, Sunnyvale, CA 94089"
+  },
+  {
+    "member_id": "AA000045",
+    "street_address": "3340 Maple St",
+    "city_nm": "Ariel",
+    "zip_code": "98603",
+    "state": "WA",
+    "state_name": "Washington",
+    "full_address": "3340 Jefferson St, Ariel, WA 98603"
+  },
+  {
+    "member_id": "AA000046",
+    "street_address": "3555 First St",
+    "city_nm": "Tampa",
+    "zip_code": "33613",
+    "state": "FL",
+    "state_name": "Florida",
+    "full_address": "3555 Second St, Tampa, FL 33613"
+  },
+  {
+    "member_id": "AA000047",
+    "street_address": "660 Washington St",
+    "city_nm": "Topeka",
+    "zip_code": "66622",
+    "state": "KS",
+    "state_name": "Kansas",
+    "full_address": "660 Pine St, Topeka, KS 66622"
+  },
+  {
+    "member_id": "AA000048",
+    "street_address": "5381 Second St",
+    "city_nm": "Johnston",
+    "zip_code": "2919",
+    "state": "RI",
+    "state_name": "Rhode Island",
+    "full_address": "5381 Second St, Johnston, RI 2919"
+  },
+  {
+    "member_id": "AA000049",
+    "street_address": "4977 Washington St",
+    "city_nm": "West Ossipee",
+    "zip_code": "3890",
+    "state": "NH",
+    "state_name": "New Hampshire",
+    "full_address": "4977 Park Ave, West Ossipee, NH 3890"
+  },
+  {
+    "member_id": "AA000050",
+    "street_address": "3594 Oak Ave",
+    "city_nm": "Warrens",
+    "zip_code": "54666",
+    "state": "WI",
+    "state_name": "Wisconsin",
+    "full_address": "3594 Oak Ave, Warrens, WI 54666"
+  }
+]
