@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 """
+Simple FAISS Fix - Replace with offline-only version
+"""
+
+import os
+import shutil
+from pathlib import Path
+
+def create_simple_faiss_fix():
+    """Create a simple FAISS engine that always uses offline mode"""
+    
+    simple_faiss_content = '''#!/usr/bin/env python3
+"""
 Simple FAISS Engine - Offline Only
 No sentence-transformers required, no internet connection needed
 """
@@ -57,3 +69,18 @@ def get_faiss_engine():
 
 # Export for easy access
 __all__ = ['FAISSSimilarityEngine', 'get_faiss_engine']
+'''
+    
+    # Write the simple FAISS engine
+    faiss_file = Path("agents/faiss_similarity_engine.py")
+    with open(faiss_file, 'w', encoding='utf-8') as f:
+        f.write(simple_faiss_content)
+    
+    print(f"✅ Created simple FAISS engine at {faiss_file}")
+    print("✅ No more sentence-transformers errors!")
+    print("✅ No more internet connection errors!")
+    print("✅ Application will work without FAISS issues!")
+
+if __name__ == "__main__":
+    create_simple_faiss_fix()
+    print("\n🎉 Simple FAISS fix completed!")

@@ -1,0 +1,37 @@
+[
+  {
+    "id": 0,
+    "text": "Hello, how can I help you with AA member matching?",
+    "timestamp": "2025-09-08T20:43:35.059030",
+    "category": "test"
+  },
+  {
+    "id": 1,
+    "text": "I need to find similar AA members based on their data",
+    "timestamp": "2025-09-08T20:43:35.059650",
+    "category": "test"
+  },
+  {
+    "id": 2,
+    "text": "What are the different matching criteria for AA members?",
+    "timestamp": "2025-09-08T20:43:35.060252",
+    "category": "test"
+  },
+  {
+    "id": 3,
+    "text": "How does the FAISS similarity search work?",
+    "timestamp": "2025-09-08T20:43:35.061524",
+    "category": "test"
+  },
+  {
+    "id": 4,
+    "text": "Can you help me with data quality validation?",
+    "timestamp": "2025-09-08T20:43:35.061951",
+    "category": "test"
+  },
+  {
+    "id": 5,
+    "text": "Test message for FAISS engine",
+    "timestamp": "2025-09-08T20:44:34.694062"
+  }
+]

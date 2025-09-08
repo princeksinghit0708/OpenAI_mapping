@@ -1,0 +1,37 @@
+[
+  {
+    "id": 0,
+    "suggestion": "Check AA member data quality",
+    "context": "test context",
+    "timestamp": "2025-09-08T20:43:35.069891",
+    "usage_count": 0
+  },
+  {
+    "id": 1,
+    "suggestion": "Validate matching criteria",
+    "context": "test context",
+    "timestamp": "2025-09-08T20:43:35.070735",
+    "usage_count": 0
+  },
+  {
+    "id": 2,
+    "suggestion": "Run similarity search",
+    "context": "test context",
+    "timestamp": "2025-09-08T20:43:35.071082",
+    "usage_count": 0
+  },
+  {
+    "id": 3,
+    "suggestion": "Export data to Excel",
+    "context": "test context",
+    "timestamp": "2025-09-08T20:43:35.071357",
+    "usage_count": 0
+  },
+  {
+    "id": 4,
+    "suggestion": "Test suggestion",
+    "context": "test context",
+    "timestamp": "2025-09-08T20:44:34.704500",
+    "usage_count": 0
+  }
+]

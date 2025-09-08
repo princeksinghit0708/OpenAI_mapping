@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Offline FAISS Similarity Search Engine - No Internet Required
-Uses built-in Python libraries and local text processing
+Offline FAISS Similarity Search Engine
+Handles cases where sentence-transformers models are not available
 """
 
 import numpy as np
@@ -13,274 +13,279 @@ from typing import Dict, List, Any, Optional, Tuple, Union
 from datetime import datetime
 import faiss
 import logging
-import re
-from collections import Counter
-import math
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class OfflineTextEmbedder:
+class OfflineFAISSEngine:
     """
-    Offline text embedding using TF-IDF and word frequency
-    No internet required - uses built-in Python libraries
-    """
-    
-    def __init__(self):
-        self.vocabulary = {}
-        self.idf_scores = {}
-        self.doc_frequencies = {}
-        self.total_docs = 0
-        
-    def build_vocabulary(self, texts: List[str]):
-        """Build vocabulary from texts"""
-        all_words = []
-        for text in texts:
-            words = self._tokenize(text)
-            all_words.extend(words)
-        
-        # Count word frequencies
-        word_counts = Counter(all_words)
-        
-        # Build vocabulary (keep words that appear at least 2 times)
-        self.vocabulary = {word: idx for idx, word in enumerate(word_counts.keys()) if word_counts[word] >= 2}
-        
-        # Calculate document frequencies
-        for text in texts:
-            words = set(self._tokenize(text))
-            for word in words:
-                if word in self.vocabulary:
-                    self.doc_frequencies[word] = self.doc_frequencies.get(word, 0) + 1
-        
-        self.total_docs = len(texts)
-        
-        # Calculate IDF scores
-        for word in self.vocabulary:
-            if word in self.doc_frequencies:
-                self.idf_scores[word] = math.log(self.total_docs / self.doc_frequencies[word])
-            else:
-                self.idf_scores[word] = 0
-    
-    def _tokenize(self, text: str) -> List[str]:
-        """Simple tokenization"""
-        # Convert to lowercase and split on non-alphanumeric characters
-        words = re.findall(r'\b\w+\b', text.lower())
-        return words
-    
-    def encode(self, text: str) -> np.ndarray:
-        """Encode text to vector using TF-IDF"""
-        words = self._tokenize(text)
-        word_counts = Counter(words)
-        
-        # Create TF-IDF vector
-        vector = np.zeros(len(self.vocabulary))
-        
-        for word, count in word_counts.items():
-            if word in self.vocabulary:
-                idx = self.vocabulary[word]
-                tf = count / len(words)  # Term frequency
-                idf = self.idf_scores.get(word, 0)  # Inverse document frequency
-                vector[idx] = tf * idf
-        
-        # Normalize vector
-        norm = np.linalg.norm(vector)
-        if norm > 0:
-            vector = vector / norm
-            
-        return vector
-
-class OfflineFAISSSimilarityEngine:
-    """
-    Offline FAISS similarity search engine - No internet required
-    Uses local text processing and TF-IDF embeddings
+    Offline FAISS similarity search engine that works without sentence-transformers
+    Uses simple TF-IDF or basic text similarity when models are not available
     """
     
     def __init__(self, 
-                 dimension: int = 1000,  # Adjust based on vocabulary size
-                 collection_name: str = "offline_chat_similarity_db"):
+                 dimension: int = 384,
+                 collection_name: str = "offline_chat_db"):
+        
         self.dimension = dimension
         self.collection_name = collection_name
-        self.embedder = OfflineTextEmbedder()
-        self.index = None
-        self.metadata_store = {}
-        self.metadata_path = Path(f"data/{collection_name}_metadata.json")
-        self.index_path = Path(f"data/{collection_name}_index.faiss")
         
-        # Create data directory
-        self.metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        # Initialize components
+        self.faiss_index = None
+        self.is_initialized = False
+        self.embedding_model = None  # Will be None for offline mode
         
-        # Initialize FAISS index
-        self._initialize_index()
+        # Storage paths
+        self.base_path = Path(f"./data/faiss_db/{collection_name}")
+        self.base_path.mkdir(parents=True, exist_ok=True)
         
-        # Load existing data
-        self._load_data()
+        self.index_path = self.base_path / f"{collection_name}_index.faiss"
+        self.metadata_path = self.base_path / f"{collection_name}_metadata.json"
+        self.suggestions_path = self.base_path / f"{collection_name}_suggestions.json"
+        
+        # In-memory storage
+        self.metadata = []
+        self.suggestions = []
+        
+        # Simple text processing for offline mode
+        self.vocabulary = set()
+        self.word_to_id = {}
+        self.id_to_word = {}
+        self.next_word_id = 0
     
-    def _initialize_index(self):
-        """Initialize FAISS index"""
-        self.index = faiss.IndexFlatIP(self.dimension)  # Inner product for cosine similarity
-    
-    def _load_data(self):
-        """Load existing metadata and index"""
+    async def initialize(self):
+        """Initialize the offline FAISS engine"""
         try:
-            if self.metadata_path.exists():
-                with open(self.metadata_path, 'r') as f:
-                    self.metadata_store = json.load(f)
-                logger.info(f"Loaded {len(self.metadata_store)} existing records")
+            logger.info("Initializing offline FAISS engine (no sentence-transformers required)")
             
+            # Load existing index and metadata if available
             if self.index_path.exists():
-                self.index = faiss.read_index(str(self.index_path))
-                logger.info(f"Loaded FAISS index with {self.index.ntotal} vectors")
+                await self._load_existing_index()
+            else:
+                await self._create_new_index()
+            
+            # Load existing data
+            await self._load_existing_data()
+            
+            logger.info(f"Offline FAISS Engine initialized: {self.collection_name}")
+            self.is_initialized = True
+            
         except Exception as e:
-            logger.warning(f"Could not load existing data: {e}")
+            logger.error(f"Failed to initialize offline FAISS engine: {str(e)}")
+            self.is_initialized = False
     
-    def _save_data(self):
-        """Save metadata and index"""
+    async def _create_new_index(self):
+        """Create a new FAISS index"""
         try:
-            with open(self.metadata_path, 'w') as f:
-                json.dump(self.metadata_store, f, indent=2)
+            # Create a simple FAISS index
+            self.faiss_index = faiss.IndexFlatL2(self.dimension)
+            logger.info(f"Created new FAISS index with dimension {self.dimension}")
             
-            if self.index is not None:
-                faiss.write_index(self.index, str(self.index_path))
         except Exception as e:
-            logger.error(f"Could not save data: {e}")
+            logger.error(f"Failed to create FAISS index: {str(e)}")
+            raise
     
-    def add_chat_interaction(self, 
-                           user_input: str, 
-                           ai_response: str, 
-                           context: Dict[str, Any] = None,
-                           feedback_score: float = None,
-                           category: str = "general") -> str:
-        """Add a chat interaction to the similarity database"""
+    async def _load_existing_index(self):
+        """Load existing FAISS index"""
         try:
-            # Create interaction text
-            interaction_text = f"{user_input} {ai_response}"
+            self.faiss_index = faiss.read_index(str(self.index_path))
+            logger.info(f"Loaded existing FAISS index from {self.index_path}")
             
-            # Generate embedding
-            embedding = self.embedder.encode(interaction_text)
+        except Exception as e:
+            logger.error(f"Failed to load existing index: {str(e)}")
+            await self._create_new_index()
+    
+    async def _load_existing_data(self):
+        """Load existing metadata and suggestions"""
+        try:
+            # Load metadata
+            if self.metadata_path.exists():
+                with open(self.metadata_path, 'r', encoding='utf-8') as f:
+                    self.metadata = json.load(f)
+                logger.info(f"Loaded {len(self.metadata)} metadata records")
             
-            # Resize embedding to match dimension
-            if len(embedding) < self.dimension:
-                embedding = np.pad(embedding, (0, self.dimension - len(embedding)))
-            elif len(embedding) > self.dimension:
-                embedding = embedding[:self.dimension]
+            # Load suggestions
+            if self.suggestions_path.exists():
+                with open(self.suggestions_path, 'r', encoding='utf-8') as f:
+                    self.suggestions = json.load(f)
+                logger.info(f"Loaded {len(self.suggestions)} suggestions")
+                
+        except Exception as e:
+            logger.error(f"Failed to load existing data: {str(e)}")
+            self.metadata = []
+            self.suggestions = []
+    
+    def _simple_text_embedding(self, text: str) -> np.ndarray:
+        """Create a simple text embedding using basic text features"""
+        if not text:
+            return np.zeros(self.dimension)
+        
+        # Convert to lowercase and split into words
+        words = text.lower().split()
+        
+        # Create a simple bag-of-words representation
+        word_counts = {}
+        for word in words:
+            # Simple word cleaning
+            word = word.strip('.,!?;:"()[]{}')
+            if word:
+                word_counts[word] = word_counts.get(word, 0) + 1
+        
+        # Create embedding vector
+        embedding = np.zeros(self.dimension)
+        
+        # Use word hashing to map words to embedding dimensions
+        for word, count in word_counts.items():
+            # Simple hash-based mapping
+            hash_val = hash(word) % self.dimension
+            embedding[hash_val] += count
+        
+        # Normalize the embedding
+        norm = np.linalg.norm(embedding)
+        if norm > 0:
+            embedding = embedding / norm
+        
+        return embedding
+    
+    async def add_text(self, text: str, metadata: Dict[str, Any] = None) -> bool:
+        """Add text to the FAISS index"""
+        try:
+            if not self.is_initialized:
+                await self.initialize()
+            
+            if not text:
+                return False
+            
+            # Create embedding
+            embedding = self._simple_text_embedding(text)
+            embedding = embedding.reshape(1, -1).astype('float32')
             
             # Add to FAISS index
-            self.index.add(embedding.reshape(1, -1))
+            self.faiss_index.add(embedding)
             
             # Store metadata
-            interaction_id = f"chat_{len(self.metadata_store)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            self.metadata_store[interaction_id] = {
-                "user_input": user_input,
-                "ai_response": ai_response,
-                "context": context or {},
-                "feedback_score": feedback_score,
-                "category": category,
-                "timestamp": datetime.now().isoformat(),
-                "interaction_text": interaction_text
+            record_metadata = {
+                'id': len(self.metadata),
+                'text': text,
+                'timestamp': datetime.now().isoformat(),
+                **(metadata or {})
             }
+            self.metadata.append(record_metadata)
             
             # Save data
-            self._save_data()
+            await self._save_data()
             
-            logger.info(f"Added chat interaction: {interaction_id}")
-            return interaction_id
+            logger.info(f"Added text to index: {text[:50]}...")
+            return True
             
         except Exception as e:
-            logger.error(f"Error adding chat interaction: {e}")
-            return None
+            logger.error(f"Failed to add text: {str(e)}")
+            return False
     
-    def find_similar_interactions(self, 
-                                query: str, 
-                                top_k: int = 5,
-                                category: str = None) -> List[Dict[str, Any]]:
-        """Find similar chat interactions"""
+    async def search_similar(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
+        """Search for similar texts"""
         try:
-            if self.index.ntotal == 0:
+            if not self.is_initialized:
+                await self.initialize()
+            
+            if not query or self.faiss_index.ntotal == 0:
                 return []
             
-            # Generate query embedding
-            query_embedding = self.embedder.encode(query)
+            # Create query embedding
+            query_embedding = self._simple_text_embedding(query)
+            query_embedding = query_embedding.reshape(1, -1).astype('float32')
             
-            # Resize embedding to match dimension
-            if len(query_embedding) < self.dimension:
-                query_embedding = np.pad(query_embedding, (0, self.dimension - len(query_embedding)))
-            elif len(query_embedding) > self.dimension:
-                query_embedding = query_embedding[:self.dimension]
+            # Search
+            distances, indices = self.faiss_index.search(query_embedding, min(k, self.faiss_index.ntotal))
             
-            # Search FAISS index
-            scores, indices = self.index.search(query_embedding.reshape(1, -1), top_k)
-            
-            # Get metadata for results
+            # Format results
             results = []
-            interaction_ids = list(self.metadata_store.keys())
-            
-            for score, idx in zip(scores[0], indices[0]):
-                if idx < len(interaction_ids):
-                    interaction_id = interaction_ids[idx]
-                    metadata = self.metadata_store[interaction_id]
-                    
-                    # Filter by category if specified
-                    if category and metadata.get("category") != category:
-                        continue
-                    
-                    results.append({
-                        "interaction_id": interaction_id,
-                        "similarity_score": float(score),
-                        "user_input": metadata["user_input"],
-                        "ai_response": metadata["ai_response"],
-                        "category": metadata.get("category", "general"),
-                        "timestamp": metadata.get("timestamp"),
-                        "context": metadata.get("context", {})
-                    })
+            for i, (distance, idx) in enumerate(zip(distances[0], indices[0])):
+                if idx < len(self.metadata):
+                    result = {
+                        'id': self.metadata[idx]['id'],
+                        'text': self.metadata[idx]['text'],
+                        'distance': float(distance),
+                        'similarity': 1.0 / (1.0 + distance),  # Convert distance to similarity
+                        'metadata': self.metadata[idx]
+                    }
+                    results.append(result)
             
             return results
             
         except Exception as e:
-            logger.error(f"Error finding similar interactions: {e}")
+            logger.error(f"Failed to search similar texts: {str(e)}")
             return []
     
-    def get_chat_suggestions(self, 
-                           current_input: str, 
-                           max_suggestions: int = 3) -> List[str]:
-        """Get chat suggestions based on similar interactions"""
+    async def add_suggestion(self, suggestion: str, context: str = "") -> bool:
+        """Add a chat suggestion"""
         try:
-            similar_interactions = self.find_similar_interactions(
-                current_input, 
-                top_k=max_suggestions * 2  # Get more to filter
-            )
+            suggestion_data = {
+                'id': len(self.suggestions),
+                'suggestion': suggestion,
+                'context': context,
+                'timestamp': datetime.now().isoformat(),
+                'usage_count': 0
+            }
             
-            suggestions = []
-            for interaction in similar_interactions:
-                if interaction["similarity_score"] > 0.3:  # Threshold for relevance
-                    suggestions.append(interaction["ai_response"])
+            self.suggestions.append(suggestion_data)
+            await self._save_data()
             
-            return suggestions[:max_suggestions]
+            logger.info(f"Added suggestion: {suggestion}")
+            return True
             
         except Exception as e:
-            logger.error(f"Error getting chat suggestions: {e}")
+            logger.error(f"Failed to add suggestion: {str(e)}")
+            return False
+    
+    async def get_suggestions(self, query: str = "", limit: int = 10) -> List[Dict[str, Any]]:
+        """Get chat suggestions"""
+        try:
+            if not query:
+                # Return most recent suggestions
+                return sorted(self.suggestions, 
+                            key=lambda x: x['timestamp'], 
+                            reverse=True)[:limit]
+            
+            # Search for similar suggestions
+            similar_texts = await self.search_similar(query, limit)
+            return [result['metadata'] for result in similar_texts if 'suggestion' in result['metadata']]
+            
+        except Exception as e:
+            logger.error(f"Failed to get suggestions: {str(e)}")
             return []
     
-    def train_on_existing_data(self, training_data: List[Dict[str, str]]):
-        """Train the embedder on existing data"""
+    async def _save_data(self):
+        """Save data to disk"""
         try:
-            texts = []
-            for item in training_data:
-                if "user_input" in item and "ai_response" in item:
-                    texts.append(f"{item['user_input']} {item['ai_response']}")
+            # Save FAISS index
+            faiss.write_index(self.faiss_index, str(self.index_path))
             
-            if texts:
-                self.embedder.build_vocabulary(texts)
-                logger.info(f"Trained embedder on {len(texts)} examples")
+            # Save metadata
+            with open(self.metadata_path, 'w', encoding='utf-8') as f:
+                json.dump(self.metadata, f, indent=2, ensure_ascii=False)
             
+            # Save suggestions
+            with open(self.suggestions_path, 'w', encoding='utf-8') as f:
+                json.dump(self.suggestions, f, indent=2, ensure_ascii=False)
+                
         except Exception as e:
-            logger.error(f"Error training on existing data: {e}")
-    
-    def get_stats(self) -> Dict[str, Any]:
-        """Get engine statistics"""
-        return {
-            "total_interactions": len(self.metadata_store),
-            "index_size": self.index.ntotal if self.index else 0,
-            "vocabulary_size": len(self.embedder.vocabulary),
-            "dimension": self.dimension
-        }
+            logger.error(f"Failed to save data: {str(e)}")
+
+# Global instance
+offline_faiss_engine = None
+
+def get_offline_faiss_engine():
+    """Get the global offline FAISS engine instance"""
+    global offline_faiss_engine
+    if offline_faiss_engine is None:
+        offline_faiss_engine = OfflineFAISSEngine()
+    return offline_faiss_engine
+
+# Async initialization function
+async def initialize_offline_engine():
+    """Initialize the offline FAISS engine"""
+    engine = get_offline_faiss_engine()
+    await engine.initialize()
+    return engine
